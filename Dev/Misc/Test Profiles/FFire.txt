@@ -1,0 +1,494 @@
+local TMW                                     = TMW 
+local Env                                     = TMW.CNDT.Env
+local Action                                = Action
+local Create                                = Action.Create
+local Print                                    = Action.Print
+local TimerSet                                = Action.TimerSet
+local Listener                                = Action.Listener
+local IsEnemy                                = Action.Bit.isEnemy
+local toStr                                 = Action.toStr
+local GetCL                                 = Action.GetCL
+local GetToggle                             = Action.GetToggle
+local TeamCache                                = Action.TeamCache
+local TeamCacheFriendly                        = TeamCache.Friendly
+local TeamCacheFriendlyIndexToPLAYERs        = TeamCacheFriendly.IndexToPLAYERs
+local EnemyTeam                                = Action.EnemyTeam
+local FriendlyTeam                            = Action.FriendlyTeam
+local LoC                                     = Action.LossOfControl
+local Player                                = Action.Player 
+local MultiUnits                            = Action.MultiUnits
+local ActiveUnitPlates                        = MultiUnits:GetActiveUnitPlates()
+local UnitCooldown                            = Action.UnitCooldown
+local Unit                                    = Action.Unit 
+local Pet                                     = LibStub("PetLibrary")
+local Azerite                                = LibStub("AzeriteTraits")
+local GetGCD                                = Action.GetGCD
+local GetCurrentGCD                            = Action.GetCurrentGCD
+local GetPing                                = Action.GetPing
+local IsUnitEnemy                            = Action.IsUnitEnemy
+local IsUnitFriendly                        = Action.IsUnitFriendly
+local AuraIsValid                            = Action.AuraIsValid
+local InterruptIsValid                        = Action.InterruptIsValid
+local BossMods_Pulling                        = Action.BossMods_Pulling
+local BurstIsON                                = Action.BurstIsON
+
+local _G, setmetatable, ipairs, pairs, next, select, math    = 
+_G, setmetatable, ipairs, pairs, next, select, math
+
+local UnitIsUnit                            = _G.UnitIsUnit
+
+Action[ACTION_CONST_MAGE_FIRE] = {
+    -- Racial
+    ArcaneTorrent                                = Create({ Type = "Spell", ID = 50613}),
+    BloodFury                                    = Create({ Type = "Spell", ID = 20572}),
+    BagofTricks                                 = Create({ Type = "Spell", ID = 312411}),
+    Fireblood                                    = Create({ Type = "Spell", ID = 265221}),
+    AncestralCall                                = Create({ Type = "Spell", ID = 274738}),
+    Berserking                                    = Create({ Type = "Spell", ID = 26297}),
+    ArcanePulse                                    = Create({ Type = "Spell", ID = 260364}),
+    QuakingPalm                                    = Create({ Type = "Spell", ID = 107079}),
+    Haymaker                                    = Create({ Type = "Spell", ID = 287712}), 
+    WarStomp                                    = Create({ Type = "Spell", ID = 20549}),
+    BullRush                                    = Create({ Type = "Spell", ID = 255654}),    
+    GiftofNaaru                                    = Create({ Type = "Spell", ID = 59544}),
+    Shadowmeld                                    = Create({ Type = "Spell", ID = 58984}), -- usable in Action Core 
+    Stoneform                                    = Create({ Type = "Spell", ID = 20594}), 
+    WilloftheForsaken                            = Create({ Type = "Spell", ID = 7744}), -- not usable in APL but user can Queue it    
+    EscapeArtist                                = Create({ Type = "Spell", ID = 20589}), -- not usable in APL but user can Queue it
+    EveryManforHimself                          = Create({ Type = "Spell", ID = 59752}), -- not usable in APL but user can Queue it
+    -- CrownControl    
+    -- Suppotive    
+    Spellsteal                                    = Create({ Type = "Spell", ID = 30449}),
+    RemoveCurse                                    = Create({ Type = "Spell", ID = 475}),
+    -- Self Defensives                                
+    BlazingBarrier                                = Create({ Type = "Spell", ID = 235313}),
+    -- Burst
+    Combustion                                    = Create({ Type = "Spell", ID = 190319}),
+    -- Rotation       
+    Flamestrike                                    = Create({ Type = "Spell", ID = 2120}),
+    Pyroblast                                    = Create({ Type = "Spell", ID = 11366}),
+    Fireball                                    = Create({ Type = "Spell", ID = 133}),
+    FireBlast                                    = Create({ Type = "Spell", ID = 108853}),
+    Scorch                                        = Create({ Type = "Spell", ID = 2948}),
+    DragonsBreath                                = Create({ Type = "Spell", ID = 31661}),
+    -- PvP
+    -- Buffs
+    HeatingUpBuff                                = Create({ Type = "Spell", ID = 48107, Hidden = true}),
+    HotStreakBuff                                = Create({ Type = "Spell", ID = 48108, Hidden = true}),
+    PyroclasmBuff                                = Create({ Type = "Spell", ID = 269651, Hidden = true}),
+    RuneofPowerBuff                                = Create({ Type = "Spell", ID = 116014, Hidden = true}),
+    CombustionBuff                                = Create({ Type = "Spell", ID = 190319, Hidden = true}),
+    BlasterMasterBuff                            = Create({ Type = "Spell", ID = 274598, Hidden = true}),
+    LatentArcanaBuff                            = Create({ Type = "Spell", ID = 296971, Hidden = true}),
+    -- Debuffs
+    -- Items
+    HyperthreadWristwraps                        = Create({ Type = "Item", ID = 168989, Hidden = true}),
+    AzsharasFontofPower                            = Create({ Type = "Trinket", ID = 169314}), 
+    BalefireBranch                                = Create({ Type = "Trinket", ID = 159630}), 
+    
+    -- Talents
+    Firestarter                                    = Create({ Type = "Spell", ID = 205026, isTalent = true}), -- Talent 1/1
+    SearingTouch                                = Create({ Type = "Spell", ID = 269644, isTalent = true}), -- Talent 1/3
+    RuneofPower                                    = Create({ Type = "Spell", ID = 116011, isTalent = true}), -- Talent 3/3
+    FlameOn                                        = Create({ Type = "Spell", ID = 205029, isTalent = true}), -- Talent 4/1
+    AlexstraszasFury                            = Create({ Type = "Spell", ID = 235870, isTalent = true}), -- Talent 4/1
+    PhoenixFlames                                = Create({ Type = "Spell", ID = 257541, isTalent = true}), -- Talent 4/3
+    FlamePatch                                    = Create({ Type = "Spell", ID = 205037, isTalent = true}), -- Talent 6/1
+    LivingBomb                                    = Create({ Type = "Spell", ID = 44457, isTalent = true}), -- Talent 6/3
+    Kindling                                    = Create({ Type = "Spell", ID = 155148, isTalent = true}), -- Talent 7/1
+    Meteor                                        = Create({ Type = "Spell", ID = 153561, isTalent = true}), -- Talent 7/1
+    -- PvP Talents
+    -- Items
+    -- Hidden 
+    BlasterMaster                                = Create({ Type = "Spell", ID = 274596, Hidden = true}), -- Simcraft Azerite
+    Channeling                                    = Create({ Type = "Spell", ID = 209274, Hidden = true}),
+}
+
+Action:CreateEssencesFor(ACTION_CONST_MAGE_FIRE)
+local A = setmetatable(Action[ACTION_CONST_MAGE_FIRE], { __index = Action })
+
+
+local player                                    = "player"
+local target                                    = "target"
+local Temp                                        = {
+    AttackTypes                                    = {"TotalImun", "DamageMagicImun"},
+    IsSlotTrinketBlocked                        = {
+        [A.AzsharasFontofPower.ID]                = true,
+        [A.BalefireBranch.ID]                    = true,
+    }
+}     
+
+local function IsSchoolFireUP()
+    return LoC:IsMissed("SILENCE") and LoC:Get("SCHOOL_INTERRUPT", "FIRE") == 0
+end 
+
+local function IsSchoolArcaneUP()
+    return LoC:IsMissed("SILENCE") and LoC:Get("SCHOOL_INTERRUPT", "ARCANE") == 0
+end 
+
+function Action:ExecuteTime()
+    if self:GetSpellCastTime() > GetGCD() + GetCurrentGCD() then
+        return self:GetSpellCastTime()
+    else
+        return GetGCD() + GetCurrentGCD()
+    end
+end
+-----------------------------------------
+--                 ROTATION  
+-----------------------------------------
+
+-- [3] Single Rotation
+A[3] = function(icon)
+    local unitID                            = "player"
+    local inAoE                                = GetToggle(2, "AoE")
+    local isStartAttack                        = GetToggle(2, "startAttack")
+    local combatTime                        = Unit(player):CombatTime()
+    local inCombat                            = combatTime > 0
+    local isStaying                            = Player:IsStaying()
+    local isSchoolFireUP                    = IsSchoolFireUP()
+    local enemies                            = MultiUnits:GetActiveEnemies()
+    local canCast                            = true
+    local combustionRopCutOff                = 60
+    local varDelayFlamestrike                = 25
+    local varHoldCombustionThreshold        = 20
+    local timeToCombustion                    = 0
+    local varHotStreakFlamestrike            = 0
+    local varHardCastFlamestrike            = 0
+    local varPhoenixPooling                    = false
+    local varFireblastPooling                = false
+    local varFontDoubleOnUse                = false
+    local varCombustionOnUse                = false
+    local varActiveFirestarter                = false
+    local varCanScorchCombustion            = false
+    local holdMeteorToCombustion            = GetToggle(2, "holdMeteor")
+    
+    
+    --    if A.BlazingBarrier:IsReady(player) and Unit(player):HasBuffs(A.CombustionBuff.ID) == 0 and (timeToCombustion > 0 or not BurstIsON(unitID)) and 
+    --    Unit(player):GetRealTimeDMG() > 0 then
+    --        return A.BlazingBarrier:Show(icon)
+    --    end
+    
+    --print("CD : " .. A.FireBlast:GetCooldown())
+    --print("Recharge : " .. A.FireBlast:GetSpellChargesFullRechargeTime())
+    --print("Recharge2 : " .. A.FireBlast:Recharge())
+    if A.LatentArcanaBuff:IsSpellInCasting() then
+        return A.Channeling:Show(icon)
+    end
+    
+    
+    local function EnemyRotation(unitID)
+        if not isStartAttack and not inCombat then
+            return 
+        end
+        
+        
+        if A.Spellsteal:IsReady(unitID, nil, nil, true) and AuraIsValid(unitID, "UsePurge", "PurgeHigh") then 
+            return A.Spellsteal:Show(icon)
+        end 
+        
+        local burstIsON         = BurstIsON(unitID)
+        local heatingUpBuff        = Unit(player):HasBuffs(A.HeatingUpBuff.ID, true)
+        local hotStreakBuff        = Unit(player):HasBuffs(A.HotStreakBuff.ID, true)
+        local combustionBuff    = Unit(player):HasBuffs(A.CombustionBuff.ID, true)
+        local blasterMasterBuff = Unit(player):HasBuffs(A.BlasterMasterBuff.ID, true)
+        local ropBuff            = Unit(player):HasBuffs(A.RuneofPowerBuff.ID, true)
+        
+        if A.Firestarter:IsSpellLearned() and Unit(unitID):HealthPercent() > 90 then
+            varActiveFirestarter = true
+        end
+        
+        timeToCombustion = A.Combustion:GetCooldown()
+        
+        if Azerite:EssenceHasMajor(A.MemoryofLucidDreams.ID) and Unit(player):HasBuffs(A.MemoryofLucidDreams.ID, true) > 0 and A.MemoryofLucidDreams:GetCooldown() - A.Combustion:GetCooldown() <= varHoldCombustionThreshold then
+            timeToCombustion = A.MemoryofLucidDreams:GetCooldown()
+        end
+        
+        if A.BalefireBranch:GetEquipped() then
+            varCombustionOnUse = true
+        end
+        
+        if A.AzsharasFontofPower:GetEquipped() and varCombustionOnUse then
+            varFontDoubleOnUse = true
+        end
+        
+        if (varFontDoubleOnUse and A.AzsharasFontofPower:GetCooldown() >= 100) then
+            timeToCombustion = timeToCombustion + A.AzsharasFontofPower:GetCooldown() - 100
+        end
+        
+        if combustionBuff > 0 and A.FireBlast:GetSpellCharges() == 0 and A.FireBlast:GetCooldown() > 0 and A.HyperthreadWristwraps:IsReady(player) then
+            return A.HyperthreadWristwraps:Show(icon)
+        end        
+        
+        if isStaying and burstIsON and timeToCombustion <= 5 + 15 * (varFontDoubleOnUse and 1 or 0) and A.AzsharasFontofPower:IsReady(player) then
+            return A.AzsharasFontofPower:Show(icon)
+        end
+        
+        if isStaying and A.RuneofPower:IsReady(player) and (A.Firestarter:IsSpellLearned() and Unit(unitID):TimeToDieX(90) > A.RuneofPower:GetSpellChargesFullRechargeTime() or timeToCombustion > combustionRopCutOff and combustionBuff == 0 or not burstIsON and A.RuneofPower:GetSpellCharges() > 1) then
+            return A.RuneofPower:Show(icon)
+        end
+        
+        -- Combustion Phase
+        --if burstIsON and (Unit(player):HasBuffs(A.LatentArcanaBuff.ID) > 0 or not A.AzsharasFontofPower:GetEquipped()) and (combustionBuff > 0 or Unit(player):HasBuffs(A.MemoryofLucidDreams.ID) > 0 or (A.RuneofPower:IsSpellLearned() and timeToCombustion <= A.RuneofPower:GetSpellCastTime() or timeToCombustion <= 0) and not varActiveFirestarter) then
+        if burstIsON and ((A.RuneofPower:IsSpellLearned() and timeToCombustion <= A.RuneofPower:GetSpellCastTime() or timeToCombustion <= 0) and not varActiveFirestarter and (A.AzsharasFontofPower:GetEquipped() and A.AzsharasFontofPower:GetCooldown() > 0 or not A.AzsharasFontofPower:GetEquipped()) or combustionBuff > 0) then
+            
+            if (A.HyperthreadWristwraps:GetEquipped() and A.HyperthreadWristwraps:GetCooldown() > 0 or not A.HyperthreadWristwraps:GetEquipped()) and A.FireBlast:GetCooldown() > GetGCD() then
+                varCanScorchCombustion = true
+            end
+            
+            if A.BalefireBranch:IsReady(player) and (combustionBuff > 0 or A.LastPlayerCastName == A.Meteor:Info()) then
+                return A.BalefireBranch:Show(icon)
+            end
+            
+            if A.MemoryofLucidDreams:AutoHeartOfAzerothP(unitID) then
+                return A.MemoryofLucidDreams:Show(icon)
+            end
+            
+            --if isSchoolFireUP and A.FireBlast:IsReadyByPassCastGCD(unitID) and (A.FireBlast:GetSpellCharges() >= 1 and ((A.FireBlast:GetSpellChargesFrac() + (combustionBuff - 3) % A.FireBlast:GetCooldown() - (combustionBuff) % (3 - 0.5)) >= 0 or A.BlasterMaster:GetAzeriteRank() == 0 or not A.FlameOn:IsSpellLearned() or combustionBuff <= 3 or blasterMasterBuff < 0.5 or A.HyperthreadWristwraps:GetEquipped() and A.HyperthreadWristwraps:GetCooldown() < 5) and combustionBuff > 0 and (not A.Scorch:IsSpellInCasting() and not A.Pyroblast:IsSpellInFlight() and heatingUpBuff > 0 or A.Scorch:IsSpellInCasting() and hotStreakBuff == 0 and (heatingUpBuff == 0 or A.BlasterMaster:GetAzeriteRank() >= 1) or A.BlasterMaster:GetAzeriteRank() >= 1 and A.FlameOn:IsSpellLearned() and A.Pyroblast:IsSpellInFlight() and heatingUpBuff > 0 and hotStreakBuff == 0)) then
+            if isSchoolFireUP and A.FireBlast:IsReadyByPassCastGCD(unitID) and (A.FireBlast:GetSpellCharges() >= 1 and ((A.FireBlast:GetSpellChargesFrac() + (combustionBuff - 3) % 4 - (combustionBuff) % 2.5) >= 0 or A.BlasterMaster:GetAzeriteRank() == 0 or not A.FlameOn:IsSpellLearned() or combustionBuff <= 3 or blasterMasterBuff < 0.5 and blasterMasterBuff > 0 or A.HyperthreadWristwraps:GetEquipped() and A.HyperthreadWristwraps:GetCooldown() < 5) and combustionBuff > 0 and (not A.Scorch:IsSpellInCasting() and not A.Pyroblast:IsSpellInFlight() and heatingUpBuff > 0 or A.Scorch:IsSpellInCasting() and hotStreakBuff == 0 and (heatingUpBuff == 0 or A.BlasterMaster:GetAzeriteRank() > 0) or A.BlasterMaster:GetAzeriteRank() > 0 and A.FlameOn:IsSpellLearned() and A.Pyroblast:IsSpellInFlight() and heatingUpBuff > 0 and hotStreakBuff == 0)) then
+                return A.FireBlast:Show(icon)
+            end
+            
+            if isStaying and combustionBuff == 0 and A.Combustion:GetCooldown() < 20 and A.RuneofPower:IsReady(player) then
+                return A.RuneofPower:Show(icon)
+            end
+            
+            --if isSchoolFireUP and A.FireBlast:IsReadyByPassCastGCD(unitID) and (A.BlasterMaster:GetAzeriteRank() >= 1 and Azerite:EssenceHasMajor(A.MemoryofLucidDreams.ID) and A.Meteor:IsSpellLearned() and A.FlameOn:IsSpellLearned() and blasterMasterBuff == 0 and (A.RuneofPower:IsSpellLearned() and A.RuneofPower:IsSpellInCasting() and Unit(player):IsCastingRemains() < 0.6 or (timeToCombustion <= 0 or combustionBuff > 0) and not A.RuneofPower:IsSpellLearned() and not A.Pyroblast:IsSpellInFlight() and not A.Fireball:IsSpellInFlight())) then            
+            if isSchoolFireUP and A.FireBlast:IsReadyByPassCastGCD(unitID) and (A.BlasterMaster:GetAzeriteRank() >= 1 and A.Meteor:IsSpellLearned() and A.FlameOn:IsSpellLearned() and blasterMasterBuff == 0 and (A.RuneofPower:IsSpellLearned() and A.RuneofPower:IsSpellInCasting() and Unit(player):IsCastingRemains() < 0.3 or (timeToCombustion <= 0 or combustionBuff > 0) and not A.RuneofPower:IsSpellLearned() and not A.Pyroblast:IsSpellInFlight() and not A.Fireball:IsSpellInFlight())) then
+                return A.FireBlast:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.Meteor:IsReady(unitID, true) and (ropBuff > 0 and (Unit(unitID):TimeToDieX(90) > 3 or not varActiveFirestarter) or (3 < timeToCombustion or timeToCombustion <= 0 or not burstIsON and not A.RuneofPower:IsSpellLearned())) then
+                return A.Meteor:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.Combustion:IsReadyByPassCastGCD(player) and (((A.Meteor:IsSpellInFlight() and A.Meteor:GetSpellTimeSinceLastCast() <= 2.5) or not A.Meteor:IsSpellLearned() or A.Meteor:GetCooldown() > 0) and (ropBuff > 0 or not A.RuneofPower:IsSpellLearned())) then
+                return A.Combustion:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.Pyroblast:IsReadyByPassCastGCD(unitID) and Unit(player):HasBuffs(A.PyroclasmBuff.ID) > 0 and combustionBuff > A.Pyroblast:GetSpellCastTime() then
+                return A.Pyroblast:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.Pyroblast:IsReadyByPassCastGCD(unitID) and hotStreakBuff > 0 then
+                return A.Pyroblast:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.Pyroblast:IsReadyByPassCastGCD(unitID) and A.Scorch:IsSpellInCasting() and heatingUpBuff > 0 then
+                return A.Pyroblast:Show(icon)
+            end
+            
+            if isSchoolFireUP and varCanScorchCombustion and A.Scorch:IsReady(unitID) and combustionBuff > A.Scorch:GetSpellCastTime() then
+                --if isSchoolFireUP and A.FireBlast:GetCooldown() > GetGCD() + GetCurrentGCD() and (not A.HyperthreadWristwraps:GetEquipped() or A.HyperthreadWristwraps:GetCooldown() > 0) and A.Scorch:IsReady(unitID) and combustionBuff > A.Scorch:GetSpellCastTime() then
+                return A.Scorch:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.FireBlast:IsReady(unitID) and (combustionBuff > 0 and heatingUpBuff == 0 and hotStreakBuff == 0) then
+                return A.FireBlast:Show(icon)
+            end
+        end
+        
+        --[[    if isSchoolFireUP and A.FireBlast:IsReadyByPassCastGCD(unitID) and (Azerite:EssenceHasMajor(A.MemoryofLucidDreams.ID) and A.FireBlast:GetSpellCharges() == A.FireBlast:GetSpellChargesMax() and hotStreakBuff == 0 and not (heatingUpBuff > 0 and (combustionBuff > 0 and (A.Fireball:IsSpellInFlight() or A.Pyroblast:IsSpellInFlight() or A.Scorch:IsSpellInCasting()) or Unit(unitID):HealthPercent() <= 30 and A.Scorch:IsSpellInCasting())) and not (heatingUpBuff == 0 and hotStreakBuff == 0 and combustionBuff == 0 and (A.Fireball:IsSpellInFlight() or A.Pyroblast:IsSpellInFlight()))) then
+            return A.FireBlast:Show(icon)
+        end
+            
+        if isSchoolFireUP and A.FireBlast:IsReadyByPassCastGCD(unitID) and (varActiveFirestarter and A.FireBlast:GetSpellCharges() >= 1 and (not varFireblastPooling or ropBuff > 0)) and (A.BlasterMaster:GetAzeriteRank() == 0 or blasterMasterBuff < 0.5 and (not A.FireBlast:IsSpellInCasting() and not A.Pyroblast:IsSpellInFlight() and heatingUpBuff > 0 or A.Fireball:IsSpellInCasting() and hotStreakBuff == 0 or A.Pyroblast:IsSpellInFlight() and heatingUpBuff == 0 and hotStreakBuff == 0)) then
+            return A.FireBlast:Show(icon)
+        end]]
+        
+        varHotStreakFlamestrike = 2 * (A.FlamePatch:IsSpellLearned() and 1 or 0) + 99 * (not A.FlamePatch:IsSpellLearned() and 1 or 0)
+        varHardCastFlamestrike = 3 * (A.FlamePatch:IsSpellLearned() and 1 or 0) + 99 * (not A.FlamePatch:IsSpellLearned() and 1 or 0)
+        -- RoP Phase
+        if ropBuff > 0 and combustionBuff == 0 and (timeToCombustion > 0 or not burstIsON) and Unit(player):HasBuffs(A.MemoryofLucidDreams.ID) == 0 then            
+            if isSchoolFireUP and A.FireBlast:IsReadyByPassCastGCD(unitID) and (Azerite:EssenceHasMajor(A.MemoryofLucidDreams.ID) and A.FireBlast:GetSpellCharges() == A.FireBlast:GetSpellChargesMax() and hotStreakBuff == 0 and not (heatingUpBuff > 0 and (combustionBuff > 0 and (A.Fireball:IsSpellInFlight() or A.Pyroblast:IsSpellInFlight() or A.Scorch:IsSpellInCasting()) or Unit(unitID):HealthPercent() <= 30 and A.Scorch:IsSpellInCasting())) and not (heatingUpBuff == 0 and hotStreakBuff == 0 and combustionBuff == 0 and (A.Fireball:IsSpellInFlight() or A.Pyroblast:IsSpellInFlight()))) then
+                return A.FireBlast:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.FireBlast:IsReadyByPassCastGCD(unitID) and (varActiveFirestarter and A.FireBlast:GetSpellCharges() >= 1 and (not varFireblastPooling or ropBuff > 0)) and (A.BlasterMaster:GetAzeriteRank() == 0 or blasterMasterBuff < 0.5 and (not A.FireBlast:IsSpellInCasting() and not A.Pyroblast:IsSpellInFlight() and heatingUpBuff > 0 or A.Fireball:IsSpellInCasting() and hotStreakBuff == 0 or A.Pyroblast:IsSpellInFlight() and heatingUpBuff == 0 and hotStreakBuff == 0)) then
+                return A.FireBlast:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.Flamestrike:IsReady(unitID, true) and ((inAoE and enemies >= varHotStreakFlamestrike and (A.Combustion:GetSpellTimeSinceLastCast() - 10 > varDelayFlamestrike or not burstIsON)) and hotStreakBuff > 0) then
+                return A.Flamestrike:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.Pyroblast:IsReadyByPassCastGCD(unitID) and hotStreakBuff > 0 then
+                return A.Pyroblast:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.FireBlast:IsReadyByPassCastGCD(unitID) and (not (A.FlamePatch:IsSpellLearned() and inAoE and enemies > 2 or inAoE and enemies > 5) and (not varActiveFirestarter and (timeToCombustion > 0 or not burstIsON)) and (heatingUpBuff == 0 and hotStreakBuff == 0 and not A.FireBlast:IsSpellLastCastOrGCD() and (A.FireBlast:GetSpellCharges() >= 2 or (A.PhoenixFlames:GetSpellCharges() >= 1 and A.PhoenixFlames:IsSpellLearned()) or (A.AlexstraszasFury:IsSpellLearned() and A.DragonsBreath:GetCooldown() == 0) or (A.SearingTouch:IsSpellLearned() and Unit(unitID):HealthPercent() <= 30)))) then
+                return A.FireBlast:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.LivingBomb:IsReady(unitID) and enemies > 1 then
+                return A.LivingBomb:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.Meteor:IsReady(unitID, true) and (holdMeteorToCombustion and timeToCombustion > 45 or not holdMeteorToCombustion) and (ropBuff > 0 and (Unit(unitID):TimeToDieX(90) > 3 or not varActiveFirestarter) or (3 < timeToCombustion or timeToCombustion <= 0 or not burstIsON and not A.RuneofPower:IsSpellLearned())) then
+                return A.Meteor:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.Pyroblast:IsReadyByPassCastGCD(unitID) and (Unit(player):HasBuffs(A.PyroclasmBuff.ID) > 0 and A.Pyroblast:GetSpellCastTime() < Unit(player):HasBuffs(A.PyroclasmBuff.ID) and ropBuff > A.Pyroblast:GetSpellCastTime()) then
+                return A.Pyroblast:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.FireBlast:IsReadyByPassCastGCD(unitID) and (not (A.FlamePatch:IsSpellLearned() and inAoE and enemies > 2 or inAoE and enemies > 5) and (not varActiveFirestarter and (timeToCombustion > 0 or not burstIsON)) and (heatingUpBuff > 0 and (Unit(unitID):HealthPercent() >= 30 or not A.SearingTouch:IsSpellLearned()))) then
+                return A.FireBlast:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.FireBlast:IsReadyByPassCastGCD(unitID) and (not (A.FlamePatch:IsSpellLearned() and inAoE and enemies > 2 or inAoE and enemies > 5) and (not varActiveFirestarter and (timeToCombustion > 0 or not burstIsON)) and A.SearingTouch:IsSpellLearned() and Unit(unitID):HealthPercent() <= 30 and (heatingUpBuff > 0 and not A.Scorch:IsSpellInCasting() or hotStreakBuff == 0)) then
+                return A.FireBlast:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.Pyroblast:IsReadyByPassCastGCD(unitID) and (A.SearingTouch:IsSpellLearned() and A.Scorch:IsSpellInCasting() and heatingUpBuff > 0 and Unit(unitID):HealthPercent() <= 30 and (not A.FlamePatch:IsSpellLearned() or inAoE and enemies == 1 or not inAoE)) then
+                return A.Pyroblast:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.Scorch:IsReady(unitID) and (A.SearingTouch:IsSpellLearned() and Unit(unitID):HealthPercent() <= 30 and hotStreakBuff == 0) then
+                return A.Scorch:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.FireBlast:IsReadyByPassCastGCD(unitID) and ((A.FlamePatch:IsSpellLearned() and inAoE and enemies > 2 or inAoE and enemies > 5) and ((timeToCombustion > 0 or not burstIsON) and not varActiveFirestarter) and hotStreakBuff == 0 and (A.BlasterMaster:GetAzeriteRank() == 0 or blasterMasterBuff < 0.5)) then
+                return A.FireBlast:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.Flamestrike:IsReady(unitID, true) and (A.FlamePatch:IsSpellLearned() and inAoE and enemies > 2 or inAoE and enemies > 5) then
+                return A.Flamestrike:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.Flamestrike:IsReady(unitID, true) and (inAoE and enemies >= varHotStreakFlamestrike and (A.Combustion:GetSpellTimeSinceLastCast() - 10 > varDelayFlamestrike or not burstIsON)) then
+                return A.Flamestrike:Show(icon)
+            end
+            
+            if isSchoolFireUP and isStaying and A.Fireball:IsReady(unitID) then
+                return A.Fireball:Show(icon)
+            end            
+        end
+        
+        if (A.RuneofPower:IsSpellLearned() and A.RuneofPower:GetCooldown() < A.FireBlast:GetSpellChargesFullRechargeTime() and (timeToCombustion > combustionRopCutOff or not burstIsON or varActiveFirestarter) and (A.RuneofPower:GetCooldown() < Unit(unitID):TimeToDie() or A.RuneofPower:GetSpellCharges() > 0) or burstIsON and timeToCombustion < A.FireBlast:GetSpellChargesFullRechargeTime() + 3 * A.BlasterMaster:GetAzeriteRank() and not varActiveFirestarter and timeToCombustion < Unit(unitID):TimeToDie()) then
+            varFireblastPooling = true
+        end
+        
+        if ropBuff == 0 and combustionBuff == 0 and (timeToCombustion > 0 or not burstIsON) and Unit(player):HasBuffs(A.MemoryofLucidDreams.ID) < 5 then            
+            if isSchoolFireUP and A.FireBlast:IsReady(unitID) and (varFireblastPooling and (Azerite:EssenceHasMajor(A.MemoryofLucidDreams.ID) and A.FireBlast:GetSpellCharges() == A.FireBlast:GetSpellChargesMax() and hotStreakBuff == 0 and not (heatingUpBuff > 0 and (combustionBuff > 0 and (A.Fireball:IsSpellInFlight() or A.Pyroblast:IsSpellInFlight() or A.Scorch:IsSpellInCasting()) or Unit(unitID):HealthPercent() <= 30 and A.Scorch:IsSpellInCasting())) and not (heatingUpBuff == 0 and hotStreakBuff == 0 and combustionBuff == 0 and (A.Fireball:IsSpellInFlight() or A.Pyroblast:IsSpellInFlight())))) then
+                return A.FireBlast:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.FireBlast:IsReady(unitID) and (varActiveFirestarter and A.FireBlast:GetSpellCharges() >= 1 and (not varFireblastPooling or ropBuff > 0)) and (A.BlasterMaster:GetAzeriteRank() == 0 or blasterMasterBuff < 0.5 and (not A.FireBlast:IsSpellInCasting() and not A.Pyroblast:IsSpellInFlight() and heatingUpBuff > 0 or A.Fireball:IsSpellInCasting() and hotStreakBuff == 0 or A.Pyroblast:IsSpellInFlight() and heatingUpBuff == 0 and hotStreakBuff == 0)) then
+                return A.FireBlast:Show(icon)
+            end
+            
+            --if isSchoolFireUP and A.FireBlast:IsReadyByPassCastGCD(unitID) and (not varFireblastPooling and (Azerite:EssenceHasMajor(A.MemoryofLucidDreams.ID) and A.FireBlast:GetSpellCharges() == A.FireBlast:GetSpellChargesMax() and hotStreakBuff == 0 and not (heatingUpBuff > 0 and (combustionBuff > 0 and (A.Fireball:IsSpellInFlight() or A.Pyroblast:IsSpellInFlight() or A.Scorch:IsSpellInCasting()) or Unit(unitID):HealthPercent() <= 30 and A.Scorch:IsSpellInCasting())) and not (heatingUpBuff == 0 and hotStreakBuff == 0 and combustionBuff == 0 and (A.Fireball:IsSpellInFlight() or A.Pyroblast:IsSpellInFlight())))) then
+            if isSchoolFireUP and A.Flamestrike:IsReady(unitID, true) and ((inAoE and enemies >= varHotStreakFlamestrike and (A.Combustion:GetSpellTimeSinceLastCast() - 10 > varDelayFlamestrike or not burstIsON)) and hotStreakBuff > 0) then
+                return A.Flamestrike:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.Pyroblast:IsReadyByPassCastGCD(unitID) and (hotStreakBuff > 0 and hotStreakBuff < A.Fireball:ExecuteTime()) then
+                return A.Pyroblast:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.Pyroblast:IsReadyByPassCastGCD(unitID) and (hotStreakBuff > 0 and (A.Fireball:IsSpellInCasting() or varActiveFirestarter or A.Pyroblast:IsSpellInFlight())) then
+                return A.Pyroblast:Show(icon)
+            end        
+            
+            if isSchoolFireUP and A.Pyroblast:IsReadyByPassCastGCD(unitID) and (hotStreakBuff > 0 and A.SearingTouch:IsSpellLearned() and Unit(unitID):HealthPercent() <= 30) then
+                return A.Pyroblast:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.Pyroblast:IsReadyByPassCastGCD(unitID) and (Unit(player):HasBuffs(A.PyroclasmBuff.ID) > 0 and A.Pyroblast:GetSpellCastTime() < Unit(player):HasBuffs(A.PyroclasmBuff.ID)) then
+                return A.Pyroblast:Show(icon)
+            end        
+            
+            if isSchoolFireUP and A.FireBlast:IsReadyByPassCastGCD(unitID) and (((timeToCombustion > 0 or not burstIsON) and ropBuff == 0 and not varActiveFirestarter) and not A.Kindling:IsSpellLearned() and not varFireblastPooling and (((A.Fireball:IsSpellInCasting() or A.Pyroblast:IsSpellInCasting()) and heatingUpBuff > 0) or (A.SearingTouch:IsSpellLearned() and Unit(unitID):HealthPercent() <= 30 and (heatingUpBuff > 0 and not A.Scorch:IsSpellInCasting() or hotStreakBuff == 0 and heatingUpBuff == 0 and A.Scorch:IsSpellInCasting() and not A.Pyroblast:IsSpellInFlight() and not A.Fireball:IsSpellInFlight())))) then
+                return A.FireBlast:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.FireBlast:IsReadyByPassCastGCD(unitID) and (A.Kindling:IsSpellLearned() and heatingUpBuff > 0 and not varActiveFirestarter and (timeToCombustion > A.FireBlast:GetSpellChargesFullRechargeTime() + 2 + (A.Kindling:IsSpellLearned() and 1 or 0) or not burstIsON or (not A.RuneofPower:IsSpellLearned() or A.RuneofPower:GetCooldown() > Unit(unitID):TimeToDie() and A.RuneofPower:GetSpellCharges() < 1) and timeToCombustion > Unit(unitID):TimeToDie())) then
+                return A.FireBlast:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.Pyroblast:IsReadyByPassCastGCD(unitID) and (A.Scorch:IsSpellInCasting() and heatingUpBuff > 0 and A.SearingTouch:IsSpellLearned() and Unit(unitID):HealthPercent() <= 30 and not (inAoE and enemies >= varHotStreakFlamestrike and (A.Combustion:GetSpellTimeSinceLastCast() - 10 > varDelayFlamestrike or not burstIsON))) then
+                return A.Pyroblast:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.LivingBomb:IsReady(unitID) and enemies > 1 then
+                return A.LivingBomb:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.Scorch:IsReady(unitID) and (A.SearingTouch:IsSpellLearned() and Unit(unitID):HealthPercent() <= 30 and hotStreakBuff == 0) then
+                return A.Scorch:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.FireBlast:IsReadyByPassCastGCD(unitID) and (not varFireblastPooling and (inAoE and enemies >= varHardCastFlamestrike and (A.Combustion:GetSpellTimeSinceLastCast() - 10 > varDelayFlamestrike or not burstIsON)) and ((timeToCombustion > 0 or not burstIsON) and not varActiveFirestarter) and hotStreakBuff == 0 and (A.BlasterMaster:GetAzeriteRank() == 0 or blasterMasterBuff < 0.5)) then
+                return A.FireBlast:Show(icon)
+            end
+            
+            if isSchoolFireUP and A.Flamestrike:IsReady(unitID, true) and (inAoE and enemies >= varHotStreakFlamestrike and (A.Combustion:GetSpellTimeSinceLastCast() - 10 > varDelayFlamestrike or not burstIsON)) then
+                return A.Flamestrike:Show(icon)
+            end
+            
+            if isSchoolFireUP and isStaying and A.Fireball:IsReady(unitID) then
+                return A.Fireball:Show(icon)
+            end    
+            
+            if isSchoolFireUP and not isStaying and A.Scorch:IsReady(unitID) and (hotStreakBuff == 0 or A.SearingTouch:IsSpellLearned() and Unit(unitID):HealthPercent() > 30) and Player:IsMovingTime() >= GetGCD() then
+                return A.Scorch:Show(icon)
+            end    
+        end
+        
+        if A.Spellsteal:IsReady(unitID, nil, nil, true) and AuraIsValid(unitID, "UsePurge", "PurgeLow") then 
+            return A.Spellsteal:Show(icon)
+        end 
+    end
+    
+    local function EnemyRotationPvP(unitID)
+        
+    end
+    
+    local function Supportive(unitID)
+        -- Purge
+        if A.ArcaneTorrent:AutoRacial(unitID) then 
+            return A.ArcaneTorrent:Show(icon)
+        end  
+        
+        if A.RemoveCurse:IsReady(unitID, nil, nil, true) and AuraIsValid(unitID, "UseDispel", "Curse") then 
+            return A.PurifyDisease:Show(icon)
+        end         
+        
+    end
+    
+    if A.BlazingBarrier:IsReady(player) and Unit(player):HasBuffs(A.BlazingBarrier.ID) == 0 and Unit(player):HasBuffs(A.CombustionBuff.ID) == 0 and Unit(player):HasBuffs(A.RuneofPowerBuff.ID) == 0 and not Player:IsMounted() and (A.Combustion:GetCooldown() > 0 or not BurstIsON(target)) then
+        return A.BlazingBarrier:Show(icon)
+    end
+    
+    if IsUnitFriendly("mouseover") then 
+        unitID = "mouseover"    
+        
+        if Supportive(unitID) then 
+            return true 
+        end             
+    end 
+    
+    if IsUnitEnemy(target) then 
+        unitID = target
+        
+        if not Unit(unitID):IsDead() and not IsInPvP and EnemyRotation(unitID) then 
+            return true
+        end
+        
+        --    if not Unit(unitID):IsDead() and IsInPvP and EnemyRotationPvP(unitID) then 
+        --    return true
+        --end
+    end 
+    
+end 
+
+
+-- Nil (nothing for profile here, just reset them)
+A[1] = nil
+A[2] = nil  
+A[4] = nil 
+A[5] = nil 
+A[6] = nil 
+A[7] = nil 
+A[8] = nil 
+

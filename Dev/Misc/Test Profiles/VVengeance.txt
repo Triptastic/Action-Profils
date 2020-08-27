@@ -1,0 +1,379 @@
+local TMW                                     = TMW 
+local Env                                     = TMW.CNDT.Env
+local Action                                = Action
+local Create                                = Action.Create
+local Print                                    = Action.Print
+local TimerSet                                = Action.TimerSet
+local Listener                                = Action.Listener
+local IsEnemy                                = Action.Bit.isEnemy
+local toStr                                 = Action.toStr
+local GetCL                                 = Action.GetCL
+local GetToggle                             = Action.GetToggle
+local TeamCache                                = Action.TeamCache
+local TeamCacheFriendly                        = TeamCache.Friendly
+local TeamCacheFriendlyIndexToPLAYERs        = TeamCacheFriendly.IndexToPLAYERs
+local EnemyTeam                                = Action.EnemyTeam
+local FriendlyTeam                            = Action.FriendlyTeam
+local LoC                                     = Action.LossOfControl
+local Player                                = Action.Player 
+local MultiUnits                            = Action.MultiUnits
+local ActiveUnitPlates                        = MultiUnits:GetActiveUnitPlates()
+local UnitCooldown                            = Action.UnitCooldown
+local Unit                                    = Action.Unit 
+local Pet                                     = LibStub("PetLibrary")
+local Azerite                                = LibStub("AzeriteTraits")
+local GetGCD                                = Action.GetGCD
+local GetCurrentGCD                            = Action.GetCurrentGCD
+local GetPing                                = Action.GetPing
+local IsUnitEnemy                            = Action.IsUnitEnemy
+local IsUnitFriendly                        = Action.IsUnitFriendly
+local AuraIsValid                            = Action.AuraIsValid
+local InterruptIsValid                        = Action.InterruptIsValid
+local BossMods_Pulling                        = Action.BossMods_Pulling
+local BurstIsON                                = Action.BurstIsON
+
+local _G, setmetatable, ipairs, pairs, next, select, math    = 
+_G, setmetatable, ipairs, pairs, next, select, math
+
+local UnitIsUnit                            = _G.UnitIsUnit
+local huge                                     = math.huge      
+
+Action[ACTION_CONST_DEMONHUNTER_VENGEANCE] = {
+    -- Racial
+    ArcaneTorrent                            = Create({ Type = "Spell", ID = 50613}),
+    Shadowmeld                                = Create({ Type = "Spell", ID = 58984}), -- usable in Action Core 
+    -- CrownControl    
+    Disrupt                                    = Create({ Type = "Spell", ID = 183752}),
+    Imprison                                = Create({ Type = "Spell", ID = 217832}),
+    SigilofSilence                            = Create({ Type = "Spell", ID = 202137}),
+    SigilofMisery                            = Create({ Type = "Spell", ID = 207684}),
+    -- Suppotive    
+    Torment                                    = Create({ Type = "Spell", ID = 185245}),
+    ConsumeMagic                            = Create({ Type = "Spell", ID = 278326}),
+    -- Self Defensives
+    Metamorphosis                            = Create({ Type = "Spell", ID = 187827}),
+    DemonSpikes                                = Create({ Type = "Spell", ID = 203720}),
+    FieryBrand                                = Create({ Type = "Spell", ID = 204021}),
+    -- Burst
+    -- Rotation
+    InfernalStrike                            = Create({ Type = "Spell", ID = 189110}),
+    SoulCleave                                = Create({ Type = "Spell", ID = 228477}),
+    ImmolationAura                            = Create({ Type = "Spell", ID = 178740}),
+    SigilofFlame                            = Create({ Type = "Spell", ID = 204596}),
+    Shear                                    = Create({ Type = "Spell", ID = 203782}),
+    -- Movement    
+    -- Utilities
+    -- PvP
+    -- Buffs
+    SoulFragmentsBuff                        = Create({ Type = "Spell", ID = 203981, Hidden = true}),
+    DemonSpikesBuff                            = Create({ Type = "Spell", ID = 203819, Hidden = true}),
+    RecklessForceBuff                        = Create({ Type = "Spell", ID = 302932, Hidden = true}),
+    -- Debuffs
+    BloodoftheEnemyDebuff                    = Create({ Type = "Spell", ID = 297108, Hidden = true}),
+    RazorCoralDebuff                        = Create({ Type = "Spell", ID = 303568, Hidden = true}),
+    ConcentratedFlameDebuff                    = Create({ Type = "Spell", ID = 295368, Hidden = true}),
+    SigilofFlameDebuff                        = Create({ Type = "Spell", ID = 204598, Hidden = true}),
+    -- Talents    
+    Felblade                                = Create({ Type = "Spell", ID = 232893, isTalent = true}),    -- Talent 3/3
+    Fracture                                = Create({ Type = "Spell", ID = 263642, isTalent = true}),    -- Talent 4/3
+    SigilofChains                            = Create({ Type = "Spell", ID = 202138, isTalent = true}),    -- Talent 5/3
+    SpiritBomb                                = Create({ Type = "Spell", ID = 247454, isTalent = true}),    -- Talent 6/2
+    FelDevastation                            = Create({ Type = "Spell", ID = 212084, isTalent = true}),    -- Talent 6/3
+    -- PvP Talents
+    
+    -- Items
+    PotionofUnbridledFury                    = Create({ Type = "Potion",  ID = 169299 }), 
+    DribblingInkpod                            = Create({ Type = "Trinket", ID = 169319 }),
+    PocketsizedComputationDevice            = Create({ Type = "Trinket", ID = 167555 }),
+    AshvanesRazorCoral                        = Create({ Type = "Trinket", ID = 169311 }),   
+    RemoteGuidanceDevice                    = Create({ Type = "Trinket", ID = 169769 }), 
+    WrithingSegmentofDrestagath                = Create({ Type = "Trinket", ID = 173946 }), 
+    -- Hidden 
+}
+
+Action:CreateEssencesFor(ACTION_CONST_DEMONHUNTER_VENGEANCE)
+local A = setmetatable(Action[ACTION_CONST_DEMONHUNTER_VENGEANCE], { __index = Action })
+
+local player                                    = "player"
+local target                                    = "target"
+local Temp                                        = {
+    AttackTypes                                    = {"TotalImun", "DamagePhysImun"},    
+    AuraForCC                                    = {"TotalImun", "DamagePhysImun", "CCTotalImun"},
+    AuraForOnlyCCAndStun                        = {"CCTotalImun", "StunImun"},
+    AuraForInterrupt                            = {"TotalImun", "DamagePhysImun", "KickImun"},
+    AuraForFear                                    = {"TotalImun", "DamagePhysImun", "FearImun"},
+    AuraForStun                                    = {"TotalImun", "DamagePhysImun", "CCTotalImun", "StunImun"},
+    AuraForSlow                                    = {"TotalImun", "DamagePhysImun", "CCTotalImun", "Freedom"},
+    IsSlotTrinketBlocked                        = {
+        [A.AshvanesRazorCoral.ID]                = true,
+    },
+}
+
+local function InMelee(unitID)
+    -- @return boolean 
+    return A.Shear:IsInRange(unitID)
+end 
+
+local function GetByRange(count, range, isCheckEqual, isCheckCombat)
+    -- @return boolean 
+    local c = 0 
+    for unitID in pairs(ActiveUnitPlates) do 
+        if (not isCheckEqual or not UnitIsUnit(target, unitID)) and (not isCheckCombat or Unit(unitID):CombatTime() > 0) and not Unit(unitID):IsExplosives() and not Unit(unitID):IsTotem() and select(6, Unit(unitID):InfoGUID()) ~= 161895 then 
+            if InMelee(unitID) then 
+                c = c + 1
+            elseif range then 
+                local r = Unit(unitID):GetRange()
+                if r > 0 and r <= range then 
+                    c = c + 1
+                end 
+            end 
+            
+            if c >= count then 
+                return true 
+            end 
+        end 
+    end
+end
+
+local function CanUseTrinkets(isBurstIsON)
+    local TrinketUsage = GetToggle(2, "TrinketUsage") 
+    
+    if TrinketUsage == "BURST" and isBurstIsON then
+        return true
+    end
+    
+    if TrinketUsage == "EVERYONE" then
+        return true
+    end
+end
+
+local function isCurrentlyTanking()
+    local IsTanking = Unit(player):IsTankingAoE(16) or Unit(player):IsTanking(target, 16)
+    
+    return IsTanking
+end
+-----------------------------------------
+--                 ROTATION  
+-----------------------------------------
+
+-- [3] Single Rotation
+A[3] = function(icon)
+    local unitID                        = "player"
+    local inAoE                            = GetToggle(2, "AoE")
+    local combatTime                    = Unit(player):CombatTime()
+    local inCombat                        = combatTime > 0
+    local refreshTime                    = (GetGCD() + GetCurrentGCD() + GetPing() + (TMW.UPD_INTV or 0) + ACTION_CONST_CACHE_DEFAULT_TIMER)
+    local soulFragments                    = Unit(player):HasBuffsStacks(A.SoulFragmentsBuff.ID, true)
+    local pain                            = Player:Pain()
+    local canCleave                        = false
+    
+    
+    local function EnemyRotation(unitID)                        
+        local isTargetInMelee            = InMelee(unitID)
+        
+        -- [[ SELF DEFENSE ]] 
+        if inCombat then                
+            -- Metamorphosis
+            if A.Metamorphosis:IsReadyByPassCastGCD(player, nil, nil, true) then 
+                local META_HP                = GetToggle(2, "MetaHP")
+                local META_TTD                = GetToggle(2, "MetaTTD")
+                
+                if  (    
+                    ( META_HP     >= 0     or META_TTD                            >= 0                                        ) and 
+                    ( META_HP     <= 0     or Unit(player):HealthPercent()     <= META_HP                                    ) and 
+                    ( META_TTD     <= 0     or Unit(player):TimeToDie()         <= META_TTD                                    ) 
+                ) or 
+                (
+                    GetToggle(2, "MetaCatchKillStrike") and 
+                    combatTime > 4 and 
+                    (
+                        ( Unit(player):GetDMG()            >= Unit(player):Health() and Unit(player):HealthPercent() <= 20 ) or 
+                        Unit(player):GetRealTimeDMG()    >= Unit(player):Health() or 
+                        Unit(player):TimeToDie()        <= GetGCD()
+                    )
+                )                
+                then                
+                    return A.Metamorphosis:Show(icon)
+                end 
+            end    
+            
+            local DemonSpikesHP            = GetToggle(2, "DemonSpikesHP")
+            local DemonSpikesHits        = GetToggle(2, "DemonSpikesHits")
+            local DemonSpikesPhys        = GetToggle(2, "DemonSpikesPhys")            
+            local Hits, Phys             = Unit(player):GetRealTimeDMG(2)
+            -- DemonSpikes
+            if A.DemonSpikes:IsReadyByPassCastGCD(player, nil, nil, true) and 
+            (
+                Unit(player):HealthPercent() <= DemonSpikesHP and
+                Hits  >= DemonSpikesHits and 
+                Phys * 100 / Unit(player):HealthMax() >= DemonSpikesPhys
+            ) and 
+            (
+                (
+                    Unit(player):HasBuffs(A.DemonSpikesBuff.ID) == 0 or 
+                    Unit(player):HasBuffs(A.DemonSpikesBuff.ID) <= refreshTime
+                )
+            ) then
+                return A.DemonSpikes:Show(icon)
+            end
+        end
+        
+        -- [[ PURGE HIGH ]] 
+        if A.ConsumeMagic:IsReady(unitID) and AuraIsValid(unitID, "UsePurge", "PurgeHigh") then
+            return A.ConsumeMagic:Show(icon)
+        end    
+        
+        -- [[ INTERRUPTS ]] 
+        local useKick, useCC, useRacial = InterruptIsValid(unitID, "TargetMouseover")        
+        if useKick or useCC or useRacial then         
+            local castLeft, _, _, _, notKickAble = Unit(unitID):IsCastingRemains()
+            
+            -- useKick
+            if useKick and castLeft > 0 and not notKickAble and A.AbsentImun(nil, unitID, Temp.AuraForInterrupt) and Unit(unitID):CanInterrupt(nil, nil, 15, 67) and A.Disrupt:IsReady(unitID) then 
+                return A.Disrupt:Show(icon)
+            end
+            
+            -- useCC / useRacial
+            if not useKick or notKickAble or A.Disrupt:GetCooldown() > 0 then
+                if useCC and castLeft > GetCurrentGCD() and castLeft < GetGCD() + GetCurrentGCD() + 0.2 and A.Imprison:IsReady(unitID) and A.Imprison:AbsentImun(unitID, Temp.AuraForCC) and Unit(unitID):IsControlAble("incapacitate") then 
+                    return A.Imprison:Show(icon)
+                end 
+            end
+        end
+        
+        -- Check if target is explosive or totem for dont use AoE spells 
+        if not Unit(unitID):IsExplosives() and not Unit(unitID):IsTotem() then
+            canCleave = true
+        end
+        
+        -- InfernalStrike
+        if A.InfernalStrike:IsReady(unitID, true) and canCleave and isTargetInMelee and (A.InfernalStrike:GetSpellChargesFrac() > 1.9 and (Unit(unitID):HasDeBuffs(A.SigilofFlameDebuff.ID) <= 3 and A.InfernalStrike:GetSpellTimeSinceLastCast() > 2)) then
+            return A.InfernalStrike:Show(icon)
+        end
+        
+        -- SoulCleave
+        if A.SoulCleave:IsReady(unitID) and (not A.SpiritBomb:IsSpellLearned() and ((Unit(player):HasBuffs(A.Metamorphosis.ID) > 0 and soulFragments >= 3) or soulFragments >= 4)) and A.SoulCleave:AbsentImun(unitID, Temp.AttackTypes) then 
+            return A.SoulCleave:Show(icon)
+        end
+        
+        -- SoulCleave
+        if A.SoulCleave:IsReady(unitID) and (A.SpiritBomb:IsSpellLearned() and soulFragments == 0) and A.SoulCleave:AbsentImun(unitID, Temp.AttackTypes) then
+            return A.SoulCleave:Show(icon)
+        end
+        
+        -- ImmolationAura
+        if A.ImmolationAura:IsReady(unitID, true) and isTargetInMelee and pain <= 90 and A.ImmolationAura:AbsentImun(unitID, Temp.AttackTypes) then
+            return A.ImmolationAura:Show(icon)
+        end
+        
+        -- ConcentratedFlame
+        if A.ConcentratedFlame:AutoHeartOfAzerothP(unitID) and (Unit(unitID):HasDeBuffs(A.ConcentratedFlameDebuff.ID) == 0 and not A.ConcentratedFlame:IsSpellInFlight() or A.ConcentratedFlame:GetSpellChargesFullRechargeTime() < GetCurrentGCD()) then
+            return A.ConcentratedFlame:Show(icon)
+        end
+        
+        -- [[ BURST ]] 
+        if isTargetInMelee and BurstIsON(unitID) and ((Unit(unitID):IsBoss() or Unit(unitID):IsPlayer()) and Unit(unitID):TimeToDie() >= GetToggle(2, "BurstTTDBoss") or not Unit(unitID):IsBoss() and not Unit(unitID):IsPlayer() and Unit(unitID):TimeToDie() >= GetToggle(2, "BurstTTDMobs")) and canCleave then
+            -- FieryBrand
+            if A.FieryBrand:IsReady(unitID) and A.FieryBrand:AbsentImun(unitID, Temp.AttackTypes) then
+                return A.FieryBrand:Show(icon)
+            end
+            
+            -- WorldveinResonance
+            if A.WorldveinResonance:AutoHeartOfAzeroth(unitID) then
+                return A.WorldveinResonance:Show(icon)
+            end
+            
+            -- RippleinSpace
+            if A.RippleinSpace:AutoHeartOfAzerothP(unitID) and Unit(unitID):GetRange() <= 25 then
+                return A.RippleinSpace:Show(icon)
+            end
+            
+            -- MemoryofLucidDreams
+            if A.MemoryofLucidDreams:AutoHeartOfAzerothP(unitID) then
+                return A.MemoryofLucidDreams:Show(icon)
+            end
+        end
+        
+        -- Trinket 1
+        if A.Trinket1:IsReady(unitID) and A.Trinket1:GetItemCategory() ~= "DEFF" and isTargetInMelee and not Temp.IsSlotTrinketBlocked[A.Trinket1.ID] and CanUseTrinkets(BurstIsON(unitID)) and A.Trinket1:AbsentImun(unitID, "DamageMagicImun") then
+            return A.Trinket1:Show(icon)    
+        end 
+        
+        -- Trinket 2  
+        if A.Trinket2:IsReady(unitID) and A.Trinket2:GetItemCategory() ~= "DEFF" and isTargetInMelee and not Temp.IsSlotTrinketBlocked[A.Trinket2.ID] and CanUseTrinkets(BurstIsON(unitID)) and A.Trinket2:AbsentImun(unitID, "DamageMagicImun") then
+            return A.Trinket2:Show(icon)    
+        end 
+        
+        -- Felblade
+        if A.Felblade:IsReady(unitID) and pain <= 70 and A.Felblade:AbsentImun(unitID, Temp.AttackTypes) then
+            return A.Felblade:Show(icon)
+        end 
+        
+        -- Fracture
+        if A.Fracture:IsReady(unitID) and soulFragments <= 3 and A.Fracture:AbsentImun(unitID, Temp.AttackTypes) then
+            return A.Fracture:Show(icon)
+        end
+        
+        -- FelDevastation
+        if A.FelDevastation:IsReady(unitID, true) and isTargetInMelee and A.FelDevastation:AbsentImun(unitID, Temp.AttackTypes) then
+            return A.FelDevastation:Show(icon)
+        end
+        
+        -- SigilofFlame
+        if A.SigilofFlame:IsReady(unitID, true) and isTargetInMelee and Unit(unitID):HasDeBuffs(A.SigilofFlameDebuff.ID) <= 3 and A.SigilofFlame:AbsentImun(unitID, Temp.AttackTypes) then
+            return A.SigilofFlame:Show(icon)
+        end
+        
+        -- Shear
+        if A.Shear:IsReady(unitID) and A.Shear:AbsentImun(unitID, Temp.AttackTypes) then
+            return A.Shear:Show(icon)
+        end
+        
+        -- Fracture
+        if A.Fracture:IsReady(unitID) and A.Fracture:AbsentImun(unitID, Temp.AttackTypes) then
+            return A.Fracture:Show(icon)
+        end
+        
+    end
+    
+    local function EnemyRotationMO(unitID)    
+        if GetToggle(2, "MOTaunt") and inCombat and A.Torment:IsReady(unitID) and not Unit(unitID):IsBoss() and Unit(player):ThreatSituation(unitID) <= 2 then
+            return A.Torment:Show(icon)
+        end
+    end
+    
+    if IsUnitEnemy("mouseover") then 
+        unitID = "mouseover"
+        
+        if not Unit(unitID):IsDead() and EnemyRotationMO(unitID) then 
+            return true 
+        end 
+    end 
+    
+    if IsUnitEnemy(target) then 
+        unitID = target
+        
+        if not Unit(unitID):IsDead() and EnemyRotation(unitID) then 
+            return true 
+        end 
+    end 
+    
+end 
+
+A[6] = function(icon)    
+    local MOExplosive    = GetToggle(2, "MOExplosive")
+    local MOTotem        = GetToggle(2, "MOTotem")
+    
+    if MOExplosive and IsUnitEnemy("mouseover") and Unit("mouseover"):IsExplosives() or MOTotem and IsUnitEnemy("mouseover") and Unit("mouseover"):IsTotem() then 
+        return A:Show(icon, ACTION_CONST_LEFT)
+    end
+end
+
+-- Nil (nothing for profile here, just reset them)
+A[1] = nil
+A[2] = nil  
+A[4] = nil 
+A[5] = nil 
+A[7] = nil
+A[8] = nil 
+

@@ -1,0 +1,39 @@
+## Interface: 80300
+## Title: |cff0070ddTaste Action Helper|r
+## Notes: (^_^)
+## Author: Taste
+## Version: 1
+## LoadWith: TellMeWhen
+## SavedVariables: TasteMsgAddonHelperDB, TasteMsgAddonHelperLDB
+## OptionalDeps: Ace3
+## RequiredDeps: TellMeWhen
+
+#@no-lib-strip@
+embeds.xml
+#@end-no-lib-strip@
+
+#@debug@
+# Localization\devel-enUS.lua
+#@end-debug@
+
+#@non-debug@
+Localization\enUS.lua
+#@end-non-debug@
+Localization\deDE.lua
+Localization\esES.lua
+Localization\esMX.lua
+Localization\frFR.lua
+Localization\koKR.lua
+Localization\ptBR.lua
+Localization\ruRU.lua
+Localization\zhCN.lua
+Localization\zhTW.lua
+
+#Modules
+#Modules\Notifications\Core.lua
+#Modules\Notifications\Config.lua
+
+Modules\Anonymizer\Anonymizer.lua
+Modules\Anonymizer\Anonymizer.xml
+
+TasteActionHelper.lua

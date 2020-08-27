@@ -1,0 +1,11 @@
+New Havoc V4.0.5 is here ; 
+- Reworked almost all the rotation with help of @Fision#4594 and @Lactor#8561 , and still getting actively on their reports. 
+- Added UI for Potion of unbridled fury
+- Added UI to setup interrupts values 
+- Added UI Dummy Test ... :) (Beta feature)
+- Added UI settings for FelBlade
+- Added UI to force sync between Eyebeam and BladeDance (ensure maximum Deathsweep during all meta buffs but can reduce the overall BladeDance usage)
+- Added UI for EyeBeam range
+- Added Imprison logic with pvp arena 123 units
+- Added range check on BladeDance / Deathsweep
+- Auto Darkness optimization

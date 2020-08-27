@@ -1,0 +1,751 @@
+local TMW                                     = TMW 
+local Env                                     = TMW.CNDT.Env
+local Action                                = Action
+local Create                                = Action.Create
+local Print                                    = Action.Print
+local TimerSet                                = Action.TimerSet
+local Listener                                = Action.Listener
+local IsEnemy                                = Action.Bit.isEnemy
+local toStr                                 = Action.toStr
+local GetCL                                 = Action.GetCL
+local GetToggle                             = Action.GetToggle
+local TeamCache                                = Action.TeamCache
+local TeamCacheFriendly                        = TeamCache.Friendly
+local TeamCacheFriendlyIndexToPLAYERs        = TeamCacheFriendly.IndexToPLAYERs
+local EnemyTeam                                = Action.EnemyTeam
+local FriendlyTeam                            = Action.FriendlyTeam
+local LoC                                     = Action.LossOfControl
+local Player                                = Action.Player 
+local MultiUnits                            = Action.MultiUnits
+local ActiveUnitPlates                        = MultiUnits:GetActiveUnitPlates()
+local UnitCooldown                            = Action.UnitCooldown
+local Unit                                    = Action.Unit 
+local Pet                                     = LibStub("PetLibrary")
+local Azerite                                = LibStub("AzeriteTraits")
+local GetGCD                                = Action.GetGCD
+local GetCurrentGCD                            = Action.GetCurrentGCD
+local GetPing                                = Action.GetPing
+local IsUnitEnemy                            = Action.IsUnitEnemy
+local IsUnitFriendly                        = Action.IsUnitFriendly
+local AuraIsValid                            = Action.AuraIsValid
+local InterruptIsValid                        = Action.InterruptIsValid
+local BossMods_Pulling                        = Action.BossMods_Pulling
+local BurstIsON                                = Action.BurstIsON
+
+local _G, setmetatable, ipairs, pairs, next, select, math    = 
+_G, setmetatable, ipairs, pairs, next, select, math
+
+local UnitIsUnit                            = _G.UnitIsUnit
+local GameLocale                             = _G.GetLocale()
+local huge                                     = math.huge   
+
+Action[ACTION_CONST_HUNTER_BEASTMASTERY] = {
+    -- Racial
+    ArcaneTorrent                            = Create({ Type = "Spell", ID = 50613}),
+    BloodFury                                = Create({ Type = "Spell", ID = 20572}),
+    BagofTricks                                = Create({ Type = "Spell", ID = 312411}),
+    LightsJudgment                            = Create({ Type = "Spell", ID = 255647}),
+    Fireblood                                = Create({ Type = "Spell", ID = 265221}),
+    AncestralCall                            = Create({ Type = "Spell", ID = 274738}),
+    Berserking                                = Create({ Type = "Spell", ID = 26297}),
+    ArcanePulse                                = Create({ Type = "Spell", ID = 260364}),
+    QuakingPalm                                = Create({ Type = "Spell", ID = 107079}),
+    Haymaker                                = Create({ Type = "Spell", ID = 287712}), 
+    WarStomp                                = Create({ Type = "Spell", ID = 20549}),
+    BullRush                                = Create({ Type = "Spell", ID = 255654}),    
+    GiftofNaaru                                = Create({ Type = "Spell", ID = 59544}),
+    Shadowmeld                                = Create({ Type = "Spell", ID = 58984}), -- usable in Action Core 
+    Stoneform                                = Create({ Type = "Spell", ID = 20594}), 
+    WilloftheForsaken                        = Create({ Type = "Spell", ID = 7744}), -- not usable in APL but user can Queue it    
+    EscapeArtist                            = Create({ Type = "Spell", ID = 20589}), -- not usable in APL but user can Queue it
+    EveryManforHimself                        = Create({ Type = "Spell", ID = 59752}), -- not usable in APL but user can Queue it
+    -- CrownControl    
+    CounterShot                                = Create({ Type = "Spell", ID = 147362}),
+    IntimidationGreen                        = Create({ Type = "Spell", ID = 19577, Color = "GREEN", Desc = "[1] CC", QueueForbidden = true}),
+    Intimidation                            = Create({ Type = "Spell", ID = 19577}),
+    TarTrap                                    = Create({ Type = "Spell", ID = 187698}),
+    FreezingTrap                            = Create({ Type = "Spell", ID = 187650}),
+    -- Suppotive    
+    
+    -- Self Defensives
+    AspectoftheTurtle                        = Create({ Type = "Spell", ID = 274441}),
+    Exhilaration                            = Create({ Type = "Spell", ID = 109304}),
+    FeignDeath                                = Create({ Type = "Spell", ID = 5384}),
+    -- Burst
+    BestialWrath                            = Create({ Type = "Spell", ID = 19574}),
+    AspectoftheWild                            = Create({ Type = "Spell", ID = 193530}),
+    -- Rotation       
+    BarbedShot                                = Create({ Type = "Spell", ID = 217200}),
+    Multishot                                = Create({ Type = "Spell", ID = 2643}),
+    KillCommand                                = Create({ Type = "Spell", ID = 34026}),
+    CobraShot                                = Create({ Type = "Spell", ID = 193455}),
+    -- Movement    
+    -- Utilities
+    CallPet                                    = Create({ Type = "Spell", ID = 883}),--, Texture = 136}),
+    MendPet                                    = Create({ Type = "Spell", ID = 136}),--, Texture = 136}),
+    RevivePet                                = Create({ Type = "Spell", ID = 982}),--, Texture = 136}),
+    -- Pet Abilities
+    Bite                                    = Create({ Type = "SpellSingleColor", ID = 17253, Hidden = true, Color = "RED"}),
+    Claw                                    = Create({ Type = "SpellSingleColor", ID = 16827, Hidden = true, Color = "RED"}),
+    Smack                                    = Create({ Type = "SpellSingleColor", ID = 49966, Hidden = true, Color = "RED"}),    
+    SpiritMend                                = Create({ Type = "SpellSingleColor", ID = 90361, Color = "YELLOW"}),
+    SonicBlast                                = Create({ Type = "SpellSingleColor", ID = 264263, Color = "YELLOW"}),
+    SpiritShock                                = Create({ Type = "SpellSingleColor", ID = 264265, Color = "LIGHT BLUE"}),
+    -- PvP
+    -- Buffs
+    FrenzyBuff                                = Create({ Type = "Spell", ID = 272790, Hidden = true}),
+    BeastCleaveBuff                            = Create({ Type = "Spell", ID = 118455, Hidden = true}),
+    RecklessForceBuff                        = Create({ Type = "Spell", ID = 302932 , Hidden = true}),
+    -- Debuffs
+    FesteringWoundDebuff                    = Create({ Type = "Spell", ID = 194310, Hidden = true}),
+    VirulentPlagueDebuff                    = Create({ Type = "Spell", ID = 191587, Hidden = true}),
+    GrandDelusionsDebuff                      = Create({ Type = "Spell", ID = 319695, Hidden = true}),    
+    BloodoftheEnemyDebuff                    = Create({ Type = "Spell", ID = 297108, Hidden = true}),
+    RazorCoralDebuff                        = Create({ Type = "Spell", ID = 303568, Hidden = true}),
+    ConcentratedFlameDebuff                    = Create({ Type = "Spell", ID = 295368, Hidden = true}),
+    -- Talents
+    KillerInstinct                            = Create({ Type = "Spell", ID = 273887, isTalent = true}),    -- Talent 1/3
+    DireBeast                                = Create({ Type = "Spell", ID = 120679, isTalent = true}),    -- Talent 3/3
+    OneWiththePack                            = Create({ Type = "Spell", ID = 199528, isTalent = true}),    -- Talent 2/2
+    ChimaeraShot                            = Create({ Type = "Spell", ID = 53209, isTalent = true}),    -- Talent 2/3
+    AMurderofCrows                            = Create({ Type = "Spell", ID = 131894, isTalent = true}),    -- Talent 4/3
+    BindingShot                                = Create({ Type = "Spell", ID = 109248, isTalent = true}),    -- Talent 5/3
+    Barrage                                    = Create({ Type = "Spell", ID = 120360, isTalent = true}),    -- Talent 6/2
+    Stampede                                = Create({ Type = "Spell", ID = 201430, isTalent = true}),    -- Talent 6/3
+    SpittingCobra                            = Create({ Type = "Spell", ID = 194407, isTalent = true}),    -- Talent 7/3
+    
+    -- PvP Talents
+    
+    -- Items
+    PotionofUnbridledFury                    = Create({ Type = "Potion",  ID = 169299 }), 
+    DribblingInkpod                            = Create({ Type = "Trinket", ID = 169319 }),
+    PocketsizedComputationDevice            = Create({ Type = "Trinket", ID = 167555 }),
+    AshvanesRazorCoral                        = Create({ Type = "Trinket", ID = 169311 }),   
+    RemoteGuidanceDevice                    = Create({ Type = "Trinket", ID = 169769 }), 
+    WrithingSegmentofDrestagath                = Create({ Type = "Trinket", ID = 173946 }), 
+    -- Hidden 
+    RapidReload                                = Create({ Type = "Spell", ID = 278530, Hidden = true}), -- Simcraft Azerite
+    PrimalInstincts                            = Create({ Type = "Spell", ID = 279806, Hidden = true}), -- Simcraft Azerite
+    DanceofDeath                            = Create({ Type = "Spell", ID = 274443, Hidden = true}), -- Simcraft Azerite
+    VisionofPerfection                        = Create({ Type = "Spell", ID = 299368, Hidden = true}), -- HoA Major
+}
+
+Action:CreateEssencesFor(ACTION_CONST_HUNTER_BEASTMASTERY)
+local A = setmetatable(Action[ACTION_CONST_HUNTER_BEASTMASTERY], { __index = Action })
+
+Pet:Add(ACTION_CONST_HUNTER_BEASTMASTERY,{ (A.Bite:Info()), (A.Claw:Info()), (A.Smack:Info()) })
+Pet:InitializeTrackerFor(ACTION_CONST_HUNTER_BEASTMASTERY)
+
+
+local player                                    = "player"
+local target                                    = "target"
+local pet                                        = "pet"
+local Temp                                        = {
+    AttackTypes                                    = {"TotalImun", "DamagePhysImun"},    
+    AuraForStun                                    = {"TotalImun", "DamagePhysImun", "CCTotalImun", "StunImun"},    
+    AuraForCC                                    = {"TotalImun", "DamagePhysImun", "CCTotalImun"},
+    AuraForOnlyCCAndStun                        = {"CCTotalImun", "StunImun"},
+    AuraForInterrupt                            = {"TotalImun", "DamagePhysImun", "KickImun"},
+    AuraForSlow                                    = {"TotalImun", "DamagePhysImun", "CCTotalImun", "Freedom"},
+    FeignDeathDelay                                = 0,
+    IsSlotTrinketBlocked                        = {
+        [A.AshvanesRazorCoral.ID]                = true,
+        [A.PocketsizedComputationDevice.ID]        = true,
+        [A.DribblingInkpod.ID]                    = true, 
+        --[A.RemoteGuidanceDevice.ID]                = true, 
+        [A.WrithingSegmentofDrestagath.ID]      = true,
+    },
+    PetFamily                                    = "nil",
+    IsSpiritBeast                                = {
+        [GameLocale]                             = "Spirit Beast",
+        ruRU                                    = "Дух зверя",
+        enGB                                    = "Spirit Beast",
+        enUS                                    = "Spirit Beast",
+        deDE                                    = "Geisterbestie",
+        esES                                    = "Bestia espíritu",
+        esMX                                    = "Bestia espíritu",
+        frFR                                    = "Esprit de bête",
+        itIT                                    = "Bestia Eterea",
+        ptBR                                    = "Fera Espiritual",
+        koKR                                    = "야수 정령",
+        zhCN                                    = "灵魂兽",
+        zhTW                                    = "靈獸",
+    },
+    IsBat                                        = {
+        [GameLocale]                             = "Bat",
+        ruRU                                    = "Летучая мышь",
+        enGB                                    = "Bat",
+        enUS                                    = "Bat",
+        deDE                                    = "Fledermaus",
+        esES                                    = "Murciélago",
+        esMX                                    = "Murciélago",
+        frFR                                    = "Chauve-souris",
+        itIT                                    = "Pipistrello",
+        ptBR                                    = "Morcego",
+        koKR                                    = "박쥐",
+        zhCN                                    = "蝙蝠",
+        zhTW                                    = "蝙蝠",
+    },
+    GetPetMeleeSpells                            = { (A.Bite:Info()), (A.Claw:Info()), (A.Smack:Info())},
+}
+
+TMW:RegisterCallback("TMW_ACTION_IS_INITIALIZED", function()
+        TimerSet("DISABLE_PET_ERRORS", 60, function() Pet:DisableErrors(true)  end)
+end)
+
+Listener:Add("ACTION_EVENT_HUNTER_FEIGNDEATH", "UNIT_SPELLCAST_SUCCEEDED", function(...)
+        local source, _, spellID = ...
+        if source == player and A.FeignDeath.ID == spellID and Temp.FeignDeathDelay == 0 then 
+            Temp.FeignDeathDelay = 20
+        end 
+end)  
+
+function Temp.IsPetInMelee(unitID)
+    -- @return boolean 
+    return Pet:IsInRange(Temp.GetPetMeleeSpells[1], unitID) or Pet:IsInRange(Temp.GetPetMeleeSpells[2], unitID) or Pet:IsInRange(Temp.GetPetMeleeSpells[3], unitID)
+end
+
+local max_search = 5
+local function GetEnemies()
+    -- @return number 
+    local enemies = 1
+    local compare = 0
+    
+    -- #1 method is if petID 
+    compare = Pet:GetMultiUnitsBySpell(Temp.GetPetMeleeSpells, max_search)    
+    if compare > enemies then 
+        enemies = compare
+    end 
+    
+    return enemies
+end 
+
+local function GetByRange(count, range, isCheckEqual, isCheckCombat)
+    -- @return boolean 
+    local c = 0 
+    for unitID in pairs(ActiveUnitPlates) do 
+        if (not isCheckEqual or not UnitIsUnit(target, unitID)) and (not isCheckCombat or Unit(unitID):CombatTime() > 0) then 
+            if range then 
+                local r = Unit(unitID):GetRange()
+                if r > 0 and r <= range then 
+                    c = c + 1
+                end 
+            end 
+            
+            if c >= count then 
+                return true 
+            end 
+        end 
+    end
+end 
+
+local function GetByRangeTTD(self, count, range)
+    -- @return number
+    local total, total_ttd = 0, 0
+    
+    for unitID in pairs(ActiveUnitPlates) do 
+        if not range or Unit(unitID):CanInterract(range) then 
+            total = total + 1
+            total_ttd = total_ttd + Unit(unitID):TimeToDie()
+        end 
+        
+        if count and total >= count then 
+            break 
+        end 
+    end 
+    
+    if total > 0 then 
+        return total_ttd / total     
+    else  
+        return huge
+    end
+end 
+GetByRangeTTD = A.MakeFunctionCachedDynamic(GetByRangeTTD)
+
+local function num(val)
+    if val then return 1 else return 0 end
+end
+
+-- [1] CC AntiFake Rotation
+local function AntiFakeStun(unitID) 
+    return 
+    IsUnitEnemy(unitID) and  
+    Unit(unitID):GetRange() <= 40 and 
+    Unit(unitID):IsControlAble("stun", 0) and 
+    A.IntimidationGreen:AbsentImun(unitID, Temp.AuraForOnlyCCAndStun, true)          
+end 
+A[1] = function(icon)    
+    if A.IntimidationGreen:IsReady(nil, nil, nil, true) and 
+    (
+        AntiFakeStun("mouseover") or 
+        AntiFakeStun("target")
+    )
+    then 
+        return A.IntimidationGreen:Show(icon)         
+    end                                                                     
+end
+
+local function SelfDefensives()
+    if Unit(player):CombatTime() == 0 then 
+        return 
+    end
+    
+    local Exhilaration = A.GetToggle(2, "ExhilarationHP")
+    if Exhilaration >= 0 and A.Exhilaration:IsReady(player) and 
+    (
+        (     -- Auto 
+            Exhilaration >= 100 and 
+            (
+                -- HP lose per sec >= 20
+                Unit(player):GetDMG() * 100 / Unit(player):HealthMax() >= 20 or 
+                Unit(player):GetRealTimeDMG() >= Unit(player):HealthMax() * 0.20 or 
+                -- TTD 
+                Unit(player):TimeToDieX(25) < 5 or 
+                (
+                    A.IsInPvP and 
+                    (
+                        Unit(player):UseDeff() or 
+                        (
+                            Unit(player, 5):HasFlags() and 
+                            Unit(player):GetRealTimeDMG() > 0 and 
+                            Unit(player):IsFocused() 
+                        )
+                    )
+                )
+            ) and 
+            Unit(player):HasBuffs("DeffBuffs", true) == 0
+        ) or 
+        (    -- Custom
+            Exhilaration < 100 and 
+            Unit(player):HealthPercent() <= Exhilaration
+        )
+    ) 
+    then 
+        return A.Exhilaration
+    end
+    
+    local SpiritMend = A.GetToggle(2, "SpiritMendHP")
+    if SpiritMend >= 0 and A.SpiritMend:IsReady(player) and Temp.PetFamily == Temp.IsSpiritBeast[GameLocale] and 
+    (
+        (     -- Auto 
+            SpiritMend >= 100 and 
+            (
+                -- HP lose per sec >= 10
+                Unit(player):GetDMG() * 100 / Unit(player):HealthMax() >= 10 or 
+                Unit(player):GetRealTimeDMG() >= Unit(player):HealthMax() * 0.10 or 
+                -- TTD 
+                Unit(player):TimeToDieX(25) < 5 or 
+                (
+                    A.IsInPvP and 
+                    (
+                        Unit(player):UseDeff() or 
+                        (
+                            Unit(player, 5):HasFlags() and 
+                            Unit(player):GetRealTimeDMG() > 0 and 
+                            Unit(player):IsFocused() 
+                        )
+                    )
+                )
+            ) and 
+            Unit(player):HasBuffs("DeffBuffs", true) == 0
+        ) or 
+        (    -- Custom
+            SpiritMend < 100 and 
+            Unit(player):HealthPercent() <= SpiritMend
+        )
+    ) 
+    then 
+        return A.SpiritMend
+    end
+    
+    local AspectoftheTurtle = A.GetToggle(2, "Turtle")
+    if AspectoftheTurtle >= 0 and A.AspectoftheTurtle:IsReady(player) and 
+    (
+        (     -- Auto 
+            AspectoftheTurtle >= 100 and 
+            (
+                -- HP lose per sec >= 30
+                Unit(player):GetDMG() * 100 / Unit("player"):HealthMax() >= 30 or 
+                Unit(player):GetRealTimeDMG() >= Unit(player):HealthMax() * 0.30 or 
+                -- TTD 
+                Unit(player):TimeToDieX(25) < 5 or 
+                (
+                    A.IsInPvP and 
+                    (
+                        Unit(player):UseDeff() or 
+                        (
+                            Unit(player, 5):HasFlags() and 
+                            Unit(player):GetRealTimeDMG() > 0 and 
+                            Unit(player):IsFocused() 
+                        )
+                    )
+                )
+            ) and 
+            Unit(player):HasBuffs("DeffBuffs", true) == 0
+        ) or 
+        (    -- Custom
+            AspectoftheTurtle < 100 and 
+            Unit(player):HealthPercent() <= AspectoftheTurtle
+        )
+    ) 
+    then
+        return A.AspectoftheTurtle
+    end
+    
+end
+SelfDefensives = A.MakeFunctionCachedStatic(SelfDefensives)
+
+local function Interrupts(unitID)
+    local useKick, useCC, useRacial = InterruptIsValid(unitID, "TargetMouseover")    
+    
+    if useKick and A.CounterShot:IsReady(unitID) and A.CounterShot:AbsentImun(unitID, Temp.TotalAndPhysKick, true) and Unit(unitID):CanInterrupt(true) then 
+        return A.CounterShot
+    end 
+    
+    if useCC and A.Intimidation:IsReady(unitID) and Unit(unitID):IsCastingRemains() > GetCurrentGCD() + 0.1 and A.Intimidation:AbsentImun(unitID, Temp.AuraForOnlyCCAndStun, true) and Unit(unitID):IsControlAble("stun", 0) then
+        return A.Intimidation     
+    end 
+    
+    if useRacial and A.QuakingPalm:AutoRacial(unitID) then 
+        return A.QuakingPalm
+    end 
+    
+    if useRacial and A.Haymaker:AutoRacial(unitID) then 
+        return A.Haymaker
+    end 
+    
+    if useRacial and A.WarStomp:AutoRacial(unitID) then 
+        return A.WarStomp
+    end 
+    
+    if useRacial and A.BullRush:AutoRacial(unitID) then 
+        return A.BullRush
+    end   
+end 
+Interrupts = A.MakeFunctionCachedDynamic(Interrupts)
+
+-----------------------------------------
+--                 ROTATION  
+-----------------------------------------
+
+-- [3] Single Rotation
+A[3] = function(icon)
+    local unitID                        = "player"
+    local inAoE                            = GetToggle(2, "AoE")
+    local isStartAttack                    = GetToggle(2, "startAttack")
+    local inHoldAoE                        = GetToggle(2, "holdAoE")
+    local minHoldAoE                    = GetToggle(2, "holdAoENum") 
+    local combatTime                    = Unit(player):CombatTime()
+    local inCombat                        = combatTime > 0
+    local refreshBarbed                    = GetGCD() + GetCurrentGCD() + GetPing() + (TMW.UPD_INTV or 0) + ACTION_CONST_CACHE_DEFAULT_TIMER
+    local enemies                        = GetEnemies()
+    local canCast                        = true
+    
+    if (Player:IsCasting() or Player:IsChanneling()) then
+        canCast = false
+    else 
+        canCast = true
+    end
+    
+    if Temp.FeignDeathDelay > 0 then
+        Temp.FeignDeathDelay = Temp.FeignDeathDelay - 1
+        return 
+    end
+    
+    Temp.PetFamily = UnitCreatureFamily(Pet:GetMainPet() and Pet:GetMainPet().name or pet)
+    --print(UnitCreatureFamily(Pet:GetMainPet() and Pet:GetMainPet().name or "pet"))
+    --if Temp.PetFamily == Temp.IsSpiritBeast[GameLocale] then
+    --    print("spirit")
+    --end
+    
+    local function EnemyRotation(unitID)    
+        
+        local MendPet = GetToggle(2, "MendPet")
+        if A.MendPet:IsReady(player) and Pet:IsActive() and Unit(pet):HealthPercent() > 0 and ((MendPet >= 100 and (Unit(pet):GetDMG() * 100 / Unit(pet):HealthMax() >= 20 or Unit(pet):GetRealTimeDMG() >= Unit(pet):HealthMax() * 0.20 or Unit(pet):TimeToDieX(15) < 2)) or (MendPet < 100 and Unit(pet):HealthPercent() <= MendPet and Unit(pet):HasBuffs(A.MendPet.ID, true) == 0))    then
+            return A.MendPet:Show(icon)
+        end
+        
+        if not Pet:IsActive() and A.MendPet:IsReady(player) and not A.LastPlayerCastName == A.MendPet:Info() then
+            return A.MendPet:Show(icon)
+        end
+        
+        if not isStartAttack and not inCombat then
+            return 
+        end
+        
+        -- Purge
+        if A.ArcaneTorrent:AutoRacial(unitID) then 
+            return A.ArcaneTorrent:Show(icon)
+        end             
+        
+        -- Interrupts
+        local Interrupt = Interrupts(unitID)
+        if Interrupt then 
+            return Interrupt:Show(icon)
+        end 
+        
+        -- Dispell Enrage / Magic
+        if Temp.PetFamily == Temp.IsBat[GameLocale] and A.SonicBlast:IsReady(unitID) and (AuraIsValid(unitID, "UseExpelEnrage", "Enrage") or AuraIsValid(unitID, "UseDispel", "Magic")) then 
+            return A.SonicBlast:Show(icon)
+        end 
+        
+        if Temp.PetFamily == Temp.IsSpiritBeast[GameLocale] and A.SpiritShock:IsReady(unitID) and (AuraIsValid(unitID, "UseExpelEnrage", "Enrage") or AuraIsValid(unitID, "UseDispel", "Magic")) then 
+            return A.SpiritShock:Show(icon)
+        end
+        
+        -- CDs
+        if BurstIsON(unitID) and canCast and Unit(unitID):TimeToDie() > 5 and Temp.IsPetInMelee(unitID) then
+            if A.AncestralCall:AutoRacial(unitID) and A.BestialWrath:GetCooldown() > 30 then
+                return A.AncestralCall:Show(icon)
+            end
+            
+            if A.Fireblood:AutoRacial(unitID) and A.BestialWrath:GetCooldown() > 30 then
+                return A.Fireblood:Show(icon)
+            end
+            
+            if A.Berserking:AutoRacial(unitID) and (Unit(player):HasBuffs(A.AspectoftheWild.ID, true) > 0 and (Unit(unitID):TimeToDie() > 24 or (Unit(player):HealthPercent() < 35 or not A.KillerInstinct:IsSpellLearned())) or Unit(unitID):TimeToDie() < 13) then
+                return A.Berserking:Show(icon)
+            end
+            
+            if A.BloodFury:AutoRacial(unitID) and (Unit(player):HasBuffs(A.AspectoftheWild.ID, true) > 0 and (Unit(unitID):TimeToDie() > 24 or (Unit(player):HealthPercent() < 35 or not A.KillerInstinct:IsSpellLearned())) or Unit(unitID):TimeToDie() < 13) then
+                return A.BloodFury:Show(icon)
+            end
+            
+            if A.LightsJudgment:IsReady(unitID) and (Unit(pet):HasBuffs(A.FrenzyBuff.ID, true) > GetGCD() or Unit(pet):HasBuffs(A.FrenzyBuff.ID, true) == 0) then
+                return A.LightsJudgment:Show(icon)
+            end
+            
+            if A.WorldveinResonance:AutoHeartOfAzeroth(unitID) and (A.LastPlayerCastName == A.AspectoftheWild:Info() or A.AspectoftheWild:GetCooldown() < GetGCD()) then
+                return A.WorldveinResonance:Show(icon)
+            end
+            
+            if A.GuardianofAzeroth:AutoHeartOfAzerothP(unitID) and (A.AspectoftheWild:GetCooldown() < 10 or ((Unit(unitID):IsBoss() or Unit(unitID):IsPlayer()) and (Unit(unitID):TimeToDie() > 210 or Unit(unitID):TimeToDie() < 30))) then
+                return A.GuardianofAzeroth:Show(icon)
+            end
+            
+            if A.MemoryofLucidDreams:AutoHeartOfAzerothP(unitID) then
+                return A.MemoryofLucidDreams:Show(icon)
+            end
+            
+            if A.ReapingFlames:AutoHeartOfAzeroth(unitID) then
+                return A.ReapingFlames:Show(icon)
+            end
+            
+            -- Trinkets
+            if A.Trinket1:IsReady(unitID) and A.Trinket1:GetItemCategory() ~= "DEFF" and A.Trinket1:AbsentImun(unitID, "DamageMagicImun") and not Temp.IsSlotTrinketBlocked[A.Trinket1.ID] then 
+                return A.Trinket1:Show(icon)
+            end 
+            
+            if A.Trinket2:IsReady(unitID) and A.Trinket2:GetItemCategory() ~= "DEFF" and A.Trinket2:AbsentImun(unitID, "DamageMagicImun") and not Temp.IsSlotTrinketBlocked[A.Trinket2.ID] then 
+                return A.Trinket2:Show(icon)
+            end  
+        end        
+        
+        local targetCoralDebuff = MultiUnits:GetByRangeAppliedDoTs(nil, 2, A.RazorCoralDebuff.ID)
+        if A.AshvanesRazorCoral:IsReady(unitID) and (Unit(unitID):HasDeBuffs(A.RazorCoralDebuff.ID, true) == 0 and targetCoralDebuff == 0 or (Unit(player):HasBuffs(A.AspectoftheWild.ID, true) > 0 and Unit(unitID):HealthPercent() < 35)) then 
+            return A.AshvanesRazorCoral:Show(icon)
+        end
+        
+        -- AoE
+        if inAoE and enemies > 1 and canCast then
+            if A.BarbedShot:IsReadyByPassCastGCD(unitID) and (Unit(pet):HasBuffs(A.FrenzyBuff.ID, true) > 0 and Unit(pet):HasBuffs(A.FrenzyBuff.ID, true) <= refreshBarbed) and (Temp.IsPetInMelee(unitID) or A.KillCommand:GetCooldown() > 0) then
+                return A.BarbedShot:Show(icon)
+            end
+            
+            if A.Multishot:IsReady(unitID) and (Unit(pet):HasBuffs(A.BeastCleaveBuff.ID, true) <= GetGCD() + GetCurrentGCD() + A.GetPing()) then
+                return A.Multishot:Show(icon)
+            end
+            
+            if A.BarbedShot:IsReady(unitID) and (A.BarbedShot:GetSpellChargesFullRechargeTime() < GetGCD() and (A.BestialWrath:GetCooldown() > 0 or not BurstIsON(unitID))) and (Temp.IsPetInMelee(unitID) or A.KillCommand:GetCooldown() > 0) then
+                return A.BarbedShot:Show(icon)
+            end
+            
+            if BurstIsON(unitID) and Temp.IsPetInMelee(unitID) then
+                if A.AspectoftheWild:IsReady(player) and Unit(player):HasBuffs(A.AspectoftheWild.ID, true) == 0 then
+                    return A.AspectoftheWild:Show(icon)
+                end
+                
+                if A.Stampede:IsReady(player) and (Unit(player):HasBuffs(A.AspectoftheWild.ID, true) > 0 and Unit(player):HasBuffs(A.BestialWrath.ID, true) > 0 or ((Unit(unitID):IsBoss() or Unit(unitID):IsPlayer()) and Unit(unitID):TimeToDie() < 15)) then
+                    return A.Stampede:Show(icon)
+                end
+                
+                if A.BestialWrath:IsReady(player) and (A.AspectoftheWild:GetCooldown() > 20 or A.OneWiththePack:IsSpellLearned() or ((Unit(unitID):IsBoss() or Unit(unitID):IsPlayer()) and Unit(unitID):TimeToDie() < 15)) then
+                    return A.BestialWrath:Show(icon)
+                end
+                
+                if A.AMurderofCrows:IsReady(unitID) then
+                    return A.AMurderofCrows:Show(icon)
+                end
+                
+                if A.SpittingCobra:IsReady(player) then
+                    return A.SpittingCobra:Show(icon)
+                end
+            end
+            
+            if A.ChimaeraShot:IsReady(unitID) then
+                return A.ChimaeraShot:Show(icon)
+            end
+            
+            if A.Barrage:IsReady(unitID, true) and Temp.IsPetInMelee(unitID) then
+                return A.Barrage:Show(icon)
+            end
+            
+            if A.KillCommand:IsReady(unitID) and (enemies < 4 or A.RapidReload:GetAzeriteRank() == 0) then
+                return A.KillCommand:Show(icon)
+            end
+            
+            if A.DireBeast:IsReady(unitID) then
+                return A.DireBeast:Show(icon)
+            end
+            
+            if A.BarbedShot:IsReady(unitID) and (Unit(pet):HasBuffs(A.FrenzyBuff.ID, true) == 0 and (A.BarbedShot:GetSpellChargesFrac() > 1.8 or Unit(player):HasBuffs(A.BestialWrath.ID, true) > 0) or A.AspectoftheWild:GetCooldown() < 10 - (GetGCD() + GetCurrentGCD()) and A.PrimalInstincts:GetAzeriteRank() >= 1 or A.BarbedShot:GetSpellChargesFrac() > 1.4 or Unit(unitID):TimeToDie() < 9) and (Temp.IsPetInMelee(unitID) or A.KillCommand:GetCooldown() > 0) then
+                return A.BarbedShot:Show(icon)
+            end
+            
+            if A.FocusedAzeriteBeam:AutoHeartOfAzerothP(unitID) and (inHoldAoE and GetByRange(minHoldAoE, 10) and GetByRangeTTD(minHoldAoE, 10) >= 10 or Unit(unitID):IsBoss() and Unit(unitID):GetRange() <= 10) then
+                return A.FocusedAzeriteBeam:Show(icon)
+            end 
+            
+            if A.PurifyingBlast:AutoHeartOfAzeroth(unitID) then 
+                return A.PurifyingBlast:Show(icon)
+            end
+            
+            if A.ConcentratedFlame:AutoHeartOfAzerothP(unitID) and (Unit(unitID):HasDeBuffs(A.ConcentratedFlameDebuff.ID) == 0 and not A.ConcentratedFlame:IsSpellInFlight() or A.ConcentratedFlame:GetSpellChargesFullRechargeTime() < GetCurrentGCD()) then
+                return A.ConcentratedFlame:Show(icon)
+            end
+            
+            if A.BloodoftheEnemy:AutoHeartOfAzerothP(unitID) and (inHoldAoE and GetByRange(minHoldAoE, 10) and GetByRangeTTD(minHoldAoE, 10) >= 10 or Unit(unitID):IsBoss() and Unit(unitID):GetRange() <= 8) then
+                return A.BloodoftheEnemy:Show(icon) 
+            end
+            
+            if A.WrithingSegmentofDrestagath:IsReady(unitID) and A.WrithingSegmentofDrestagath:AbsentImun(unitID, "DamageMagicImun") and (inHoldAoE and GetByRange(minHoldAoE, 10) and GetByRangeTTD(minHoldAoE, 10) >= 10 or Unit(unitID):IsBoss() and Unit(unitID):GetRange() <= 10) then
+                return A.WrithingSegmentofDrestagath:Show(icon)
+            end
+            
+            if A.TheUnboundForce:AutoHeartOfAzeroth(unitID) and (Unit(player):HasBuffs(A.RecklessForceBuff.ID, true) > 0 or Unit(player):HasBuffsStacks(A.RecklessForceBuff.ID, true) < 10) then
+                return A.TheUnboundForce:Show(icon)
+            end
+            
+            if A.Multishot:IsReady(unitID) and (A.RapidReload:GetAzeriteRank() >= 1 and enemies > 2) then
+                return A.Multishot:Show(icon)
+            end
+            
+            if A.CobraShot:IsReady(unitID) and (A.KillCommand:GetCooldown() > Player:FocusTimeToMaxPredicted() and (enemies < 3 or A.RapidReload:GetAzeriteRank() == 0)) then
+                return A.CobraShot:Show(icon)
+            end
+        end
+        
+        -- Single Target
+        if inAoE and enemies == 1 or not inAoE and canCast then
+            if A.BarbedShot:IsReadyByPassCastGCD(unitID) and (Unit(pet):HasBuffs(A.FrenzyBuff.ID, true) > 0 and Unit(pet):HasBuffs(A.FrenzyBuff.ID, true) <= refreshBarbed or (A.BestialWrath:GetCooldown() > 0 or not BurstIsON(unitID)) and A.BarbedShot:GetSpellChargesFullRechargeTime() < GetGCD() or A.PrimalInstincts:GetAzeriteRank() >= 1 and A.AspectoftheWild:GetCooldown() < GetGCD()) and (Temp.IsPetInMelee(unitID) or A.KillCommand:GetCooldown() > 0) then
+                return A.BarbedShot:Show(icon)
+            end
+            
+            if A.ConcentratedFlame:AutoHeartOfAzerothP(unitID) and (Player:Focus() + Player:FocusRegen() * GetGCD() < Player:FocusMax() and Unit(player):HasBuffs(A.BestialWrath.ID, true) == 0 and (Unit(unitID):HasDeBuffs(A.ConcentratedFlameDebuff.ID) == 0 and not A.ConcentratedFlame:IsSpellInFlight() or A.ConcentratedFlame:GetSpellChargesFullRechargeTime() < GetCurrentGCD() or Unit(unitID):TimeToDie() < 5)) then
+                return A.ConcentratedFlame:Show(icon)
+            end
+            
+            if BurstIsON(unitID) and Temp.IsPetInMelee(unitID) then
+                
+                if A.AspectoftheWild:IsReady(player) and (Unit(player):HasBuffs(A.AspectoftheWild.ID, true) == 0 and (A.BarbedShot:GetSpellCharges() < 1 or A.PrimalInstincts:GetAzeriteRank() == 0)) then
+                    return A.AspectoftheWild:Show(icon)
+                end
+                
+                if A.Stampede:IsReady(player) and (Unit(player):HasBuffs(A.AspectoftheWild.ID, true) > 0 and Unit(player):HasBuffs(A.BestialWrath.ID, true) > 0 or ((Unit(unitID):IsBoss() or Unit(unitID):IsPlayer()) and Unit(unitID):TimeToDie() < 15)) then
+                    return A.Stampede:Show(icon)
+                end
+                
+                if A.AMurderofCrows:IsReady(unitID) then
+                    return A.AMurderofCrows:Show(icon)
+                end
+                
+                if A.FocusedAzeriteBeam:AutoHeartOfAzerothP(unitID) and (Unit(player):HasBuffs(A.BestialWrath.ID, true) == 0) then
+                    return A.FocusedAzeriteBeam:Show(icon)
+                end 
+                
+                if A.TheUnboundForce:AutoHeartOfAzeroth(unitID) and (Unit(player):HasBuffs(A.RecklessForceBuff.ID, true) > 0 or Unit(player):HasBuffsStacks(A.RecklessForceBuff.ID, true) < 10) then
+                    return A.TheUnboundForce:Show(icon)
+                end
+                
+                if A.BestialWrath:IsReady(player) and (A.OneWiththePack:IsSpellLearned() and Unit(player):HasBuffs(A.BestialWrath.ID, true) < GetGCD() or Unit(player):HasBuffs(A.BestialWrath.ID, true) > 0 and A.AspectoftheWild:GetCooldown() > 15 or ((Unit(unitID):IsBoss() or Unit(unitID):IsPlayer()) and Unit(unitID):TimeToDie() < 15)) then 
+                    return A.BestialWrath:Show(icon)
+                end
+                
+                if A.BagofTricks:AutoRacial(unitID) and (Unit(player):HasBuffs(A.BestialWrath.ID, true) == 0 or ((Unit(unitID):IsBoss() or Unit(unitID):IsPlayer()) and Unit(unitID):TimeToDie() < 5)) then
+                    return A.BagofTricks:Show(icon)
+                end    
+                
+                if A.PurifyingBlast:AutoHeartOfAzeroth(unitID) then 
+                    return A.PurifyingBlast:Show(icon)
+                end
+                
+                if A.SpittingCobra:IsReady(player) then
+                    return A.SpittingCobra:Show(icon)
+                end
+            end
+            
+            if A.BarbedShot:IsReady(unitID) and (A.DanceofDeath:GetAzeriteRank() > 1 and Unit(player):HasBuffs(A.DanceofDeath.ID, true) < GetGCD()) and (Temp.IsPetInMelee(unitID) or A.KillCommand:GetCooldown() > 0) then
+                return A.BarbedShot:Show(icon)
+            end
+            
+            if A.BloodoftheEnemy:AutoHeartOfAzerothP(unitID) and (Unit(player):HasBuffs(A.AspectoftheWild.ID, true) > 10 + (GetGCD() + GetCurrentGCD()) and Unit(unitID):IsBoss() and Unit(unitID):GetRange() <= 8) then
+                return A.BloodoftheEnemy:Show(icon) 
+            end
+            
+            if A.KillCommand:IsReady(unitID) then
+                return A.KillCommand:Show(icon)
+            end
+            
+            if A.ChimaeraShot:IsReady(unitID) then
+                return A.ChimaeraShot:Show(icon)
+            end
+            
+            if A.DireBeast:IsReady(unitID) then
+                return A.DireBeast:Show(icon)
+            end
+            
+            if A.BarbedShot:IsReady(unitID) and (A.OneWiththePack:IsSpellLearned() and A.BarbedShot:GetSpellChargesFrac() > 1.5 or A.BarbedShot:GetSpellChargesFrac() > 1.8 or A.AspectoftheWild:GetCooldown() < 10 - (GetGCD() + GetCurrentGCD()) and A.PrimalInstincts:GetAzeriteRank() >= 1 or ((Unit(unitID):IsBoss() or Unit(unitID):IsPlayer()) and Unit(unitID):TimeToDie() < 9)) and (Temp.IsPetInMelee(unitID) or A.KillCommand:GetCooldown() > 0) then 
+                return A.BarbedShot:Show(icon)
+            end
+            
+            if A.CobraShot:IsReady(unitID) and ((Player:Focus() - A.CobraShot:GetSpellPowerCost() + Player:FocusRegen() * (A.KillCommand:GetCooldown() - 1) > A.KillCommand:GetSpellPowerCost() or A.KillCommand:GetCooldown() > 1 + GetGCD() or Unit(player):HasBuffs(A.MemoryofLucidDreams.ID, true) > 0) and A.KillCommand:GetCooldown() > 1) then
+                return A.CobraShot:Show(icon)
+            end
+            
+            if A.BarbedShot:IsReady(unitID) and (10 - GetGCD() > A.BarbedShot:GetSpellChargesFullRechargeTime()) and (Temp.IsPetInMelee(unitID) or A.KillCommand:GetCooldown() > 0) then
+                return A.BarbedShot:Show(icon)
+            end
+            
+        end
+        
+    end
+    
+    -- Defensive
+    local SelfDefensive = SelfDefensives()
+    if SelfDefensive then 
+        return SelfDefensive:Show(icon)
+    end 
+    
+    if Unit(player):HasDeBuffs(A.GrandDelusionsDebuff.ID, true) > 0 and A.FeignDeath:IsReady(player) then
+        return A.FeignDeath:Show(icon)
+    end    
+    
+    if IsUnitEnemy(target) then 
+        unitID = target
+        
+        if not Unit(unitID):IsDead() and EnemyRotation(unitID) then 
+            return true 
+        end 
+    end 
+    
+end 
+
+-- Nil (nothing for profile here, just reset them)
+A[1] = nil
+A[2] = nil  
+A[4] = nil 
+A[5] = nil 
+A[6] = nil 
+A[7] = nil
+A[8] = nil 
+

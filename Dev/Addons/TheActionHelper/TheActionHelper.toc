@@ -1,0 +1,41 @@
+## Interface: 80300
+## Title: |cFFff69b4TheActionHelper|r
+## Notes: Configuration for TellMeWhen TheAction
+## Author: Taste
+## Version: 0.1
+## X-Date: 2020-05-09T10:59:49Z
+## X-Email: faucher.leo@gmail.com
+## X-Category: Miscellaneous
+## OptionalDeps: Ace3, LibToast-1.0, LibWindow-1.1
+## LoadWith: TellMeWhen
+## SavedVariables: TheActionHelperSettingsDB, FakeCharacterName, FakeGuildName, isEnabled, isVisible, partyMemberNames, partyMembers, partyMemberRealms
+
+embeds.xml
+
+#@debug@
+# Localization\devel-enUS.lua
+#@end-debug@
+
+#@non-debug@
+Localization\enUS.lua
+#@end-non-debug@
+Localization\deDE.lua
+Localization\esES.lua
+Localization\esMX.lua
+Localization\frFR.lua
+Localization\koKR.lua
+Localization\ptBR.lua
+Localization\ruRU.lua
+Localization\zhCN.lua
+Localization\zhTW.lua
+
+
+TheActionHelper.lua
+
+# Notification API
+#Modules\Notifications\Core.lua
+Modules\Notifications\Config.lua
+
+# Anonymizer API
+Modules\Anonymizer\Frame.lua
+Modules\Anonymizer\Frame.xml

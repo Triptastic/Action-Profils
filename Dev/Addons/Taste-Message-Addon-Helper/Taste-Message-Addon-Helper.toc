@@ -1,0 +1,14 @@
+## Interface: 80200
+## Title: |cff0070ddTaste Message Addon Helper|r
+## Notes: Taste Message Addon Helper: Handle Message & Message Addon situations.
+## Author: Taste
+## Version: 1
+## SavedVariables: TasteMsgAddonHelperDB, TasteMsgAddonHelperLDB
+## OptionalDeps: Ace3
+
+#@no-lib-strip@
+embeds.xml
+#@end-no-lib-strip@
+
+Taste-Message-Addon-Helper.lua
+

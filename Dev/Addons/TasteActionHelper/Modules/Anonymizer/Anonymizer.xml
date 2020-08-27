@@ -1,0 +1,404 @@
+<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/">
+	<Button name="NamesEntryTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="150" y="16" />
+		</Size>
+		<Scripts>
+			<OnClick>
+				if self:GetText() ~= nil then
+				fntDelete:SetText(self:GetText())
+				btnRemove:SetText("Remove "..self:GetText())
+				btnRemove:Enable()
+				end
+			</OnClick>
+			<OnEnter>
+				if partyMemberRealms[self:GetText()] ~= nil then
+					fntstrOldName:SetText(self:GetText().."-"..partyMemberRealms[self:GetText()])
+				end
+				fntstrNewName:SetText(partyMemberNames[self:GetText()])
+			</OnEnter>
+			<OnLeave>
+				fntstrOldName:SetText("--")
+				fntstrNewName:SetText("--")
+			</OnLeave>
+		</Scripts>
+		<NormalFont style="GameFontHighlightLeft" />
+	</Button>
+	<Frame name="sgPersonalFrame" parent="UIParent" toplevel="true" movable="true">
+		<Size x="169" y="237" />
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset x="-192" y="159" />
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString inherits="GameFontNormalLarge" text="ReName">
+					<Size x="163" y="19" />
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="3" y="-33" />
+						</Anchor>
+					</Anchors>
+					<FontHeight val="16" />
+				</FontString>
+				<FontString name="fntstrVersion" inherits="GameFontGreenSmall" text="Ver 1.3.301">
+					<Size x="163" y="19" />
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="3" y="-56" />
+						</Anchor>
+					</Anchors>
+					<FontHeight val="10" />
+				</FontString>
+				<FontString inherits="GameFontNormal" text="Guild Name" justifyH="LEFT">
+					<Size x="105" y="20" />
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="12" y="-118" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="Character Name" justifyH="LEFT">
+					<Size x="105" y="20" />
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="12" y="-76" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox name="inputGuildName" inherits="InputBoxTemplate" enableKeyboard="true" autoFocus="false">
+				<Size x="125" y="26" />
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="22" y="-136" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetText("ReName")
+					</OnLoad>
+					<OnChar>
+						text = self:GetText()
+						RegisterNewGuildName(text)
+					</OnChar>
+				</Scripts>
+			</EditBox>
+			<EditBox name="inputCharacterName" inherits="InputBoxTemplate" enableKeyboard="true" autoFocus="false">
+				<Size x="125" y="26" />
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="22" y="-94" />
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="" />
+				<Scripts>
+					<OnChar>
+						text = self:GetText()
+						RegisterNewCharacterName(text)
+					</OnChar>
+				</Scripts>
+			</EditBox>
+			<Button name="btnUpdateNames" inherits="UIPanelButtonTemplate" text="Enable">
+				<Size x="133" y="23" />
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="14" y="-168" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if isEnabled == "true" then
+						isEnabled = "false"
+						self:SetText("Enable")
+						PlayerName:SetText(UnitName("player"))
+						GuildFrame.TitleText:SetText(GetGuildInfo("player"))
+						inputCharacterName:Disable()
+						inputGuildName:Disable()
+						elseif isEnabled == "false" then
+						isEnabled = "true"
+						GuildFrame.TitleText:SetText("")
+						RenameDoHide()
+						self:SetText("Disable")
+						inputCharacterName:Enable()
+						inputGuildName:Enable()
+						RenameHideCharName()
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="btnClose" inherits="UIPanelCloseButton" text="Button1">
+				<Size x="24" y="24" />
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="134" y="-12" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						isVisible="false"
+						sgPersonalFrame:Hide()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="btnNames" inherits="UIPanelButtonTemplate" text="Names &gt;">
+				<Size x="80" y="23" />
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="67" y="-197" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if sgpNamesFrame:IsShown() then
+							sgpNamesFrame:Hide()
+							self:SetText("Names &gt;")
+						else
+							sgpNamesFrame:Show()
+							self:SetText("Names &lt;")
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForDrag("LeftButton");
+				inputCharacterName:Disable()
+				inputGuildName:Disable()
+				LoadAddOn("Blizzard_GuildUI")
+				LoadAddOn("Blizzard_PVPUI")
+				GuildFrame.TitleText:SetText(GetGuildInfo("player"))
+			</OnLoad>
+			<OnDragStart>
+				self:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				self:StopMovingOrSizing();
+			</OnDragStop>
+		</Scripts>
+	</Frame>
+	<Frame name="sgpNamesFrame" parent="sgPersonalFrame" hidden="True">
+		<Size x="426" y="237" />
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="sgPersonalFrame" relativePoint="TOPLEFT">
+				<Offset x="175" />
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString inherits="GameFontNormal" text="Player Name" justifyH="LEFT">
+					<Size x="128" y="20" />
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="16" y="-28" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="Masked Player Names:" justifyV="TOP" justifyH="LEFT">
+					<Size x="227" y="20" />
+					<Anchors>
+						<Anchor point="TOPLEFT" x="175" y="-16" />
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="Masked Name" justifyH="LEFT">
+					<Size x="105" y="20" />
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="16" y="-120" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="Realm Name" justifyH="LEFT">
+					<Size x="128" y="20" />
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="16" y="-75" />
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="fntDelete" inherits="GameFontNormal" hidden="true" text="">
+					<Size x="80" y="20" />
+					<Anchors>
+						<Anchor point="TOPLEFT" x="175" y="-161" />
+					</Anchors>
+				</FontString>
+				<FontString name="fntstrOldName" inherits="GameFontHighlightSmall" text="">
+					<Size x="113" y="20" />
+					<Anchors>
+						<Anchor point="TOPLEFT" x="175" y="-202" />
+					</Anchors>
+				</FontString>
+				<FontString name="fntstrNewName" inherits="GameFontHighlightSmall" text="">
+					<Size x="113" y="20" />
+					<Anchors>
+						<Anchor point="TOPLEFT" x="294" y="-202" />
+					</Anchors>
+				</FontString>
+				<FontString name="fntNewName" inherits="GameFontNormal" text="Masked Name">
+					<Size x="113" y="16" />
+					<Anchors>
+						<Anchor point="TOPLEFT" x="294" y="-184" />
+					</Anchors>
+				</FontString>
+				<FontString name="fntOldName" inherits="GameFontNormal" text="Player Name">
+					<Size x="113" y="16" />
+					<Anchors>
+						<Anchor point="TOPLEFT" x="175" y="-184" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox name="inputPartyName" inherits="InputBoxTemplate" enableKeyboard="true" autoFocus="false">
+				<Size x="125" y="26" />
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="22" y="-47" />
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="" />
+			</EditBox>
+			<EditBox name="inputPartyNew" inherits="InputBoxTemplate" enableKeyboard="true" autoFocus="false">
+				<Size x="125" y="26" />
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="22" y="-139" />
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="btnUpdatePartyNames" inherits="UIPanelButtonTemplate" text="Add">
+				<Size x="57" y="23" />
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="90" y="-171" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						addPartyMember()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="inputRealmName" inherits="InputBoxTemplate" enableKeyboard="true" autoFocus="false">
+				<Size x="125" y="26" />
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="22" y="-94" />
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="" />
+			</EditBox>
+			<ScrollFrame name="NamesScrollBar" inherits="FauxScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="175" y="-35" />
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="-46" y="85" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(self, offset, 15, NamesScrollBar_Update);
+					</OnVerticalScroll>
+					<OnShow>
+						NamesScrollBar_Update()
+					</OnShow>
+				</Scripts>
+			</ScrollFrame>
+			<Button name="NamesEntry1" inherits="NamesEntryTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NamesScrollBar" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="8" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="NamesEntry2" inherits="NamesEntryTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NamesEntry1" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+			</Button>
+			<Button name="NamesEntry3" inherits="NamesEntryTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NamesEntry2" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+			</Button>
+			<Button name="NamesEntry4" inherits="NamesEntryTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NamesEntry3" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+			</Button>
+			<Button name="NamesEntry5" inherits="NamesEntryTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NamesEntry4" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+			</Button>
+			<Button name="NamesEntry6" inherits="NamesEntryTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NamesEntry5" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+			</Button>
+			<Button name="NamesEntry7" inherits="NamesEntryTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NamesEntry6" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+			</Button>
+			<Button name="btnRemove" inherits="UIPanelButtonTemplate" text="Remove">
+				<Size x="227" y="22" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="175" y="-160" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						removePartyMember(fntDelete:GetText())
+						btnRemove:SetText("Remove")
+						btnRemove:Disable()
+						fntDelete:SetText("")
+						NamesScrollBar_Update()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="btnImport" inherits="UIPanelButtonTemplate" text="Import">
+				<Size x="70" y="23" />
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="14" y="-171" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						importSelected()
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>
