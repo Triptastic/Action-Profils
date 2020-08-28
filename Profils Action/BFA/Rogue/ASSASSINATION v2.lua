@@ -127,7 +127,9 @@ Action[ACTION_CONST_ROGUE_ASSASSINATION] = {
     Shiv                                   = Action.Create({ Type = "Spell", ID = 248744       }),
     SmokeBomb                              = Action.Create({ Type = "Spell", ID = 212182       }),
     DFA                                    = Action.Create({ Type = "Spell", ID = 269513       }),
-    Neuro                                  = Action.Create({ Type = "Spell", ID = 206328       }),    
+    Neuro                                  = Action.Create({ Type = "Spell", ID = 206328       }),  
+    PreyontheWeak                          = Action.Create({ Type = "Spell", ID = 131511	      }),  
+	PreyontheWeakDebuff                    = Action.Create({ Type = "Spell", ID = 255909	      }), 
     -- Poisons
     CripplingPoison                        = Action.Create({ Type = "Spell", ID = 3408     }),
     DeadlyPoison                           = Action.Create({ Type = "Spell", ID = 2823     }),
@@ -250,8 +252,9 @@ local VarSkipCycleGarrote = false;
 local VarSkipCycleRupture = false;
 local VarSkipRupture = false;
 local VarReapingDelay = 0;
-local VarOpenerDone = false
-local VarOpenerType = 0
+local VarOpenerDone = false;
+local VarOpenerType = 0;
+local ShouldKidney = false;
 
 A.Listener:Add("ROTATION_VARS", "PLAYER_REGEN_ENABLED", function()
   VarVendettaSubterfugeCondition = false
@@ -267,6 +270,7 @@ A.Listener:Add("ROTATION_VARS", "PLAYER_REGEN_ENABLED", function()
   VarReapingDelay = 0
   VarOpenerDone = false
   VarOpenerType = 0
+  ShouldKidney = false
 end)
 
 local function num(val)
@@ -356,18 +360,7 @@ local function GetByRange(count, range, isStrictlySuperior, isStrictlyInferior, 
 	end
 	
 end  
-GetByRange = A.MakeFunctionCachedDynamic(GetByRange)
-                                                     
-Listener:Add("ACTION_EVENT_ROGUE_FORCE_KIDNEY", "UNIT_SPELLCAST_SUCCEEDED", function(...)
-        local source, _, spellID = ...
-        if source == player and A.KidneyShot.ID == spellID and GetToggle(2, "ForceKidney") then 
-            SetToggle(Temp.KidneyShotToggle)
-        end 
-        
-        if source == player and A.KidneyShot.ID == spellID and GetToggle(2, "ForceKidneyF") then 
-            SetToggle(Temp.KidneyShotFToggle)
-        end 
-end)  
+GetByRange = A.MakeFunctionCachedDynamic(GetByRange)                                                    
 
 local function InMelee(unit)
     -- @return boolean 
@@ -1722,20 +1715,6 @@ A[3] = function(icon, isMulti, isArena)
             
             return 
         end
-        
-        -- Kidney Shot on enemies with burst damage buff or if our friend healer is cc
-        if A.IsInPvP and A.KidneyShot:IsReady(unit) and CanCast and inMelee and Player:ComboPoints() >= 4 and Unit(unit):IsControlAble("stun", 25) and Unit(unit):HasBuffs("DamageBuffs") > 0 then
-            -- Notification                    
-            Action.SendNotification("Defensive Kidney Shot on : " .. UnitName(unit), A.KidneyShot.ID)
-            return A.KidneyShot:Show(icon)
-        end    
-            
-        -- 'Full' Kidney Shot
-        if A.IsInPvP and A.KidneyShot:IsReady(unit) and CanCast and Unit(unit):HealthPercent() <= 70 and Player:ComboPoints() >= 4 and A.KidneyShot:AbsentImun(unit, {"TotalImun", "DamagePhysImun", "CCTotalImun"}, true) and Unit(unit):IsControlAble("stun", 0) then 
-            -- Notification                    
-            Action.SendNotification("Offensive Kidney Shot on : " .. UnitName(unit), A.KidneyShot.ID)
-		    return A.KidneyShot:Show(icon)              
-        end
             
         -- Neuro
         if A.IsInPvP and A.Neuro:IsSpellLearned() and CanCast and A.Neuro:IsReady(unit) and inMelee and Unit(unit):HealthPercent() <= 75 and not Player:IsStealthed() then
@@ -1751,12 +1730,94 @@ A[3] = function(icon, isMulti, isArena)
         if A.IsInPvP and A.DFA:IsSpellLearned() and CanCast and A.DFA:IsReady(unit) and Unit(unit):HealthPercent() <= 70 and Player:ComboPoints() >= 5 and Unit(unit):GetRange() <= 15 and Action.AbsentImun(unit, "DamagePhysImun", true) then
             return A.DFA:Show(icon)
         end        
-            
+		
         -- Mouseover KidneyShot on enemy trying to leave with less than 30% HP
-        if unit == "mouseover" and CanCast and Player:ComboPoints() >= 4 and Unit(unit):HealthPercent() <= 30 and (A.IsInPvP or (not Unit(unit):IsBoss() and Unit(unit):IsMovingOut())) and A.KidneyShot:IsReady(unit) and A.KidneyShot:AbsentImun(unit, {"TotalImun", "DamagePhysImun", "Freedom", "CCTotalImun"}, true) and Unit(unit):GetMaxSpeed() >= 100 and Unit(unit):HasDeBuffs("Slowed") == 0 and not Unit(unit):IsTotem() then 
+        if unit == "mouseover" and CanCast and Player:ComboPoints() >= 4 and Unit(unit):HealthPercent() <= A.GetToggle(2, "EscapingKidneyShotHP") and -- Add settings
+		(
+		    A.IsInPvP 
+			or 
+			(not Unit(unit):IsBoss() and Unit(unit):IsMovingOut())
+		)
+		and A.KidneyShot:IsReady(unit) and 
+		A.KidneyShot:AbsentImun(unit, Temp.TotalAndPhys) and 
+		Unit(unit):GetMaxSpeed() >= 100 and 
+		Unit(unit):HasDeBuffs("Slowed") == 0 and 
+		not Unit(unit):IsTotem() 
+		then 
             Action.SendNotification("Mouseover Kidney Shot on escaping unit", A.KidneyShot.ID)
 		    return A.KidneyShot:Show(icon)
         end 
+        
+        -- Kidney Shot UI vars
+        local KidneyShotMode = A.GetToggle(2, "KidneyShotMode")        -- "AUTO" "ONLY HEALER" "ON MELEE BURST"
+		local KidneyReason = "None"
+				
+		-- AUTO Mode
+		if KidneyShotMode == "AUTO" and A.KidneyShot:IsReady(unit) and CanCast and inMelee and Unit(unit):IsControlAble("stun") and Player:ComboPoints() >= A.GetToggle(2, "KidneyShotMinCP") then
+		    if A.IsInPvP and EnemyTeam then 
+			
+			    -- Enemies with burst damage buff and our friend healer is "long" cc
+				if
+    		    (
+				    Unit(unit):HasBuffs("DamageBuffs") > 0 and
+                    FriendlyTeam("HEALER"):GetCC() > 2
+			    )
+				then
+				    KidneyReason = "Friendly Healer in trouble, defensive Kidney on " .. UnitName(unit)
+					ShouldKidney = true				
+			    elseif
+			    -- CC Chain gonna fade on enemy healer and EnemyTeam is gonna die soon 
+			    (
+			        EnemyTeam("HEALER"):GetCC() > 0 and EnemyTeam("HEALER"):GetCC() <= A.GetGCD() + 0.1 and
+				    EnemyTeam():GetTTD(1, 5) and -- at least 1 enemy is gonna die under 5sec
+				    Unit(unit):GetUnitID() == EnemyTeam("HEALER"):GetUnitID()
+			    )
+			    then
+				    KidneyReason = "Maintain chain CC on " .. UnitName(unit)
+				    ShouldKidney = true			
+			    elseif
+			    -- One of our FriendlyTeam is gonna die really soon and enemy team is bursting
+			    (
+			        FriendlyTeam():GetTTD(1, 3) and 
+				    Unit(unit):HasBuffs("DamageBuffs") > 0
+			    )
+			    then
+				    KidneyReason = "Friendly mate in trouble, defensive Kidney on " .. UnitName(unit)
+				    ShouldKidney = true
+				end
+			end
+		end
+
+		-- Mega Kidney Shotz handler
+        if ShouldKidney and A.KidneyShot:IsReady(unit) and CanCast and inMelee and Unit(unit):IsControlAble("stun") and Player:ComboPoints() >= A.GetToggle(2, "KidneyShotMinCP") then
+            Action.SendNotification(KidneyReason, A.KidneyShot.ID)
+		    return A.KidneyShot:Show(icon)		
+		end
+		
+        -- Kidney Shot on enemies with burst damage buff or if our friend healer is cc
+        if A.IsInPvP and A.KidneyShot:IsReady(unit) and CanCast and inMelee and Player:ComboPoints() >= 4 and Unit(unit):IsControlAble("stun") and Unit(unit):HasBuffs("DamageBuffs") > 0 then
+            -- Notification                    
+            Action.SendNotification("Defensive Kidney Shot on : " .. UnitName(unit), A.KidneyShot.ID)
+            return A.KidneyShot:Show(icon)
+        end    
+            
+        -- 'Full' Kidney Shot
+        if A.IsInPvP and A.KidneyShot:IsReady(unit) and CanCast and Unit(unit):HealthPercent() <= 70 and Player:ComboPoints() >= 4 and A.KidneyShot:AbsentImun(unit, {"TotalImun", "DamagePhysImun", "CCTotalImun"}, true) and Unit(unit):IsControlAble("stun") then 
+            -- Notification                    
+            Action.SendNotification("Offensive Kidney Shot on : " .. UnitName(unit), A.KidneyShot.ID)
+		    return A.KidneyShot:Show(icon)              
+        end
+		
+        -- Kidney Shot fallback
+		if A.KidneyShot:IsReady(unit) and 
+		(
+		    A.ToxicBlade:IsSpellLearned() and A.ToxicBlade:GetCooldown() < 3 and Player:EnergyPredicted() >= A.GetToggle(2, "ToxicBladeEnergyPvP") + A.KidneyShot:GetSpellPowerCost() -- Toxic Blade window is ready (+ Kidney cost)
+			or
+			not A.ToxicBlade:IsSpellLearned()
+		)
+		then
+		    return A.KidneyShot:Show(icon)
+		end
         
         -- vendetta,if=!stealthed.rogue&dot.rupture.ticking&!debuff.vendetta.up&variable.vendetta_subterfuge_condition&variable.vendetta_nightstalker_condition&variable.vendetta_font_condition		
         if A.Vendetta:IsReadyByPassCastGCD(unit) and 
@@ -2201,7 +2262,7 @@ A[3] = function(icon, isMulti, isArena)
         end 
 		
         -- toxic_blade,if=dot.rupture.ticking&(!equipped.azsharas_font_of_power|cooldown.vendetta.remains>10)
-        if A.ToxicBlade:IsSpellLearned() and CanCast and Player:ComboPoints() >= 4 + num(A.DeeperStratagem:IsSpellLearned()) and Unit(unit):HasDeBuffs(A.Rupture.ID, true) > 0 and Unit(unit):TimeToDie() > 4 and 
+        if not A.IsInPvP and A.ToxicBlade:IsSpellLearned() and CanCast and Player:ComboPoints() >= 4 + num(A.DeeperStratagem:IsSpellLearned()) and Unit(unit):HasDeBuffs(A.Rupture.ID, true) > 0 and Unit(unit):TimeToDie() > 4 and 
         (
 		    A.Vendetta:GetCooldown() < 5 and BurstIsON(unit) 
 			or 
@@ -2210,11 +2271,11 @@ A[3] = function(icon, isMulti, isArena)
 			A.Vendetta:GetCooldown() > 5
 		)
 		then
-            if A.ToxicBlade:GetCooldown() <= 3 and Player:Energy() < 70 then
+            if A.ToxicBlade:GetCooldown() <= A.GetToggle(2, "ToxicBladeCDRemainPvE") and Player:Energy() < A.GetToggle(2, "ToxicBladeEnergyPvE") then -- Settings to add ToxicBladeCDRemainPvE ToxicBladeEnergyPvE
                 return A.PoolResource:Show(icon)
             else
                 if A.ToxicBlade:IsReady(unit) and A.ToxicBlade:AbsentImun(unit, Temp.TotalAndPhys) then
-                    if Player:Energy() < 70 then                    
+                    if Player:Energy() < A.GetToggle(2, "ToxicBladeEnergyPvE") then                    
                         return A.PoolResource:Show(icon)
                     else
                         return A.ToxicBlade:Show(icon)
@@ -2223,6 +2284,32 @@ A[3] = function(icon, isMulti, isArena)
             end
         end
 
+        -- Toxic Blade PvP
+        if A.IsInPvP and A.ToxicBlade:IsSpellLearned() and CanCast and Player:ComboPoints() >= 4 and 
+		(
+		    A.PreyontheWeak:IsSpellLearned() and 
+			(
+			    Unit(unit):HasDeBuffs(A.PreyontheWeakDebuff.ID, true) > A.GetGCD() 
+				or 
+				A.LastPlayerCastName == A.KidneyShot:Info()
+			)
+			or 
+			not A.PreyontheWeak:IsSpellLearned()
+		)
+		then
+            if A.ToxicBlade:GetCooldown() <= A.GetToggle(2, "ToxicBladeCDRemainPvP") and Player:Energy() < A.GetToggle(2, "ToxicBladeEnergyPvP") then -- Settings to add
+                return A.PoolResource:Show(icon)
+            else
+                if A.ToxicBlade:IsReady(unit) and A.ToxicBlade:AbsentImun(unit, Temp.TotalAndPhys) then
+                    if Player:Energy() < A.GetToggle(2, "ToxicBladeEnergyPvP") then                    
+                        return A.PoolResource:Show(icon)
+                    else
+                        return A.ToxicBlade:Show(icon)
+                    end
+                end
+            end
+		end
+				
         -- envenom-fallback-toxic_blade
         if A.Envenom:IsReadyByPassCastGCD(unit) and 
 		A.Envenom:AbsentImun(unit, Temp.TotalAndPhys) and 
@@ -2417,13 +2504,11 @@ end
 local function ArenaRotation(icon, unit)
     if A.IsInPvP and (A.Zone == "pvp" or A.Zone == "arena") and not Player:IsStealthed() and not Player:IsMounted() then
         -- Note: "arena1" is just identification of meta 6
-        if (unit == "arena1" or unit == "arena2" or unit == "arena3") then 
-			-- Interrupt
-   		    local Interrupt = Interrupts(unit)
-  		    if Interrupt then 
-  		        return Interrupt:Show(icon)
-  		    end	
-        end
+		-- Interrupt
+   		local Interrupt = Interrupts(unit)
+  		if Interrupt then 
+  		    return Interrupt:Show(icon)
+  		end	
     end 
 end 
 local function PartyRotation(unit)

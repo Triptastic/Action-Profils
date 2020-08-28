@@ -1492,11 +1492,89 @@ A.Data.ProfileUI = {
                     M = {},
                 },
 			},
+            { -- Toxic Blade
+                {
+                    E = "Header",
+                    L = {
+                        ANY = " -- " .. A.GetSpellInfo(245388) .. " -- ",
+                    },
+                },
+            },
+            {
+			    RowOptions = { margin = { top = 10 } },
+                {
+                    E = "Header",
+                    L = {
+                        ANY = " -- PvE -- ",
+                    },
+                },
+                {
+                    E = "Header",
+                    L = {
+                        ANY = " -- PvP -- ",
+                    },
+                },
+			},
+            -- Toxic Blade
+            { -- [3] 
+              	RowOptions = { margin = { top = -10 } },						
+                {                    
+                    E = "Slider",                                                     
+                    MIN = 1, 
+                    MAX = 10,                            
+                    DB = "ToxicBladeCDRemainPvE", -- PvE
+                    DBV = 3,
+                    ONOFF = false,
+                    L = { 
+                        ANY = "pool ressource if " .. A.GetSpellInfo(245388) .. " cooldown is under value(sec)",                        
+                    }, 
+                    M = {},
+                },
+                {                    
+                    E = "Slider",                                                     
+                    MIN = 1, 
+                    MAX = 10,                            
+                    DB = "ToxicBladeCDRemainPvP", -- PvP
+                    DBV = 3,
+                    ONOFF = false,
+                    L = { 
+                        ANY = "pool ressource if " .. A.GetSpellInfo(245388) .. " cooldown is under value(sec)",                      
+                    }, 
+                    M = {},
+                },
+			},
+			{
+			    RowOptions = { margin = { top = 10 } },
+                {
+                    E = "Slider",                                                     
+                    MIN = 1, 
+                    MAX = 100,                            
+                    DB = "ToxicBladeEnergyPvE", -- PvE
+                    DBV = 75,
+                    ONOFF = false,
+                    L = { 
+                        ANY = "pool ressource if energy is under value(%)",  
+                    }, 
+                    M = {},
+                },
+                {
+                    E = "Slider",                                                     
+                    MIN = 1, 
+                    MAX = 100,                            
+                    DB = "ToxicBladeEnergyPvP",  -- PvP
+                    DBV = 65,
+                    ONOFF = false,
+                    L = { 
+                        ANY = "pool ressource if energy is under value(%)", 
+                    }, 
+                    M = {},
+                },			    
+            },	
             { -- [7]
                 {
                     E = "Header",
                     L = {
-                        ANY = " -- Rotation -- ",
+                        ANY = " -- Miscellaneous -- ",
                     },
                 },
             },			
@@ -1974,79 +2052,6 @@ A.Data.ProfileUI = {
                     },
                 },
             },
-			
-			{
-			    RowOptions = { margin = { top = 10 } },
-                {
-                    E = "Header",
-                    L = {
-                        ANY = " -- RBG -- ",
-                    },
-                },
-                {
-                    E = "Header",
-                    L = {
-                        ANY = " -- Arena -- ",
-                    },
-                },
-			},
-            -- Sap
-            { -- [3] 
-              	RowOptions = { margin = { top = -10 } },						
-                {                    
-                    E = "Slider",                                                     
-                    MIN = 1, 
-                    MAX = 10,                            
-                    DB = "HolyAvengerRaidUnits", -- RBG1
-                    DBV = 5,
-                    ONOFF = false,
-                    L = { 
-                        ANY = A.GetSpellInfo(105809) .. "\nmin units",                        
-                    }, 
-                    M = {},
-                },
-                {                    
-                    E = "Slider",                                                     
-                    MIN = 1, 
-                    MAX = 10,                            
-                    DB = "HolyAvengerPartyUnits", -- Arena1
-                    DBV = 3,
-                    ONOFF = false,
-                    L = { 
-                        ANY = A.GetSpellInfo(105809) .. "\nmin units",                        
-                    }, 
-                    M = {},
-                },
-			},
-			{
-			    RowOptions = { margin = { top = 10 } },
-                {
-                    E = "Slider",                                                     
-                    MIN = 1, 
-                    MAX = 100,                            
-                    DB = "HolyAvengerRaidHP", -- RBG2
-                    DBV = 55,
-                    ONOFF = false,
-                    L = { 
-                        ANY = A.GetSpellInfo(105809) .. "\n(%)",
-                    }, 
-                    M = {},
-                },
-                {
-                    E = "Slider",                                                     
-                    MIN = 1, 
-                    MAX = 100,                            
-                    DB = "HolyAvengerPartyHP",  -- Arena2
-                    DBV = 40,
-                    ONOFF = false,
-                    L = { 
-                        ANY = A.GetSpellInfo(105809) .. "\n(%)",
-                    }, 
-                    M = {},
-                },
-			    
-            },	
-			
             { -- [2] 2nd Row
                 {
                     E = "Checkbox", 
@@ -2081,22 +2086,59 @@ A.Data.ProfileUI = {
                     M = {},
                 },				
             },
+            { -- [5] KidneyShot     
+                {
+                    E = "Dropdown",                                                         
+                    OT = {
+					    { text = "AUTO", value = "AUTO" },
+                        { text = "ONLY HEALER", value = "ONLY HEALER" },
+                        { text = "ON MELEE BURST", value = "ON MELEE BURST" },
+                        { text = "OFF", value = "OFF" },
+                    },
+                    DB = "KidneyShotMode",
+                    DBV = "AUTO",
+                    L = { 
+                        ANY = "PvP " .. A.GetSpellInfo(408),
+                    }, 
+                    TT = { 
+                        enUS = "@arena1-3 interrupt PvP list from 'Interrupts' tab by " .. A.GetSpellInfo(408), 
+                    }, 
+                    M = {},
+                },
+                {
+                    E = "Slider",                                                     
+                    MIN = 1, 
+                    MAX = 6,                            
+                    DB = "KidneyShotMinCP",
+                    DBV = 4, -- 2sec
+                    ONOFF = false,
+                    L = { 
+                        ANY = A.GetSpellInfo(408) .. " min CP",
+                    },
+                    TT = { 
+                        enUS = "Minimum Combo Points before using " .. A.GetSpellInfo(408), 
+                        ruRU = "Minimum Combo Points before using " .. A.GetSpellInfo(408), 
+                        frFR = "Minimum Combo Points before using " .. A.GetSpellInfo(408), 
+                    }, 					
+                    M = {},
+                },	
+            },
             { -- [5] Blind     
                 {
                     E = "Dropdown",                                                         
                     OT = {
-                        { text = "Only Heal", value = "Heal" },
-                        { text = "Only PvP", value = "PvP" },
-                        { text = "BOTH", value = "BOTH" },
+                        { text = "AUTO", value = "AUTO" },
+                        { text = "ONLY HEALER", value = "ONLY HEALER" },
+                        { text = "ON MELEE BURST", value = "ON MELEE BURST" },
                         { text = "OFF", value = "OFF" },
                     },
-                    DB = "BlindPvP",
-                    DBV = "BOTH",
+                    DB = "BlindMode",
+                    DBV = "AUTO",
                     L = { 
                         ANY = "PvP " .. A.GetSpellInfo(2094),
                     }, 
                     TT = { 
-                        enUS = "@arena1-3 interrupt PvP list from 'Interrupts' tab by Blind\nMore custom config you can find in group by open /tmw", 
+                        enUS = "@arena1-3 interrupt PvP list from 'Interrupts' tab by " .. A.GetSpellInfo(2094),
                     }, 
                     M = {},
                 },
