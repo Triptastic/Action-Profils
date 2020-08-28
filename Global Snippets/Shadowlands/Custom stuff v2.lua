@@ -661,17 +661,21 @@ end
 
 -- NEW Using LibToast v1.0
 -- Embed LibToast directly inside Action calls
+-- @Parameters : ToastType, message and spellId are mandatory
+-- @Usage : toast is Type of Toast to show (Burst, CC, Urgency...etc) // message is the text to show and icon the spellID to show
+-- @Example Action:SpawnToast(toast, message, icon) 
+-- /run A:SpawnToast("Urgency", "Urgency!!!", 22812) 28212 is Barkskin
 if LibToast then
 
-    LibToast:Embed(Action)
+    LibToast:Embed(Action) -- Add LibToast called to Action addon
 
     -- NEW Creates a template called "UrgencyToast" which sets the text to whatever
     -- Callback on Ok button
     local function CloseToast()
     end
 	
-    -- Toast settings
-    Action:RegisterToast("UrgencyToast", function(toast, message, icon)
+    -- Urgency Toast settings
+    Action:RegisterToast("Urgency", function(toast, message, icon)
         local icontexture = GetSpellTexture(icon)
         --toast:SetTitle(" ") -- Do we really need title ? Lets see later
         toast:SetText(message)
@@ -682,7 +686,25 @@ if LibToast then
         --toast:MakePersistent()
         --toast:SetPrimaryCallback(_G.OKAY, CloseToast)
     end)
--- /run A:SpawnToast("UrgencyToast", "Urgency!!!", 22812)
+	
+    -- Crowd Control Toast settings
+    Action:RegisterToast("CC", function(toast, message, icon)
+        local icontexture = GetSpellTexture(icon)
+        --toast:SetTitle(" ") -- Do we really need title ? Lets see later
+        toast:SetText(message)
+        toast:SetIconTexture(icontexture)
+    	toast:SetUrgencyLevel("emergency") 
+    end)
+	
+    -- CDs and Burst Toast settings
+    Action:RegisterToast("Burst", function(toast, message, icon)
+        local icontexture = GetSpellTexture(icon)
+        --toast:SetTitle(" ") -- Do we really need title ? Lets see later
+        toast:SetText(message)
+        toast:SetIconTexture(icontexture)
+    	toast:SetUrgencyLevel("emergency") 
+    end)
+
 end
 
 -- Core function   
@@ -740,7 +762,7 @@ function A.SendNotification(message, spell, delay, incombat)
             end
         end
     end
-	-- Return result to both TMW System and LibToast
+	-- Return result to both TMW System Dogtags and LibToast
 	if not LibToast then
         TMW:Fire("TMW_ACTION_NOTIFICATION")    
         return A.NotificationMessage, A.CurrentNotificationIcon, A.NotificationIsValid, A.NotificationIsValidUntil
