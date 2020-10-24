@@ -1,13 +1,11 @@
-rogue="Felori"
-source=blizzard
-origin="/tmp/iFLryV4dWXtVJjtw99ema.armoryv2.profile.json,equipment=/tmp/iFLryV4dWXtVJjtw99ema.armoryv2.equipment.json,spec=/tmp/iFLryV4dWXtVJjtw99ema.armoryv2.spec.json"
+rogue="PR_Rogue_Assassination"
+source=default
 spec=assassination
-level=50
-race=blood_elf
+level=60
+race=troll
 role=attack
 position=back
-talents=https://worldofwarcraft.com/en-us/game/talent-calculator#rogue/assassination/talents=2212121
-azerite_essences=23:3:1/27:4:0/12:4:0/35:4:0
+talents=3210021
 
 # Default consumables
 potion=potion_of_unbridled_fury
@@ -173,34 +171,29 @@ actions.stealthed+=/garrote,target_if=min:remains,if=talent.subterfuge.enabled&a
 actions.stealthed+=/pool_resource,for_next=1
 actions.stealthed+=/garrote,if=talent.subterfuge.enabled&talent.exsanguinate.enabled&active_enemies=1&buff.subterfuge.remains<1.3
 
-head=gibbering_maw,id=174134,bonus_id=4824/1517/4786/6511/4775,azerite_powers=13/44/30/582/136
-neck=heart_of_azeroth,id=158075,bonus_id=6316/4932/4933,ilevel=152,azerite_level=98
-shoulders=pauldrons_of_the_great_convergence,id=174133,bonus_id=4824/1517/4786/6512/4775,azerite_powers=13/217/21/582/136
-back=ashjrakamas_shroud_of_resolve,id=169223,bonus_id=6603/1472
-chest=tortured_fleshbeast_cuirass,id=174136,bonus_id=4824/1517/4786/6510/4775,azerite_powers=13/85/21/582/408
-shirt=artisan_initiates_shirt,id=89191
-tabard=renowned_guild_tabard,id=69210
-wrists=bracers_of_dark_prophecy,id=174138,bonus_id=4824/1517/4786/6514/6482/6470,gems=7vers
-hands=corrosive_handlers_gloves,id=159305,bonus_id=6536/6578/1543/4786/6514/6439/6470,gems=7vers
-waist=cord_of_anguished_cries,id=174140,bonus_id=4824/6516/1517/4786/6514,gems=7vers
-legs=unseen_predators_breeches,id=169070,bonus_id=6536/6578/1524/4786/6516/6514,gems=7vers
-feet=corpuscular_leather_greaves,id=174144,bonus_id=4824/1808/6515/1517/4786/6482/6470,gems=7vers
-finger1=ring_of_cosmic_potential,id=174533,bonus_id=4824/41/6516/6515/1517/4786,enchant=9vers
-finger2=lord_waycrests_signet,id=158362,bonus_id=6536/6578/1543/4786/6514/6482/6470,gems=7vers,enchant=9vers
-trinket1=azsharas_font_of_power,id=169314,bonus_id=4800/1808/1500/4786,gems=7vers
-trinket2=vitacharged_titanshard,id=174500,bonus_id=4824/1517/4786/6514,gems=7vers
-main_hand=shard_of_the_black_empire,id=172227,bonus_id=4824/6578/1517/4786/6514/6439/6470,gems=12agi,enchant=force_multiplier
-off_hand=shard_of_the_black_empire,id=172227,bonus_id=4824/6578/1517/4786/6514/6439/6470,gems=18agi,enchant=galeforce_striking
+head=hood_of_refracted_shadows,id=178817,bonus_id=6807/1500
+neck=sin_stained_pendant,id=178827,bonus_id=6807/1500
+shoulders=far_travelers_shoulderpads,id=179344,bonus_id=6807/1500
+back=dealer_xyexas_cape,id=179349,bonus_id=6807/1500
+chest=rainshadow_hauberk,id=178698,bonus_id=6807/1500
+wrists=bands_of_the_undergrowth,id=178702,bonus_id=6807/1500
+hands=rocket_chicken_handlers,id=179336,bonus_id=6807/1500
+waist=waistcord_of_dark_devotion,id=178823,bonus_id=6807/1500
+legs=soulfeather_breeches,id=179324,bonus_id=6807/1500
+feet=primeval_souls_ankleguards,id=179352,bonus_id=6807/1500
+finger1=arachnid_cipher_ring,id=178933,bonus_id=6805/1474
+finger2=signet_of_the_false_accuser,id=178824,bonus_id=6807/1500
+trinket1=infinitely_divisible_ooze,id=178769,bonus_id=6807/1500
+trinket2=phial_of_putrefaction,id=178771,bonus_id=6807/1500
+main_hand=dominas_oozing_shiv,id=178928,bonus_id=6807/1500
+off_hand=dominas_oozing_shiv,id=178928,bonus_id=6807/1500
 
 # Gear Summary
-# gear_ilvl=135.75
-# gear_agility=412
-# gear_stamina=718
-# gear_crit_rating=276
-# gear_haste_rating=230
-# gear_mastery_rating=133
-# gear_versatility_rating=162
-# gear_leech_rating=16
-# gear_corruption=120
-# gear_corruption_resistance=125
-# gear_armor=288
+# gear_ilvl=184.38
+# gear_agility=562
+# gear_stamina=862
+# gear_crit_rating=401
+# gear_haste_rating=326
+# gear_mastery_rating=465
+# gear_versatility_rating=123
+# gear_armor=482

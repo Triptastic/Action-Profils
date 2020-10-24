@@ -73,7 +73,13 @@ Action[ACTION_CONST_MAGE_ARCANE] = {
     EscapeArtist                           = Create({ Type = "Spell", ID = 20589    }), -- not usable in APL but user can Queue it
     EveryManforHimself                     = Create({ Type = "Spell", ID = 59752    }), -- not usable in APL but user can Queue it
     -- Generics
+    SiphonStorm                            = Create({ Type = "Spell", ID =  }),
+    Necrolord                              = Create({ Type = "Spell", ID =  }),
+    NightFae                               = Create({ Type = "Spell", ID =  }),
+    DisciplinaryCommand                    = Create({ Type = "Spell", ID =  }),
+    ArcaneProdigy                          = Create({ Type = "Spell", ID =  }),
     VisionofPerfection                     = Create({ Type = "Spell", ID =  }),
+    GrislyIcicle                           = Create({ Type = "Spell", ID =  }),
     ArcaneFamiliarBuff                     = Create({ Type = "Spell", ID = 210126 }),
     ArcaneFamiliar                         = Create({ Type = "Spell", ID = 205022 }),
     ArcaneIntellectBuff                    = Create({ Type = "Spell", ID = 1459 }),
@@ -110,12 +116,15 @@ Action[ACTION_CONST_MAGE_ARCANE] = {
     NetherTempestDebuff                    = Create({ Type = "Spell", ID = 114923 }),
     ShiftingPower                          = Create({ Type = "Spell", ID =  }),
     ClearcastingBuff                       = Create({ Type = "Spell", ID = 263725 }),
+    ArcaneInfinity                         = Create({ Type = "Spell", ID =  }),
     Amplification                          = Create({ Type = "Spell", ID = 236628 }),
     ArcaneExplosion                        = Create({ Type = "Spell", ID = 1449 }),
     Enlightened                            = Create({ Type = "Spell", ID =  }),
+    Kyrian                                 = Create({ Type = "Spell", ID =  }),
     ReapingFlames                          = Create({ Type = "Spell", ID =  }),
     BlinkAny                               = Create({ Type = "Spell", ID =  }),
     CancelAction                           = Create({ Type = "Spell", ID =  }),
+    FieldofBlossoms                        = Create({ Type = "Spell", ID =  }),
     RadiantSparkDebuff                     = Create({ Type = "Spell", ID =  }),
     RadiantSparkVulnerabilityDebuff        = Create({ Type = "Spell", ID =  }),
     ArcaneEcho                             = Create({ Type = "Spell", ID =  }),
@@ -174,8 +183,8 @@ Action[ACTION_CONST_MAGE_ARCANE] = {
     ConductiveInkDebuff                    = Create({ Type = "Spell", ID = 302565, Hidden = true     }),
 };
 
--- To create essences use next code:
-Action:CreateEssencesFor(ACTION_CONST_MAGE_ARCANE)  -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
+-- To create covenant use next code:
+A:CreateCovenantsFor(ACTION_CONST_MAGE_ARCANE)  -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 local A = setmetatable(Action[ACTION_CONST_MAGE_ARCANE], { __index = Action })
 
 
@@ -637,12 +646,12 @@ A[3] = function(icon, isMulti)
             end
             
             -- variable,name=prepull_evo,op=set,value=1,if=variable.prepull_evo=0&runeforge.siphon_storm.equipped&covenant.necrolord.enabled&active_enemies>1
-            if (VarPrepullEvo == 0 and runeforge.siphon_storm.equipped and covenant.necrolord.enabled and MultiUnits:GetByRangeInCombat(40, 5, 10) > 1) then
+            if (VarPrepullEvo == 0 and runeforge.siphon_storm.equipped and A.Necrolord:IsCovenantLearned() and MultiUnits:GetByRangeInCombat(40, 5, 10) > 1) then
                 VarPrepullEvo = 1
             end
             
             -- variable,name=prepull_evo,op=set,value=1,if=variable.prepull_evo=0&runeforge.siphon_storm.equipped&covenant.night_fae.enabled
-            if (VarPrepullEvo == 0 and runeforge.siphon_storm.equipped and covenant.night_fae.enabled) then
+            if (VarPrepullEvo == 0 and runeforge.siphon_storm.equipped and A.NightFae:IsCovenantLearned()) then
                 VarPrepullEvo = 1
             end
             
@@ -680,12 +689,12 @@ A[3] = function(icon, isMulti)
             end
             
             -- variable,name=totm_max_delay,op=set,value=15,if=variable.totm_max_delay=5&covenant.night_fae.enabled
-            if (VarTotmMaxDelay == 5 and covenant.night_fae.enabled) then
+            if (VarTotmMaxDelay == 5 and A.NightFae:IsCovenantLearned()) then
                 VarTotmMaxDelay = 15
             end
             
             -- variable,name=totm_max_delay,op=set,value=15,if=variable.totm_max_delay=5&conduit.arcane_prodigy.enabled&active_enemies<3
-            if (VarTotmMaxDelay == 5 and conduit.arcane_prodigy.enabled and MultiUnits:GetByRangeInCombat(40, 5, 10) < 3) then
+            if (VarTotmMaxDelay == 5 and A.ArcaneProdigy:IsConduitLearned() and MultiUnits:GetByRangeInCombat(40, 5, 10) < 3) then
                 VarTotmMaxDelay = 15
             end
             
@@ -698,7 +707,7 @@ A[3] = function(icon, isMulti)
             VarBarrageManaPct = 70
             
             -- variable,name=barrage_mana_pct,op=set,value=40,if=variable.barrage_mana_pct=70&covenant.night_fae.enabled
-            if (VarBarrageManaPct == 70 and covenant.night_fae.enabled) then
+            if (VarBarrageManaPct == 70 and A.NightFae:IsCovenantLearned()) then
                 VarBarrageManaPct = 40
             end
             
@@ -1029,12 +1038,12 @@ A[3] = function(icon, isMulti)
             end
             
             -- touch_of_the_magi,if=buff.arcane_charge.stack<=variable.totm_max_charges&talent.rune_of_power.enabled&cooldown.rune_of_power.remains<=gcd&cooldown.arcane_power.remains>variable.totm_max_delay&covenant.kyrian.enabled&cooldown.radiant_spark.remains<=8
-            if A.TouchoftheMagi:IsReady(unit) and (Unit("player"):ArcaneChargesP <= VarTotmMaxCharges and A.RuneofPower:IsSpellLearned() and A.RuneofPower:GetCooldown() <= GetGCD() and A.ArcanePower:GetCooldown() > VarTotmMaxDelay and covenant.kyrian.enabled and A.RadiantSpark:GetCooldown() <= 8) then
+            if A.TouchoftheMagi:IsReady(unit) and (Unit("player"):ArcaneChargesP <= VarTotmMaxCharges and A.RuneofPower:IsSpellLearned() and A.RuneofPower:GetCooldown() <= GetGCD() and A.ArcanePower:GetCooldown() > VarTotmMaxDelay and A.Kyrian:IsCovenantLearned() and A.RadiantSpark:GetCooldown() <= 8) then
                 return A.TouchoftheMagi:Show(icon)
             end
             
             -- touch_of_the_magi,if=buff.arcane_charge.stack<=variable.totm_max_charges&talent.rune_of_power.enabled&cooldown.rune_of_power.remains<=gcd&cooldown.arcane_power.remains>variable.totm_max_delay&!covenant.kyrian.enabled
-            if A.TouchoftheMagi:IsReady(unit) and (Unit("player"):ArcaneChargesP <= VarTotmMaxCharges and A.RuneofPower:IsSpellLearned() and A.RuneofPower:GetCooldown() <= GetGCD() and A.ArcanePower:GetCooldown() > VarTotmMaxDelay and not covenant.kyrian.enabled) then
+            if A.TouchoftheMagi:IsReady(unit) and (Unit("player"):ArcaneChargesP <= VarTotmMaxCharges and A.RuneofPower:IsSpellLearned() and A.RuneofPower:GetCooldown() <= GetGCD() and A.ArcanePower:GetCooldown() > VarTotmMaxDelay and not A.Kyrian:IsCovenantLearned()) then
                 return A.TouchoftheMagi:Show(icon)
             end
             
@@ -1059,12 +1068,12 @@ A[3] = function(icon, isMulti)
             end
             
             -- presence_of_mind,if=buff.arcane_charge.stack=0&covenant.kyrian.enabled
-            if A.PresenceofMind:IsReady(unit) and A.BurstIsON(unit) and (Unit("player"):ArcaneChargesP == 0 and covenant.kyrian.enabled) then
+            if A.PresenceofMind:IsReady(unit) and A.BurstIsON(unit) and (Unit("player"):ArcaneChargesP == 0 and A.Kyrian:IsCovenantLearned()) then
                 return A.PresenceofMind:Show(icon)
             end
             
             -- presence_of_mind,if=debuff.touch_of_the_magi.up&!covenant.kyrian.enabled
-            if A.PresenceofMind:IsReady(unit) and A.BurstIsON(unit) and (Unit(unit):HasDeBuffs(A.TouchoftheMagiDebuff.ID, true) and not covenant.kyrian.enabled) then
+            if A.PresenceofMind:IsReady(unit) and A.BurstIsON(unit) and (Unit(unit):HasDeBuffs(A.TouchoftheMagiDebuff.ID, true) and not A.Kyrian:IsCovenantLearned()) then
                 return A.PresenceofMind:Show(icon)
             end
             
@@ -1234,7 +1243,7 @@ A[3] = function(icon, isMulti)
             end
             
             -- shifting_power,if=soulbind.field_of_blossoms.enabled
-            if A.ShiftingPower:IsReady(unit) and (soulbind.field_of_blossoms.enabled) then
+            if A.ShiftingPower:IsReady(unit) and (A.FieldofBlossoms:IsSoulbindLearned()) then
                 return A.ShiftingPower:Show(icon)
             end
             
@@ -1314,12 +1323,12 @@ A[3] = function(icon, isMulti)
             end
             
             -- arcane_barrage,if=cooldown.touch_of_the_magi.remains=0&(buff.arcane_charge.stack>variable.totm_max_charges&talent.rune_of_power.enabled&cooldown.rune_of_power.remains<=gcd&cooldown.arcane_power.remains>variable.totm_max_delay&covenant.kyrian.enabled&cooldown.radiant_spark.remains<=8)
-            if A.ArcaneBarrage:IsReady(unit) and (A.TouchoftheMagi:GetCooldown() == 0 and (Unit("player"):ArcaneChargesP > VarTotmMaxCharges and A.RuneofPower:IsSpellLearned() and A.RuneofPower:GetCooldown() <= GetGCD() and A.ArcanePower:GetCooldown() > VarTotmMaxDelay and covenant.kyrian.enabled and A.RadiantSpark:GetCooldown() <= 8)) then
+            if A.ArcaneBarrage:IsReady(unit) and (A.TouchoftheMagi:GetCooldown() == 0 and (Unit("player"):ArcaneChargesP > VarTotmMaxCharges and A.RuneofPower:IsSpellLearned() and A.RuneofPower:GetCooldown() <= GetGCD() and A.ArcanePower:GetCooldown() > VarTotmMaxDelay and A.Kyrian:IsCovenantLearned() and A.RadiantSpark:GetCooldown() <= 8)) then
                 return A.ArcaneBarrage:Show(icon)
             end
             
             -- arcane_barrage,if=cooldown.touch_of_the_magi.remains=0&(buff.arcane_charge.stack>variable.totm_max_charges&talent.rune_of_power.enabled&cooldown.rune_of_power.remains<=gcd&cooldown.arcane_power.remains>variable.totm_max_delay&!covenant.kyrian.enabled)
-            if A.ArcaneBarrage:IsReady(unit) and (A.TouchoftheMagi:GetCooldown() == 0 and (Unit("player"):ArcaneChargesP > VarTotmMaxCharges and A.RuneofPower:IsSpellLearned() and A.RuneofPower:GetCooldown() <= GetGCD() and A.ArcanePower:GetCooldown() > VarTotmMaxDelay and not covenant.kyrian.enabled)) then
+            if A.ArcaneBarrage:IsReady(unit) and (A.TouchoftheMagi:GetCooldown() == 0 and (Unit("player"):ArcaneChargesP > VarTotmMaxCharges and A.RuneofPower:IsSpellLearned() and A.RuneofPower:GetCooldown() <= GetGCD() and A.ArcanePower:GetCooldown() > VarTotmMaxDelay and not A.Kyrian:IsCovenantLearned())) then
                 return A.ArcaneBarrage:Show(icon)
             end
             
@@ -1354,7 +1363,7 @@ A[3] = function(icon, isMulti)
             end
             
             -- arcane_missiles,if=debuff.touch_of_the_magi.up&talent.arcane_echo.enabled&buff.deathborne.down&(debuff.touch_of_the_magi.remains>action.arcane_missiles.execute_time|cooldown.presence_of_mind.remains>0|covenant.kyrian.enabled),chain=1
-            if A.ArcaneMissiles:IsReady(unit) and (Unit(unit):HasDeBuffs(A.TouchoftheMagiDebuff.ID, true) and A.ArcaneEcho:IsSpellLearned() and Unit("player"):HasBuffsDown(A.DeathborneBuff.ID, true) and (Unit(unit):HasDeBuffs(A.TouchoftheMagiDebuff.ID, true) > A.ArcaneMissiles:GetSpellCastTime() or A.PresenceofMind:GetCooldown() > 0 or covenant.kyrian.enabled)) then
+            if A.ArcaneMissiles:IsReady(unit) and (Unit(unit):HasDeBuffs(A.TouchoftheMagiDebuff.ID, true) and A.ArcaneEcho:IsSpellLearned() and Unit("player"):HasBuffsDown(A.DeathborneBuff.ID, true) and (Unit(unit):HasDeBuffs(A.TouchoftheMagiDebuff.ID, true) > A.ArcaneMissiles:GetSpellCastTime() or A.PresenceofMind:GetCooldown() > 0 or A.Kyrian:IsCovenantLearned())) then
                 return A.ArcaneMissiles:Show(icon)
             end
             

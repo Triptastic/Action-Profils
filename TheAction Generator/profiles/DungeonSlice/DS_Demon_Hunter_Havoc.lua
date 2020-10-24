@@ -153,8 +153,8 @@ Action[ACTION_CONST_DEMONHUNTER_HAVOC] = {
     ConductiveInkDebuff                    = Create({ Type = "Spell", ID = 302565, Hidden = true     }),
 };
 
--- To create essences use next code:
-Action:CreateEssencesFor(ACTION_CONST_DEMONHUNTER_HAVOC)  -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
+-- To create covenant use next code:
+A:CreateCovenantsFor(ACTION_CONST_DEMONHUNTER_HAVOC)  -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 local A = setmetatable(Action[ACTION_CONST_DEMONHUNTER_HAVOC], { __index = Action })
 
 

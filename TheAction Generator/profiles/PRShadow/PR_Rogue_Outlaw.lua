@@ -79,6 +79,7 @@ Action[ACTION_CONST_ROGUE_OUTLAW] = {
     SliceandDiceBuff                       = Create({ Type = "Spell", ID = 5171 }),
     SliceandDice                           = Create({ Type = "Spell", ID = 5171 }),
     Shiv                                   = Create({ Type = "Spell", ID =  }),
+    TinyToxicBlade                         = Create({ Type = "Spell", ID =  }),
     EchoingReprimand                       = Create({ Type = "Spell", ID =  }),
     SerratedBoneSpike                      = Create({ Type = "Spell", ID =  }),
     SerratedBoneSpikeDotDebuff             = Create({ Type = "Spell", ID =  }),
@@ -96,13 +97,14 @@ Action[ACTION_CONST_ROGUE_OUTLAW] = {
     FlagellationDebuff                     = Create({ Type = "Spell", ID =  }),
     AdrenalineRush                         = Create({ Type = "Spell", ID = 13750 }),
     AdrenalineRushBuff                     = Create({ Type = "Spell", ID = 13750 }),
-    KillingSpree                           = Create({ Type = "Spell", ID = 51690 }),
     LatentArcana                           = Create({ Type = "Spell", ID = 296962 }),
     RolltheBonesBuff                       = Create({ Type = "Spell", ID =  }),
     BladeFlurry                            = Create({ Type = "Spell", ID = 13877 }),
     BladeFlurryBuff                        = Create({ Type = "Spell", ID = 13877 }),
+    Ambidexterity                          = Create({ Type = "Spell", ID =  }),
     GhostlyStrike                          = Create({ Type = "Spell", ID = 196937 }),
     BroadsideBuff                          = Create({ Type = "Spell", ID = 193356 }),
+    KillingSpree                           = Create({ Type = "Spell", ID = 51690 }),
     BladeRush                              = Create({ Type = "Spell", ID = 271877 }),
     Vanish                                 = Create({ Type = "Spell", ID = 1856 }),
     Dreadblades                            = Create({ Type = "Spell", ID =  }),
@@ -172,8 +174,8 @@ Action[ACTION_CONST_ROGUE_OUTLAW] = {
     ConductiveInkDebuff                    = Create({ Type = "Spell", ID = 302565, Hidden = true     }),
 };
 
--- To create essences use next code:
-Action:CreateEssencesFor(ACTION_CONST_ROGUE_OUTLAW)  -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
+-- To create covenant use next code:
+A:CreateCovenantsFor(ACTION_CONST_ROGUE_OUTLAW)  -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 local A = setmetatable(Action[ACTION_CONST_ROGUE_OUTLAW], { __index = Action })
 
 
@@ -866,15 +868,15 @@ local function Interrupts(unit)
 end
 Interrupts = A.MakeFunctionCachedDynamic(Interrupts)
 
-local function EvaluateCycleSerratedBoneSpike32(unit)
+local function EvaluateCycleSerratedBoneSpike34(unit)
   return Unit("player"):HasBuffs(A.SliceandDiceBuff.ID, true) and not Unit(unit):HasDeBuffs(A.SerratedBoneSpikeDotDebuff.ID, true) or fight_remains <= 5 or A.SerratedBoneSpike:GetSpellChargesFrac() >= 2.75
 end
 
-local function EvaluateTargetIfFilterMarkedForDeath94(unit)
+local function EvaluateTargetIfFilterMarkedForDeath92(unit)
   return Unit(unit):TimeToDie()
 end
 
-local function EvaluateTargetIfMarkedForDeath99(unit)
+local function EvaluateTargetIfMarkedForDeath97(unit)
   return (MultiUnits:GetByRangeInCombat(40, 5, 10) > 1) and (Unit(unit):TimeToDie() < Player:ComboPointsDeficit() or not Unit("player"):IsStealthed(true, false) and Player:ComboPointsDeficit() >= CPMaxSpend() - 1)
 end
 
@@ -974,7 +976,7 @@ A[3] = function(icon, isMulti)
             
             -- serrated_bone_spike,cycle_targets=1,if=buff.slice_and_dice.up&!dot.serrated_bone_spike_dot.ticking|fight_remains<=5|cooldown.serrated_bone_spike.charges_fractional>=2.75
             if A.SerratedBoneSpike:IsReady(unit) then
-                if Action.Utils.CastTargetIf(A.SerratedBoneSpike, 40, "min", EvaluateCycleSerratedBoneSpike32) then
+                if Action.Utils.CastTargetIf(A.SerratedBoneSpike, 40, "min", EvaluateCycleSerratedBoneSpike34) then
                     return A.SerratedBoneSpike:Show(icon) 
                 end
             end
@@ -1015,8 +1017,8 @@ A[3] = function(icon, isMulti)
                 return A.FlagellationCleanse:Show(icon)
             end
             
-            -- adrenaline_rush,if=!buff.adrenaline_rush.up&(!cooldown.killing_spree.up|!talent.killing_spree.enabled)&(!equipped.azsharas_font_of_power|cooldown.latent_arcana.remains>20)
-            if A.AdrenalineRush:IsReady(unit) and (not Unit("player"):HasBuffs(A.AdrenalineRushBuff.ID, true) and (not A.KillingSpree:GetCooldown() == 0 or not A.KillingSpree:IsSpellLearned()) and (not A.AzsharasFontofPower:IsExists() or A.LatentArcana:GetCooldown() > 20)) then
+            -- adrenaline_rush,if=!buff.adrenaline_rush.up&(!equipped.azsharas_font_of_power|cooldown.latent_arcana.remains>20)
+            if A.AdrenalineRush:IsReady(unit) and (not Unit("player"):HasBuffs(A.AdrenalineRushBuff.ID, true) and (not A.AzsharasFontofPower:IsExists() or A.LatentArcana:GetCooldown() > 20)) then
                 return A.AdrenalineRush:Show(icon)
             end
             
@@ -1027,7 +1029,7 @@ A[3] = function(icon, isMulti)
             
             -- marked_for_death,target_if=min:target.time_to_die,if=raid_event.adds.up&(target.time_to_die<combo_points.deficit|!stealthed.rogue&combo_points.deficit>=cp_max_spend-1)
             if A.MarkedForDeath:IsReady(unit) then
-                if Action.Utils.CastTargetIf(A.MarkedForDeath, 40, "min", EvaluateTargetIfFilterMarkedForDeath94, EvaluateTargetIfMarkedForDeath99) then 
+                if Action.Utils.CastTargetIf(A.MarkedForDeath, 40, "min", EvaluateTargetIfFilterMarkedForDeath92, EvaluateTargetIfMarkedForDeath97) then 
                     return A.MarkedForDeath:Show(icon) 
                 end
             end
@@ -1037,7 +1039,7 @@ A[3] = function(icon, isMulti)
             end
             
             -- blade_flurry,if=spell_targets>=2-conduit.ambidexterity.enabled&!buff.blade_flurry.up&raid_event.adds.in>10
-            if A.BladeFlurry:IsReady(unit) and (MultiUnits:GetByRangeInCombat(8, 5, 10) >= 2 - conduit.ambidexterity.enabled and not Unit("player"):HasBuffs(A.BladeFlurryBuff.ID, true) and IncomingAddsIn > 10) then
+            if A.BladeFlurry:IsReady(unit) and (MultiUnits:GetByRangeInCombat(8, 5, 10) >= 2 - A.Ambidexterity:IsConduitLearned() and not Unit("player"):HasBuffs(A.BladeFlurryBuff.ID, true) and IncomingAddsIn > 10) then
                 return A.BladeFlurry:Show(icon)
             end
             

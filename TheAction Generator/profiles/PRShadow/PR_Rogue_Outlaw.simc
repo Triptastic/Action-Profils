@@ -1,14 +1,11 @@
-rogue="Ise"
-source=blizzard
-origin="/tmp/t565y2MuwSGKuzWrMj7dLp.armoryv2.profile.json,equipment=/tmp/t565y2MuwSGKuzWrMj7dLp.armoryv2.equipment.json,spec=/tmp/t565y2MuwSGKuzWrMj7dLp.armoryv2.spec.json"
+rogue="PR_Rogue_Outlaw"
+source=default
 spec=outlaw
-level=50
-race=night_elf
-timeofday=day
+level=60
+race=pandaren
 role=attack
 position=back
-talents=https://worldofwarcraft.com/en-us/game/talent-calculator#rogue/outlaw/talents=2322121
-azerite_essences=23:3:1/27:4:0/35:4:0/12:4:0
+talents=3010022
 
 # Default consumables
 potion=potion_of_unbridled_fury
@@ -67,7 +64,7 @@ actions.build+=/sinister_strike
 actions.cds=call_action_list,name=essences,if=!stealthed.all
 actions.cds+=/flagellation
 actions.cds+=/flagellation_cleanse,if=debuff.flagellation.remains<2|debuff.flagellation.stack>=40
-actions.cds+=/adrenaline_rush,if=!buff.adrenaline_rush.up&(!cooldown.killing_spree.up|!talent.killing_spree.enabled)&(!equipped.azsharas_font_of_power|cooldown.latent_arcana.remains>20)
+actions.cds+=/adrenaline_rush,if=!buff.adrenaline_rush.up&(!equipped.azsharas_font_of_power|cooldown.latent_arcana.remains>20)
 actions.cds+=/roll_the_bones,if=buff.roll_the_bones.remains<=3|variable.rtb_reroll
 # If adds are up, snipe the one with lowest TTD. Use when dying faster than CP deficit or without any CP.
 actions.cds+=/marked_for_death,target_if=min:target.time_to_die,if=raid_event.adds.up&(target.time_to_die<combo_points.deficit|!stealthed.rogue&combo_points.deficit>=cp_max_spend-1)
@@ -119,35 +116,29 @@ actions.finish+=/dispatch
 actions.stealth=cheap_shot,target_if=min:debuff.prey_on_the_weak.remains,if=talent.prey_on_the_weak.enabled&!target.is_boss
 actions.stealth+=/ambush
 
-head=gibbering_maw,id=174134,bonus_id=4824/1517/4786/6511/4775,azerite_powers=13/44/459/582/411
-neck=heart_of_azeroth,id=158075,bonus_id=6316/4932/4933,ilevel=151,azerite_level=97
-shoulders=pauldrons_of_the_great_convergence,id=174133,bonus_id=4823/1502/4786/6509/4775,azerite_powers=13/85/21/582/180
-back=ashjrakamas_shroud_of_resolve,id=169223,bonus_id=6603/1472
-chest=darkheart_robe,id=174131,bonus_id=4824/1517/4786/6510/4775,azerite_powers=13/15/30/582/411
-shirt=precious_ribbon,id=52019
-tabard=argent_crusaders_tabard,id=46874
-wrists=venerated_raptorhide_bindings,id=160214,bonus_id=6536/40/1533/4786/6514/6479/6470,gems=18agi
-hands=gloves_of_the_insatiable_maw,id=173464,bonus_id=6412/6578/1519/4786/6514/6479/6470,gems=7vers
-waist=cincture_of_the_azerite_arsenal,id=159333,bonus_id=6536/40/6578/1543/4786/6514/6479/6470,gems=5crit_4vers
-legs=macabre_ritual_pants,id=174143,bonus_id=4824/6578/1517/4786/6514/6479/6470,gems=5vers_5crit
-feet=besiegers_deckstalkers,id=159320,bonus_id=6536/6578/1543/4786/6514/6479/6470,gems=5vers_5crit
-finger1=lord_waycrests_signet,id=158362,bonus_id=6536/4802/6578/6513/1543/4786/6479/6470,gems=12agi,enchant=9vers
-finger2=thornwoven_band,id=162548,bonus_id=6536/42/6578/1543/4786/6514/6478/6462,gems=7vers,enchant=9vers
-trinket1=vitacharged_titanshard,id=174500,bonus_id=4824/6513/1517/4786
-trinket2=deadeye_spyglass,id=159623,bonus_id=6536/1543/4786/6514,gems=7vers
-main_hand=cranial_recalibrator,id=169052,bonus_id=6536/6578/6579/6493/6612/6515/1524/4786,enchant=versatile_navigation
-off_hand=divers_folly,id=168900,bonus_id=4800/1500/4786,enchant=force_multiplier
+head=hood_of_refracted_shadows,id=178817,bonus_id=6807/1500
+neck=sin_stained_pendant,id=178827,bonus_id=6807/1500
+shoulders=far_travelers_shoulderpads,id=179344,bonus_id=6807/1500
+back=dealer_xyexas_cape,id=179349,bonus_id=6807/1500
+chest=rainshadow_hauberk,id=178698,bonus_id=6807/1500
+wrists=bands_of_the_undergrowth,id=178702,bonus_id=6807/1500
+hands=rocket_chicken_handlers,id=179336,bonus_id=6807/1500
+waist=waistcord_of_dark_devotion,id=178823,bonus_id=6807/1500
+legs=soulfeather_breeches,id=179324,bonus_id=6807/1500
+feet=primeval_souls_ankleguards,id=179352,bonus_id=6807/1500
+finger1=arachnid_cipher_ring,id=178933,bonus_id=6805/1474
+finger2=signet_of_the_false_accuser,id=178824,bonus_id=6807/1500
+trinket1=infinitely_divisible_ooze,id=178769,bonus_id=6807/1500
+trinket2=phial_of_putrefaction,id=178771,bonus_id=6807/1500
+main_hand=bloodspiller,id=179328,bonus_id=6807/1500
+off_hand=dominas_oozing_shiv,id=178928,bonus_id=6807/1500
 
 # Gear Summary
-# gear_ilvl=130.69
-# gear_agility=418
-# gear_stamina=686
-# gear_crit_rating=231
-# gear_haste_rating=148
-# gear_mastery_rating=88
-# gear_versatility_rating=264
-# gear_speed_rating=15
-# gear_avoidance_rating=27
-# gear_corruption=152
-# gear_corruption_resistance=125
-# gear_armor=252
+# gear_ilvl=184.38
+# gear_agility=562
+# gear_stamina=862
+# gear_crit_rating=398
+# gear_haste_rating=326
+# gear_mastery_rating=444
+# gear_versatility_rating=147
+# gear_armor=482

@@ -255,8 +255,8 @@ class Context(Decorable):
             '    RazorCoralDebuff                       = Create({ Type = "Spell", ID = 303568, Hidden = true     }),\n' 
             '    ConductiveInkDebuff                    = Create({ Type = "Spell", ID = 302565, Hidden = true     }),\n'				
             '};\n\n'
-			'-- To create essences use next code:\n'
-            f'Action:CreateEssencesFor(ACTION_CONST_{class_}_{spec})  '      
+			'-- To create covenant use next code:\n'
+            f'A:CreateCovenantsFor(ACTION_CONST_{class_}_{spec})  '      
 			'-- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)\n'
             f'local A = setmetatable(Action[ACTION_CONST_{class_}_{spec}'
             '], { __index = Action })')

@@ -1389,6 +1389,7 @@ end
 -- [5] Trinket Rotation
 -- No specialization trinket actions 
 -- Passive 
+--[[
 local function FreezingTrapUsedByEnemy()
     if     UnitCooldown:GetCooldown("arena", 3355) > UnitCooldown:GetMaxDuration("arena", 3355) - 2 and
     UnitCooldown:IsSpellInFly("arena", 3355) and 
@@ -1441,4 +1442,4 @@ A[8] = function(icon)
         return Party:Show(icon)
     end     
     return ArenaRotation(icon, "arena3")
-end
+end]]--

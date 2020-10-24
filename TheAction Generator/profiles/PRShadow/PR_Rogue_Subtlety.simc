@@ -1,13 +1,11 @@
-rogue="Pøettic"
-source=blizzard
-origin="/tmp/hBo2v3RNVjjvV5mcwDjDJK.armoryv2.profile.json,equipment=/tmp/hBo2v3RNVjjvV5mcwDjDJK.armoryv2.equipment.json,spec=/tmp/hBo2v3RNVjjvV5mcwDjDJK.armoryv2.spec.json"
+rogue="PR_Rogue_Subtlety"
+source=default
 spec=subtlety
-level=50
-race=blood_elf
+level=60
+race=void_elf
 role=attack
 position=back
-talents=https://worldofwarcraft.com/en-us/game/talent-calculator#rogue/subtlety/talents=2122132
-azerite_essences=23:3:1/35:3:0/27:3:0/12:4:0
+talents=1320031
 
 # Default consumables
 potion=potion_of_unbridled_fury
@@ -54,6 +52,7 @@ actions+=/variable,name=stealth_threshold,value=25+talent.vigor.enabled*20+talen
 # Consider using a Stealth CD when reaching the energy threshold
 actions+=/call_action_list,name=stealth_cds,if=energy.deficit<=variable.stealth_threshold
 actions+=/call_action_list,name=finish,if=runeforge.deathly_shadows.equipped&dot.sepsis.ticking&dot.sepsis.remains<=2&combo_points>=2
+actions+=/call_action_list,name=finish,if=cooldown.symbols_of_death.remains<=2&combo_points>=2&runeforge.the_rotten.equipped
 actions+=/call_action_list,name=finish,if=combo_points=animacharged_cp
 # Finish at 4+ without DS, 5+ with DS (outside stealth)
 actions+=/call_action_list,name=finish,if=combo_points.deficit<=1|fight_remains<=1&combo_points>=3
@@ -88,8 +87,8 @@ actions.cds+=/pool_resource,for_next=1,if=!talent.shadow_focus.enabled
 # Use Tornado pre SoD when we have the energy whether from pooling without SF or just generally.
 actions.cds+=/shuriken_tornado,if=energy>=60&variable.snd_condition&cooldown.symbols_of_death.up&cooldown.shadow_dance.charges>=1
 actions.cds+=/serrated_bone_spike,cycle_targets=1,if=variable.snd_condition&!dot.serrated_bone_spike_dot.ticking|fight_remains<=5
-# Use Symbols on cooldown (after first SnD) unless we are going to pop Tornado and do not have Shadow Focus.
-actions.cds+=/symbols_of_death,if=variable.snd_condition&!cooldown.shadow_blades.up&(talent.enveloping_shadows.enabled|cooldown.shadow_dance.charges>=1)&(!talent.shuriken_tornado.enabled|talent.shadow_focus.enabled|cooldown.shuriken_tornado.remains>2)&(!essence.blood_of_the_enemy.major|cooldown.blood_of_the_enemy.remains>2)
+# Use Symbols on cooldown (after first SnD) unless we are going to pop Tornado and do not have Shadow Focus. Low CP for The Rotten.
+actions.cds+=/symbols_of_death,if=variable.snd_condition&!cooldown.shadow_blades.up&(talent.enveloping_shadows.enabled|cooldown.shadow_dance.charges>=1)&(!talent.shuriken_tornado.enabled|talent.shadow_focus.enabled|cooldown.shuriken_tornado.remains>2)&(!runeforge.the_rotten.equipped|combo_points<=2)&(!essence.blood_of_the_enemy.major|cooldown.blood_of_the_enemy.remains>2)
 # If adds are up, snipe the one with lowest TTD. Use when dying faster than CP deficit or not stealthed without any CP.
 actions.cds+=/marked_for_death,target_if=min:target.time_to_die,if=raid_event.adds.up&(target.time_to_die<combo_points.deficit|!stealthed.all&combo_points.deficit>=cp_max_spend)
 # If no adds will die within the next 30s, use MfD on boss without any CP.
@@ -137,6 +136,7 @@ actions.finish+=/secret_technique
 actions.finish+=/rupture,cycle_targets=1,if=!variable.skip_rupture&!variable.use_priority_rotation&spell_targets.shuriken_storm>=2&target.time_to_die>=(5+(2*combo_points))&refreshable
 # Refresh Rupture early if it will expire during Symbols. Do that refresh if SoD gets ready in the next 5s.
 actions.finish+=/rupture,if=!variable.skip_rupture&remains<cooldown.symbols_of_death.remains+10&cooldown.symbols_of_death.remains<=5&target.time_to_die-remains>cooldown.symbols_of_death.remains+5
+actions.finish+=/black_powder,if=!variable.use_priority_rotation&spell_targets>=3
 actions.finish+=/eviscerate
 
 # Stealth Cooldowns
@@ -183,34 +183,29 @@ actions.stealthed+=/gloomblade,if=!runeforge.akaaris_soul_fragment.equipped&buff
 actions.stealthed+=/gloomblade,if=runeforge.akaaris_soul_fragment.equipped&buff.perforated_veins.stack>=3&(conduit.perforated_veins.rank+conduit.deeper_dagger.rank)>=16
 actions.stealthed+=/shadowstrike
 
-head=irontide_captains_hat,id=155888,bonus_id=5448/1543/4786/6511/4775,azerite_powers=13/44/30/479/413
-neck=heart_of_azeroth,id=158075,bonus_id=4932/4933/6316,ilevel=148,azerite_level=94
-shoulders=pauldrons_of_the_great_convergence,id=174133,bonus_id=4823/1502/4786/6509/4775,azerite_powers=13/85/18/582/414
-back=ashjrakamas_shroud_of_resolve,id=169223,bonus_id=6594/1472
-chest=type_ii_bomber_jacket,id=169073,bonus_id=5448/1524/4786/6510/4775,azerite_powers=13/548/21/413/414
-shirt=ebon_filigreed_doublet,id=42360
-wrists=blood_elders_bindings,id=159324,bonus_id=6536/6578/6515/1543/4786/6439/6470
-hands=corrosive_handlers_gloves,id=159305,bonus_id=6536/4802/6516/6513/1533/4786,gems=12agi
-waist=houndjowl_waistband,id=159341,bonus_id=6536/6516/6515/1533/4786
-legs=leggings_of_the_galeforce_viper,id=159329,bonus_id=6536/6516/6513/1533/4786
-feet=ooeygooey_galoshes,id=169056,bonus_id=6536/6578/6579/6473/6470/6515/1524/4786
-finger1=seal_of_the_city_watch,id=162542,bonus_id=6536/4802/40/6578/6579/6474/6455/6515/1543/4786,gems=7vers,enchant=9vers
-finger2=lord_waycrests_signet,id=158362,bonus_id=6536/41/6513/1533/4786/6516,enchant=9vers
-trinket1=deadeye_spyglass,id=159623,bonus_id=6534/6513/1533/4786
-trinket2=lustrous_golden_plumage,id=159617,bonus_id=6536/6513/1533/4786
-main_hand=deep_fathoms_bite,id=159135,bonus_id=6536/6578/1543/4786/6439/6470/6514,gems=18agi,enchant=deadly_navigation
-off_hand=jollys_boot_dagger,id=159132,bonus_id=6536/40/6578/6515/1543/4786/6482/6470,enchant=versatile_navigation
+head=hood_of_refracted_shadows,id=178817,bonus_id=6807/1500
+neck=sin_stained_pendant,id=178827,bonus_id=6807/1500
+shoulders=far_travelers_shoulderpads,id=179344,bonus_id=6807/1500
+back=dealer_xyexas_cape,id=179349,bonus_id=6807/1500
+chest=rainshadow_hauberk,id=178698,bonus_id=6807/1500
+wrists=bands_of_the_undergrowth,id=178702,bonus_id=6807/1500
+hands=rocket_chicken_handlers,id=179336,bonus_id=6807/1500
+waist=waistcord_of_dark_devotion,id=178823,bonus_id=6807/1500
+legs=soulfeather_breeches,id=179324,bonus_id=6807/1500
+feet=primeval_souls_ankleguards,id=179352,bonus_id=6807/1500
+finger1=arachnid_cipher_ring,id=178933,bonus_id=6805/1474
+finger2=signet_of_the_false_accuser,id=178824,bonus_id=6807/1500
+trinket1=infinitely_divisible_ooze,id=178769,bonus_id=6807/1500
+trinket2=phial_of_putrefaction,id=178771,bonus_id=6807/1500
+main_hand=dominas_oozing_shiv,id=178928,bonus_id=6807/1500
+off_hand=dominas_oozing_shiv,id=178928,bonus_id=6807/1500
 
 # Gear Summary
-# gear_ilvl=129.56
-# gear_agility=446
-# gear_stamina=683
-# gear_crit_rating=219
-# gear_haste_rating=73
-# gear_mastery_rating=216
-# gear_versatility_rating=140
-# gear_leech_rating=15
-# gear_avoidance_rating=26
-# gear_corruption=90
-# gear_corruption_resistance=98
-# gear_armor=248
+# gear_ilvl=184.38
+# gear_agility=562
+# gear_stamina=862
+# gear_crit_rating=401
+# gear_haste_rating=326
+# gear_mastery_rating=465
+# gear_versatility_rating=123
+# gear_armor=482

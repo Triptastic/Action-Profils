@@ -98,16 +98,10 @@ Action[ACTION_CONST_SHAMAN_ENHANCEMENT] = {
     WindShear                              = Create({ Type = "Spell", ID = 57994 }),
     Windstrike                             = Create({ Type = "Spell", ID = 115356 }),
     HeartEssence                           = Create({ Type = "Spell", ID = 298554 }),
-    BloodFury                              = Create({ Type = "Spell", ID = 20572 }),
-    Ascendance                             = Create({ Type = "Spell", ID = 114051 }),
-    AscendanceBuff                         = Create({ Type = "Spell", ID = 114051 }),
-    Berserking                             = Create({ Type = "Spell", ID = 26297 }),
-    Fireblood                              = Create({ Type = "Spell", ID = 265221 }),
-    AncestralCall                          = Create({ Type = "Spell", ID = 274738 }),
-    BagofTricks                            = Create({ Type = "Spell", ID =  }),
     FeralSpirit                            = Create({ Type = "Spell", ID = 51533 }),
     EarthenSpike                           = Create({ Type = "Spell", ID = 188089 }),
-    Sundering                              = Create({ Type = "Spell", ID = 197214 })
+    Sundering                              = Create({ Type = "Spell", ID = 197214 }),
+    Ascendance                             = Create({ Type = "Spell", ID = 114051 })
     -- Trinkets
     TrinketTest                            = Create({ Type = "Trinket", ID = 122530, QueueForbidden = true }), 
     TrinketTest2                           = Create({ Type = "Trinket", ID = 159611, QueueForbidden = true }), 
@@ -153,8 +147,8 @@ Action[ACTION_CONST_SHAMAN_ENHANCEMENT] = {
     ConductiveInkDebuff                    = Create({ Type = "Spell", ID = 302565, Hidden = true     }),
 };
 
--- To create essences use next code:
-Action:CreateEssencesFor(ACTION_CONST_SHAMAN_ENHANCEMENT)  -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
+-- To create covenant use next code:
+A:CreateCovenantsFor(ACTION_CONST_SHAMAN_ENHANCEMENT)  -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 local A = setmetatable(Action[ACTION_CONST_SHAMAN_ENHANCEMENT], { __index = Action })
 
 
@@ -814,31 +808,6 @@ A[3] = function(icon, isMulti)
             -- heart_essence
             if A.HeartEssence:IsReady(unit) then
                 return A.HeartEssence:Show(icon)
-            end
-            
-            -- blood_fury,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
-            if A.BloodFury:AutoRacial(unit) and Racial and A.BurstIsON(unit) and (not A.Ascendance:IsSpellLearned() or Unit("player"):HasBuffs(A.AscendanceBuff.ID, true) or A.Ascendance:GetCooldown() > 50) then
-                return A.BloodFury:Show(icon)
-            end
-            
-            -- berserking,if=!talent.ascendance.enabled|buff.ascendance.up
-            if A.Berserking:AutoRacial(unit) and Racial and A.BurstIsON(unit) and (not A.Ascendance:IsSpellLearned() or Unit("player"):HasBuffs(A.AscendanceBuff.ID, true)) then
-                return A.Berserking:Show(icon)
-            end
-            
-            -- fireblood,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
-            if A.Fireblood:AutoRacial(unit) and Racial and A.BurstIsON(unit) and (not A.Ascendance:IsSpellLearned() or Unit("player"):HasBuffs(A.AscendanceBuff.ID, true) or A.Ascendance:GetCooldown() > 50) then
-                return A.Fireblood:Show(icon)
-            end
-            
-            -- ancestral_call,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
-            if A.AncestralCall:AutoRacial(unit) and Racial and A.BurstIsON(unit) and (not A.Ascendance:IsSpellLearned() or Unit("player"):HasBuffs(A.AscendanceBuff.ID, true) or A.Ascendance:GetCooldown() > 50) then
-                return A.AncestralCall:Show(icon)
-            end
-            
-            -- bag_of_tricks,if=!talent.ascendance.enabled|!buff.ascendance.up
-            if A.BagofTricks:IsReady(unit) and (not A.Ascendance:IsSpellLearned() or not Unit("player"):HasBuffs(A.AscendanceBuff.ID, true)) then
-                return A.BagofTricks:Show(icon)
             end
             
             -- feral_spirit

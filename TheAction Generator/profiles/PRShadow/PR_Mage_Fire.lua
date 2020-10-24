@@ -77,6 +77,7 @@ Action[ACTION_CONST_MAGE_FIRE] = {
     ArcaneIntellect                        = Create({ Type = "Spell", ID = 1459 }),
     FlamePatch                             = Create({ Type = "Spell", ID = 205037 }),
     ShiftingPower                          = Create({ Type = "Spell", ID =  }),
+    NightFae                               = Create({ Type = "Spell", ID =  }),
     Firestarter                            = Create({ Type = "Spell", ID = 205026 }),
     MirrorImage                            = Create({ Type = "Spell", ID = 55342 }),
     Pyroblast                              = Create({ Type = "Spell", ID = 11366 }),
@@ -103,9 +104,11 @@ Action[ACTION_CONST_MAGE_FIRE] = {
     HeatingUpBuff                          = Create({ Type = "Spell", ID = 48107 }),
     IgniteDebuff                           = Create({ Type = "Spell", ID =  }),
     PhoenixFlames                          = Create({ Type = "Spell", ID = 257541 }),
+    InfernalCascade                        = Create({ Type = "Spell", ID =  }),
     InfernalCascadeBuff                    = Create({ Type = "Spell", ID =  }),
     FirestormBuff                          = Create({ Type = "Spell", ID =  }),
     ArcaneExplosion                        = Create({ Type = "Spell", ID =  }),
+    DisciplinaryCommand                    = Create({ Type = "Spell", ID =  }),
     DisciplinaryCommandBuff                = Create({ Type = "Spell", ID =  }),
     DisciplinaryCommandArcaneBuff          = Create({ Type = "Spell", ID =  }),
     BuffDisciplinaryCommand                = Create({ Type = "Spell", ID =  }),
@@ -119,8 +122,10 @@ Action[ACTION_CONST_MAGE_FIRE] = {
     Flamestrike                            = Create({ Type = "Spell", ID = 2120 }),
     PyroclasmBuff                          = Create({ Type = "Spell", ID = 269651 }),
     Pyroclasm                              = Create({ Type = "Spell", ID =  }),
+    FlameAccretion                         = Create({ Type = "Spell", ID =  }),
     SearingTouch                           = Create({ Type = "Spell", ID = 269644 }),
     AlexstraszasFuryBuff                   = Create({ Type = "Spell", ID =  }),
+    SunKingsBlessing                       = Create({ Type = "Spell", ID =  }),
     FromtheAshes                           = Create({ Type = "Spell", ID =  }),
     Kindling                               = Create({ Type = "Spell", ID = 155148 }),
     CyclingVariable                        = Create({ Type = "Spell", ID =  }),
@@ -173,8 +178,8 @@ Action[ACTION_CONST_MAGE_FIRE] = {
     ConductiveInkDebuff                    = Create({ Type = "Spell", ID = 302565, Hidden = true     }),
 };
 
--- To create essences use next code:
-Action:CreateEssencesFor(ACTION_CONST_MAGE_FIRE)  -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
+-- To create covenant use next code:
+A:CreateCovenantsFor(ACTION_CONST_MAGE_FIRE)  -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 local A = setmetatable(Action[ACTION_CONST_MAGE_FIRE], { __index = Action })
 
 
@@ -519,7 +524,7 @@ A[3] = function(icon, isMulti)
             VarKindlingReduction = 0.2
             
             -- variable,name=shifting_power_reduction,op=set,value=action.shifting_power.cast_time%action.shifting_power.tick_time*3,if=covenant.night_fae.enabled
-            if (covenant.night_fae.enabled) then
+            if (A.NightFae:IsCovenantLearned()) then
                 VarShiftingPowerReduction = A.ShiftingPower:GetSpellCastTime() / action.shifting_power.tick_time * 3
             end
             
@@ -629,12 +634,12 @@ A[3] = function(icon, isMulti)
             end
             
             -- fire_blast,use_off_gcd=1,use_while_casting=1,if=!azerite.blaster_master.enabled&(active_enemies<=active_dot.ignite|!cooldown.phoenix_flames.ready)&conduit.infernal_cascade.enabled&charges>=1&((action.fire_blast.charges_fractional+(variable.extended_combustion_remains-buff.infernal_cascade.duration)%cooldown.fire_blast.duration-variable.extended_combustion_remains%(buff.infernal_cascade.duration-0.5))>=0|variable.extended_combustion_remains<=buff.infernal_cascade.duration|buff.infernal_cascade.remains<0.5)&buff.combustion.up&!buff.firestorm.react&!buff.hot_streak.react&hot_streak_spells_in_flight+buff.heating_up.react<2
-            if A.FireBlast:IsReady(unit) and (not A.BlasterMaster:GetAzeriteRank() > 0 and (MultiUnits:GetByRangeInCombat(40, 5, 10) <= A.IgniteDebuff.ID, true:ActiveDot or not A.PhoenixFlames:GetCooldown() == 0) and conduit.infernal_cascade.enabled and A.FireBlast:GetSpellCharges() >= 1 and ((A.FireBlast:GetSpellChargesFrac() + (VarExtendedCombustionRemains - A.InfernalCascadeBuff.ID, true:BaseDuration()) / A.FireBlast:BaseDuration() - VarExtendedCombustionRemains / (A.InfernalCascadeBuff.ID, true:BaseDuration() - 0.5)) >= 0 or VarExtendedCombustionRemains <= A.InfernalCascadeBuff.ID, true:BaseDuration() or Unit("player"):HasBuffs(A.InfernalCascadeBuff.ID, true) < 0.5) and Unit("player"):HasBuffs(A.CombustionBuff.ID, true) and not Unit("player"):HasBuffsStacks(A.FirestormBuff.ID, true) and not Unit("player"):HasBuffsStacks(A.HotStreakBuff.ID, true) and hot_streak_spells_in_flight + Unit("player"):HasBuffsStacks(A.HeatingUpBuff.ID, true) < 2) then
+            if A.FireBlast:IsReady(unit) and (not A.BlasterMaster:GetAzeriteRank() > 0 and (MultiUnits:GetByRangeInCombat(40, 5, 10) <= A.IgniteDebuff.ID, true:ActiveDot or not A.PhoenixFlames:GetCooldown() == 0) and A.InfernalCascade:IsConduitLearned() and A.FireBlast:GetSpellCharges() >= 1 and ((A.FireBlast:GetSpellChargesFrac() + (VarExtendedCombustionRemains - A.InfernalCascadeBuff.ID, true:BaseDuration()) / A.FireBlast:BaseDuration() - VarExtendedCombustionRemains / (A.InfernalCascadeBuff.ID, true:BaseDuration() - 0.5)) >= 0 or VarExtendedCombustionRemains <= A.InfernalCascadeBuff.ID, true:BaseDuration() or Unit("player"):HasBuffs(A.InfernalCascadeBuff.ID, true) < 0.5) and Unit("player"):HasBuffs(A.CombustionBuff.ID, true) and not Unit("player"):HasBuffsStacks(A.FirestormBuff.ID, true) and not Unit("player"):HasBuffsStacks(A.HotStreakBuff.ID, true) and hot_streak_spells_in_flight + Unit("player"):HasBuffsStacks(A.HeatingUpBuff.ID, true) < 2) then
                 return A.FireBlast:Show(icon)
             end
             
             -- fire_blast,use_off_gcd=1,use_while_casting=1,if=!azerite.blaster_master.enabled&(active_enemies<=active_dot.ignite|!cooldown.phoenix_flames.ready)&!conduit.infernal_cascade.enabled&charges>=1&buff.combustion.up&!buff.firestorm.react&!buff.hot_streak.react&hot_streak_spells_in_flight+buff.heating_up.react<2
-            if A.FireBlast:IsReady(unit) and (not A.BlasterMaster:GetAzeriteRank() > 0 and (MultiUnits:GetByRangeInCombat(40, 5, 10) <= A.IgniteDebuff.ID, true:ActiveDot or not A.PhoenixFlames:GetCooldown() == 0) and not conduit.infernal_cascade.enabled and A.FireBlast:GetSpellCharges() >= 1 and Unit("player"):HasBuffs(A.CombustionBuff.ID, true) and not Unit("player"):HasBuffsStacks(A.FirestormBuff.ID, true) and not Unit("player"):HasBuffsStacks(A.HotStreakBuff.ID, true) and hot_streak_spells_in_flight + Unit("player"):HasBuffsStacks(A.HeatingUpBuff.ID, true) < 2) then
+            if A.FireBlast:IsReady(unit) and (not A.BlasterMaster:GetAzeriteRank() > 0 and (MultiUnits:GetByRangeInCombat(40, 5, 10) <= A.IgniteDebuff.ID, true:ActiveDot or not A.PhoenixFlames:GetCooldown() == 0) and not A.InfernalCascade:IsConduitLearned() and A.FireBlast:GetSpellCharges() >= 1 and Unit("player"):HasBuffs(A.CombustionBuff.ID, true) and not Unit("player"):HasBuffsStacks(A.FirestormBuff.ID, true) and not Unit("player"):HasBuffsStacks(A.HotStreakBuff.ID, true) and hot_streak_spells_in_flight + Unit("player"):HasBuffsStacks(A.HeatingUpBuff.ID, true) < 2) then
                 return A.FireBlast:Show(icon)
             end
             
@@ -722,7 +727,7 @@ A[3] = function(icon, isMulti)
             end
             
             -- fireball,if=buff.combustion.down&cooldown.combustion.remains<cast_time&!conduit.flame_accretion.enabled
-            if A.Fireball:IsReady(unit) and (Unit("player"):HasBuffsDown(A.CombustionBuff.ID, true) and A.Combustion:GetCooldown() < A.Fireball:GetSpellCastTime() and not conduit.flame_accretion.enabled) then
+            if A.Fireball:IsReady(unit) and (Unit("player"):HasBuffsDown(A.CombustionBuff.ID, true) and A.Combustion:GetCooldown() < A.Fireball:GetSpellCastTime() and not A.FlameAccretion:IsConduitLearned()) then
                 return A.Fireball:Show(icon)
             end
             
@@ -1021,7 +1026,7 @@ end
             end
             
             -- variable,name=fire_blast_pooling,value=!variable.disable_combustion&variable.time_to_combustion<action.fire_blast.full_recharge_time-variable.shifting_power_reduction*(cooldown.shifting_power.remains<variable.time_to_combustion)&variable.time_to_combustion<fight_remains|runeforge.sun_kings_blessing.equipped&action.fire_blast.charges_fractional<action.fire_blast.max_charges-0.5&(cooldown.shifting_power.remains>15|!covenant.night_fae.enabled)
-            VarFireBlastPooling = num(not VarDisableCombustion and VarTimeToCombustion < A.FireBlast:GetSpellChargesFullRechargeTime() - VarShiftingPowerReduction * num((A.ShiftingPower:GetCooldown() < VarTimeToCombustion)) and VarTimeToCombustion < fight_remains or runeforge.sun_kings_blessing.equipped and A.FireBlast:GetSpellChargesFrac() < A.FireBlast:GetSpellChargesMax() - 0.5 and (A.ShiftingPower:GetCooldown() > 15 or not covenant.night_fae.enabled))
+            VarFireBlastPooling = num(not VarDisableCombustion and VarTimeToCombustion < A.FireBlast:GetSpellChargesFullRechargeTime() - VarShiftingPowerReduction * num((A.ShiftingPower:GetCooldown() < VarTimeToCombustion)) and VarTimeToCombustion < fight_remains or runeforge.sun_kings_blessing.equipped and A.FireBlast:GetSpellChargesFrac() < A.FireBlast:GetSpellChargesMax() - 0.5 and (A.ShiftingPower:GetCooldown() > 15 or not A.NightFae:IsCovenantLearned()))
             
             -- call_action_list,name=rop_phase,if=buff.rune_of_power.up&(variable.time_to_combustion>0|variable.disable_combustion)
             if (Unit("player"):HasBuffs(A.RuneofPowerBuff.ID, true) and (VarTimeToCombustion > 0 or VarDisableCombustion)) then

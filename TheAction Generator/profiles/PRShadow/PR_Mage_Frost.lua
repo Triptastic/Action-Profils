@@ -92,13 +92,19 @@ Action[ACTION_CONST_MAGE_FROST] = {
     ShiftingPower                          = Create({ Type = "Spell", ID =  }),
     MirrorsofTorment                       = Create({ Type = "Spell", ID =  }),
     FrostNova                              = Create({ Type = "Spell", ID = 122 }),
+    GrislyIcicle                           = Create({ Type = "Spell", ID =  }),
     FireBlast                              = Create({ Type = "Spell", ID =  }),
+    DisciplinaryCommand                    = Create({ Type = "Spell", ID =  }),
     BuffDisciplinaryCommand                = Create({ Type = "Spell", ID =  }),
     DisciplinaryCommandFireBuff            = Create({ Type = "Spell", ID =  }),
     ArcaneExplosion                        = Create({ Type = "Spell", ID =  }),
+    ColdFront                              = Create({ Type = "Spell", ID =  }),
+    FreezingWinds                          = Create({ Type = "Spell", ID =  }),
     FreezingWindsBuff                      = Create({ Type = "Spell", ID =  }),
+    GlacialFragments                       = Create({ Type = "Spell", ID =  }),
     SplittingIce                           = Create({ Type = "Spell", ID = 56377 }),
     IcyVeins                               = Create({ Type = "Spell", ID = 12472 }),
+    WastelandPropriety                     = Create({ Type = "Spell", ID =  }),
     Deathborne                             = Create({ Type = "Spell", ID =  }),
     RuneofPower                            = Create({ Type = "Spell", ID = 116011 }),
     RuneofPowerBuff                        = Create({ Type = "Spell", ID = 116014 }),
@@ -118,6 +124,9 @@ Action[ACTION_CONST_MAGE_FROST] = {
     FreezingRainBuff                       = Create({ Type = "Spell", ID =  }),
     RayofFrost                             = Create({ Type = "Spell", ID = 205021 }),
     GlacialSpikeBuff                       = Create({ Type = "Spell", ID = 199844 }),
+    CombatMeditation                       = Create({ Type = "Spell", ID =  }),
+    FieldofBlossoms                        = Create({ Type = "Spell", ID =  }),
+    GroveInvigoration                      = Create({ Type = "Spell", ID =  }),
     DisciplinaryCommandArcaneBuff          = Create({ Type = "Spell", ID =  })
     -- Trinkets
     TrinketTest                            = Create({ Type = "Trinket", ID = 122530, QueueForbidden = true }), 
@@ -164,8 +173,8 @@ Action[ACTION_CONST_MAGE_FROST] = {
     ConductiveInkDebuff                    = Create({ Type = "Spell", ID = 302565, Hidden = true     }),
 };
 
--- To create essences use next code:
-Action:CreateEssencesFor(ACTION_CONST_MAGE_FROST)  -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
+-- To create covenant use next code:
+A:CreateCovenantsFor(ACTION_CONST_MAGE_FROST)  -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 local A = setmetatable(Action[ACTION_CONST_MAGE_FROST], { __index = Action })
 
 
@@ -563,7 +572,7 @@ A[3] = function(icon, isMulti)
             end
             
             -- mirrors_of_torment,if=soulbind.wasteland_propriety.enabled
-            if A.MirrorsofTorment:IsReady(unit) and (soulbind.wasteland_propriety.enabled) then
+            if A.MirrorsofTorment:IsReady(unit) and (A.WastelandPropriety:IsSoulbindLearned()) then
                 return A.MirrorsofTorment:Show(icon)
             end
             
@@ -760,7 +769,7 @@ A[3] = function(icon, isMulti)
             end
             
             -- radiant_spark,if=(!runeforge.freezing_winds.equipped|active_enemies>=2)&(buff.brain_freeze.react|soulbind.combat_meditation.enabled)
-            if A.RadiantSpark:IsReady(unit) and ((not runeforge.freezing_winds.equipped or MultiUnits:GetByRangeInCombat(40, 5, 10) >= 2) and (Unit("player"):HasBuffsStacks(A.BrainFreezeBuff.ID, true) or soulbind.combat_meditation.enabled)) then
+            if A.RadiantSpark:IsReady(unit) and ((not runeforge.freezing_winds.equipped or MultiUnits:GetByRangeInCombat(40, 5, 10) >= 2) and (Unit("player"):HasBuffsStacks(A.BrainFreezeBuff.ID, true) or A.CombatMeditation:IsSoulbindLearned())) then
                 return A.RadiantSpark:Show(icon)
             end
             
@@ -770,7 +779,7 @@ A[3] = function(icon, isMulti)
             end
             
             -- shifting_power,line_cd=60,if=(soulbind.field_of_blossoms.enabled|soulbind.grove_invigoration.enabled)&(!talent.rune_of_power.enabled|buff.rune_of_power.down&cooldown.rune_of_power.remains>16)
-            if A.ShiftingPower:IsReady(unit) and ((soulbind.field_of_blossoms.enabled or soulbind.grove_invigoration.enabled) and (not A.RuneofPower:IsSpellLearned() or Unit("player"):HasBuffsDown(A.RuneofPowerBuff.ID, true) and A.RuneofPower:GetCooldown() > 16)) then
+            if A.ShiftingPower:IsReady(unit) and ((A.FieldofBlossoms:IsSoulbindLearned() or A.GroveInvigoration:IsSoulbindLearned()) and (not A.RuneofPower:IsSpellLearned() or Unit("player"):HasBuffsDown(A.RuneofPowerBuff.ID, true) and A.RuneofPower:GetCooldown() > 16)) then
                 return A.ShiftingPower:Show(icon)
             end
             

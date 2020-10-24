@@ -97,6 +97,7 @@ Action[ACTION_CONST_PALADIN_RETRIBUTION] = {
     DivineStorm                            = Create({ Type = "Spell", ID = 53385 }),
     VanquishersHammerBuff                  = Create({ Type = "Spell", ID =  }),
     TemplarsVerdict                        = Create({ Type = "Spell", ID = 85256 }),
+    Necrolord                              = Create({ Type = "Spell", ID =  }),
     HolyAvengerBuff                        = Create({ Type = "Spell", ID =  }),
     SeethingRageBuff                       = Create({ Type = "Spell", ID =  }),
     DivineToll                             = Create({ Type = "Spell", ID =  }),
@@ -150,8 +151,8 @@ Action[ACTION_CONST_PALADIN_RETRIBUTION] = {
     ConductiveInkDebuff                    = Create({ Type = "Spell", ID = 302565, Hidden = true     }),
 };
 
--- To create essences use next code:
-Action:CreateEssencesFor(ACTION_CONST_PALADIN_RETRIBUTION)  -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
+-- To create covenant use next code:
+A:CreateCovenantsFor(ACTION_CONST_PALADIN_RETRIBUTION)  -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 local A = setmetatable(Action[ACTION_CONST_PALADIN_RETRIBUTION], { __index = Action })
 
 
@@ -562,7 +563,7 @@ A[3] = function(icon, isMulti)
             end
             
             -- templars_verdict,if=(!talent.crusade.enabled|cooldown.crusade.remains>gcd*3)&(!talent.execution_sentence.enabled|cooldown.execution_sentence.remains>gcd*3&spell_targets.divine_storm<=3)&(!talent.final_reckoning.enabled|cooldown.final_reckoning.remains>gcd*3)&(!covenant.necrolord.enabled|cooldown.vanquishers_hammer.remains>gcd)|talent.holy_avenger.enabled&cooldown.holy_avenger.remains<gcd*3|buff.holy_avenger.up|buff.crusade.up&buff.crusade.stack<10|buff.vanquishers_hammer.up
-            if A.TemplarsVerdict:IsReady(unit) and ((not A.Crusade:IsSpellLearned() or A.Crusade:GetCooldown() > GetGCD() * 3) and (not A.ExecutionSentence:IsSpellLearned() or A.ExecutionSentence:GetCooldown() > GetGCD() * 3 and MultiUnits:GetByRangeInCombat(8, 5, 10) <= 3) and (not A.FinalReckoning:IsSpellLearned() or A.FinalReckoning:GetCooldown() > GetGCD() * 3) and (not covenant.necrolord.enabled or A.VanquishersHammer:GetCooldown() > GetGCD()) or A.HolyAvenger:IsSpellLearned() and A.HolyAvenger:GetCooldown() < GetGCD() * 3 or Unit("player"):HasBuffs(A.HolyAvengerBuff.ID, true) or Unit("player"):HasBuffs(A.CrusadeBuff.ID, true) and Unit("player"):HasBuffsStacks(A.CrusadeBuff.ID, true) < 10 or Unit("player"):HasBuffs(A.VanquishersHammerBuff.ID, true)) then
+            if A.TemplarsVerdict:IsReady(unit) and ((not A.Crusade:IsSpellLearned() or A.Crusade:GetCooldown() > GetGCD() * 3) and (not A.ExecutionSentence:IsSpellLearned() or A.ExecutionSentence:GetCooldown() > GetGCD() * 3 and MultiUnits:GetByRangeInCombat(8, 5, 10) <= 3) and (not A.FinalReckoning:IsSpellLearned() or A.FinalReckoning:GetCooldown() > GetGCD() * 3) and (not A.Necrolord:IsCovenantLearned() or A.VanquishersHammer:GetCooldown() > GetGCD()) or A.HolyAvenger:IsSpellLearned() and A.HolyAvenger:GetCooldown() < GetGCD() * 3 or Unit("player"):HasBuffs(A.HolyAvengerBuff.ID, true) or Unit("player"):HasBuffs(A.CrusadeBuff.ID, true) and Unit("player"):HasBuffsStacks(A.CrusadeBuff.ID, true) < 10 or Unit("player"):HasBuffs(A.VanquishersHammerBuff.ID, true)) then
                 return A.TemplarsVerdict:Show(icon)
             end
             

@@ -78,6 +78,7 @@ Action[ACTION_CONST_PRIEST_SHADOW] = {
     VampiricTouchDebuff                    = Create({ Type = "Spell", ID = 34914 }),
     VampiricTouch                          = Create({ Type = "Spell", ID = 34914 }),
     Silence                                = Create({ Type = "Spell", ID = 15487 }),
+    SephuzsProclamation                    = Create({ Type = "Spell", ID =  }),
     SearingNightmare                       = Create({ Type = "Spell", ID =  }),
     ShadowWordPainDebuff                   = Create({ Type = "Spell", ID = 589 }),
     MindBlast                              = Create({ Type = "Spell", ID = 8092 }),
@@ -92,11 +93,14 @@ Action[ACTION_CONST_PRIEST_SHADOW] = {
     VoidBolt                               = Create({ Type = "Spell", ID = 205448 }),
     HungeringVoid                          = Create({ Type = "Spell", ID =  }),
     DevouringPlague                        = Create({ Type = "Spell", ID =  }),
+    DissonantEchoes                        = Create({ Type = "Spell", ID =  }),
     ShadowWordDeath                        = Create({ Type = "Spell", ID = 32379 }),
+    ShadowflamePrism                       = Create({ Type = "Spell", ID =  }),
     SurrenderToMadness                     = Create({ Type = "Spell", ID = 193223 }),
     VoidformBuff                           = Create({ Type = "Spell", ID = 194249 }),
     VoidTorrent                            = Create({ Type = "Spell", ID = 263165 }),
     TwistofFate                            = Create({ Type = "Spell", ID = 109142 }),
+    PainbreakerPsalm                       = Create({ Type = "Spell", ID =  }),
     ShadowCrash                            = Create({ Type = "Spell", ID = 205385 }),
     ShadowCrashDeBuffDebuff                = Create({ Type = "Spell", ID =  }),
     DarkThoughtsBuff                       = Create({ Type = "Spell", ID =  }),
@@ -105,6 +109,7 @@ Action[ACTION_CONST_PRIEST_SHADOW] = {
     UnfurlingDarknessBuff                  = Create({ Type = "Spell", ID =  }),
     PsychicLink                            = Create({ Type = "Spell", ID =  }),
     DevouringPlagueDebuff                  = Create({ Type = "Spell", ID =  }),
+    TwinsoftheSunPriestess                 = Create({ Type = "Spell", ID =  }),
     PowerInfusion                          = Create({ Type = "Spell", ID =  })
     -- Trinkets
     TrinketTest                            = Create({ Type = "Trinket", ID = 122530, QueueForbidden = true }), 
@@ -151,8 +156,8 @@ Action[ACTION_CONST_PRIEST_SHADOW] = {
     ConductiveInkDebuff                    = Create({ Type = "Spell", ID = 302565, Hidden = true     }),
 };
 
--- To create essences use next code:
-Action:CreateEssencesFor(ACTION_CONST_PRIEST_SHADOW)  -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
+-- To create covenant use next code:
+A:CreateCovenantsFor(ACTION_CONST_PRIEST_SHADOW)  -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 local A = setmetatable(Action[ACTION_CONST_PRIEST_SHADOW], { __index = Action })
 
 
@@ -412,51 +417,51 @@ local function EvaluateCycleSilence24(unit)
     return runeforge.sephuzs_proclamation.equipped and (target.is_add or Unit(unit):IsCasting)
 end
 
-local function EvaluateCycleSearingNightmare34(unit)
+local function EvaluateCycleSearingNightmare36(unit)
     return (VarSearingNightmareCutoff and not VarPiOrVfSyncCondition) or (Unit(unit):HasDeBuffsRefreshable(A.ShadowWordPainDebuff.ID, true) and MultiUnits:GetByRangeInCombat(40, 5, 10) > 1)
 end
 
-local function EvaluateCycleSearingNightmare47(unit)
+local function EvaluateCycleSearingNightmare49(unit)
     return A.SearingNightmare:IsSpellLearned() and Unit(unit):HasDeBuffsRefreshable(A.ShadowWordPainDebuff.ID, true) and MultiUnits:GetByRangeInCombat(40, 5, 10) > 2
 end
 
-local function EvaluateCycleMindSear96(unit)
+local function EvaluateCycleMindSear98(unit)
     return A.SearingNightmare:IsSpellLearned() and MultiUnits:GetByRangeInCombat(40, 5, 10) > (VarMindSearCutoff + 1) and not Unit(unit):HasDeBuffs(A.ShadowWordPainDebuff.ID, true) and not A.Mindbender:GetCooldown() == 0
 end
 
-local function EvaluateCycleDamnation111(unit)
+local function EvaluateCycleDamnation113(unit)
     return not VarAllDotsUp
 end
 
-local function EvaluateCycleDevouringPlague124(unit)
+local function EvaluateCycleDevouringPlague126(unit)
     return (refreshable or Player:Insanity() > 75) and not VarPiOrVfSyncCondition and (not A.SearingNightmare:IsSpellLearned() or (A.SearingNightmare:IsSpellLearned() and not VarSearingNightmareCutoff))
 end
 
-local function EvaluateCycleShadowWordDeath145(unit)
+local function EvaluateCycleShadowWordDeath149(unit)
     return (Unit(unit):HealthPercent() < 20 and MultiUnits:GetByRangeInCombat(40, 5, 10) < 4) or (pet.fiend.active and runeforge.shadowflame_prism.equipped)
 end
 
-local function EvaluateCycleSurrenderToMadness152(unit)
+local function EvaluateCycleSurrenderToMadness158(unit)
     return Unit(unit):TimeToDie() < 25 and Unit("player"):HasBuffsDown(A.VoidformBuff.ID, true)
 end
 
-local function EvaluateCycleVoidTorrent171(unit)
+local function EvaluateCycleVoidTorrent177(unit)
     return VarDotsUp and Unit(unit):TimeToDie() > 4 and Unit("player"):HasBuffsDown(A.VoidformBuff.ID, true) and MultiUnits:GetByRangeInCombat(40, 5, 10) < (5 + (6 * num(A.TwistofFate:IsSpellLearned())))
 end
 
-local function EvaluateCycleMindSear204(unit)
+local function EvaluateCycleMindSear212(unit)
     return MultiUnits:GetByRangeInCombat(40, 5, 10) > VarMindSearCutoff and Unit("player"):HasBuffs(A.DarkThoughtsBuff.ID, true)
 end
 
-local function EvaluateCycleVampiricTouch229(unit)
+local function EvaluateCycleVampiricTouch237(unit)
     return Unit(unit):HasDeBuffsRefreshable(A.VampiricTouchDebuff.ID, true) and Unit(unit):TimeToDie() > 6 or (A.Misery:IsSpellLearned() and Unit(unit):HasDeBuffsRefreshable(A.ShadowWordPainDebuff.ID, true)) or Unit("player"):HasBuffs(A.UnfurlingDarknessBuff.ID, true)
 end
 
-local function EvaluateCycleShadowWordPain260(unit)
+local function EvaluateCycleShadowWordPain268(unit)
     return Unit(unit):HasDeBuffsRefreshable(A.ShadowWordPainDebuff.ID, true) and Unit(unit):TimeToDie() > 4 and not A.Misery:IsSpellLearned() and not (A.SearingNightmare:IsSpellLearned() and MultiUnits:GetByRangeInCombat(40, 5, 10) > (VarMindSearCutoff + 1)) and (not A.PsychicLink:IsSpellLearned() or (A.PsychicLink:IsSpellLearned() and MultiUnits:GetByRangeInCombat(40, 5, 10) <= 2))
 end
 
-local function EvaluateCycleMindSear283(unit)
+local function EvaluateCycleMindSear291(unit)
     return MultiUnits:GetByRangeInCombat(40, 5, 10) > VarMindSearCutoff
 end
 
@@ -537,13 +542,13 @@ A[3] = function(icon, isMulti)
         
             -- searing_nightmare,use_while_casting=1,target_if=(variable.searing_nightmare_cutoff&!variable.pi_or_vf_sync_condition)|(dot.shadow_word_pain.refreshable&spell_targets.mind_sear>1)
             if A.SearingNightmare:IsReady(unit) then
-                if Action.Utils.CastTargetIf(A.SearingNightmare, 40, "min", EvaluateCycleSearingNightmare34) then
+                if Action.Utils.CastTargetIf(A.SearingNightmare, 40, "min", EvaluateCycleSearingNightmare36) then
                     return A.SearingNightmare:Show(icon) 
                 end
             end
             -- searing_nightmare,use_while_casting=1,target_if=talent.searing_nightmare.enabled&dot.shadow_word_pain.refreshable&spell_targets.mind_sear>2
             if A.SearingNightmare:IsReady(unit) then
-                if Action.Utils.CastTargetIf(A.SearingNightmare, 40, "min", EvaluateCycleSearingNightmare47) then
+                if Action.Utils.CastTargetIf(A.SearingNightmare, 40, "min", EvaluateCycleSearingNightmare49) then
                     return A.SearingNightmare:Show(icon) 
                 end
             end
@@ -629,13 +634,13 @@ A[3] = function(icon, isMulti)
             
             -- mind_sear,target_if=talent.searing_nightmare.enabled&spell_targets.mind_sear>(variable.mind_sear_cutoff+1)&!dot.shadow_word_pain.ticking&!cooldown.mindbender.up
             if A.MindSear:IsReady(unit) then
-                if Action.Utils.CastTargetIf(A.MindSear, 40, "min", EvaluateCycleMindSear96) then
+                if Action.Utils.CastTargetIf(A.MindSear, 40, "min", EvaluateCycleMindSear98) then
                     return A.MindSear:Show(icon) 
                 end
             end
             -- damnation,target_if=!variable.all_dots_up
             if A.Damnation:IsReady(unit) then
-                if Action.Utils.CastTargetIf(A.Damnation, 40, "min", EvaluateCycleDamnation111) then
+                if Action.Utils.CastTargetIf(A.Damnation, 40, "min", EvaluateCycleDamnation113) then
                     return A.Damnation:Show(icon) 
                 end
             end
@@ -646,24 +651,24 @@ A[3] = function(icon, isMulti)
             
             -- devouring_plague,target_if=(refreshable|insanity>75)&!variable.pi_or_vf_sync_condition&(!talent.searing_nightmare.enabled|(talent.searing_nightmare.enabled&!variable.searing_nightmare_cutoff))
             if A.DevouringPlague:IsReady(unit) then
-                if Action.Utils.CastTargetIf(A.DevouringPlague, 40, "min", EvaluateCycleDevouringPlague124) then
+                if Action.Utils.CastTargetIf(A.DevouringPlague, 40, "min", EvaluateCycleDevouringPlague126) then
                     return A.DevouringPlague:Show(icon) 
                 end
             end
             -- void_bolt,if=spell_targets.mind_sear<(4+conduit.dissonant_echoes.enabled)&insanity<=85
-            if A.VoidBolt:IsReady(unit) and (MultiUnits:GetByRangeInCombat(40, 5, 10) < (4 + conduit.dissonant_echoes.enabled) and Player:Insanity() <= 85) then
+            if A.VoidBolt:IsReady(unit) and (MultiUnits:GetByRangeInCombat(40, 5, 10) < (4 + A.DissonantEchoes:IsConduitLearned()) and Player:Insanity() <= 85) then
                 return A.VoidBolt:Show(icon)
             end
             
             -- shadow_word_death,target_if=(target.health.pct<20&spell_targets.mind_sear<4)|(pet.fiend.active&runeforge.shadowflame_prism.equipped)
             if A.ShadowWordDeath:IsReady(unit) then
-                if Action.Utils.CastTargetIf(A.ShadowWordDeath, 40, "min", EvaluateCycleShadowWordDeath145) then
+                if Action.Utils.CastTargetIf(A.ShadowWordDeath, 40, "min", EvaluateCycleShadowWordDeath149) then
                     return A.ShadowWordDeath:Show(icon) 
                 end
             end
             -- surrender_to_madness,target_if=target.time_to_die<25&buff.voidform.down
             if A.SurrenderToMadness:IsReady(unit) then
-                if Action.Utils.CastTargetIf(A.SurrenderToMadness, 40, "min", EvaluateCycleSurrenderToMadness152) then
+                if Action.Utils.CastTargetIf(A.SurrenderToMadness, 40, "min", EvaluateCycleSurrenderToMadness158) then
                     return A.SurrenderToMadness:Show(icon) 
                 end
             end
@@ -674,7 +679,7 @@ A[3] = function(icon, isMulti)
             
             -- void_torrent,target_if=variable.dots_up&target.time_to_die>4&buff.voidform.down&spell_targets.mind_sear<(5+(6*talent.twist_of_fate.enabled))
             if A.VoidTorrent:IsReady(unit) then
-                if Action.Utils.CastTargetIf(A.VoidTorrent, 40, "min", EvaluateCycleVoidTorrent171) then
+                if Action.Utils.CastTargetIf(A.VoidTorrent, 40, "min", EvaluateCycleVoidTorrent177) then
                     return A.VoidTorrent:Show(icon) 
                 end
             end
@@ -695,7 +700,7 @@ A[3] = function(icon, isMulti)
             
             -- mind_sear,target_if=spell_targets.mind_sear>variable.mind_sear_cutoff&buff.dark_thoughts.up,chain=1,interrupt_immediate=1,interrupt_if=ticks>=2
             if A.MindSear:IsReady(unit) then
-                if Action.Utils.CastTargetIf(A.MindSear, 40, "min", EvaluateCycleMindSear204) then
+                if Action.Utils.CastTargetIf(A.MindSear, 40, "min", EvaluateCycleMindSear212) then
                     return A.MindSear:Show(icon) 
                 end
             end
@@ -711,7 +716,7 @@ A[3] = function(icon, isMulti)
             
             -- vampiric_touch,target_if=refreshable&target.time_to_die>6|(talent.misery.enabled&dot.shadow_word_pain.refreshable)|buff.unfurling_darkness.up
             if A.VampiricTouch:IsReady(unit) then
-                if Action.Utils.CastTargetIf(A.VampiricTouch, 40, "min", EvaluateCycleVampiricTouch229) then
+                if Action.Utils.CastTargetIf(A.VampiricTouch, 40, "min", EvaluateCycleVampiricTouch237) then
                     return A.VampiricTouch:Show(icon) 
                 end
             end
@@ -722,13 +727,13 @@ A[3] = function(icon, isMulti)
             
             -- shadow_word_pain,target_if=refreshable&target.time_to_die>4&!talent.misery.enabled&!(talent.searing_nightmare.enabled&spell_targets.mind_sear>(variable.mind_sear_cutoff+1))&(!talent.psychic_link.enabled|(talent.psychic_link.enabled&spell_targets.mind_sear<=2))
             if A.ShadowWordPain:IsReady(unit) then
-                if Action.Utils.CastTargetIf(A.ShadowWordPain, 40, "min", EvaluateCycleShadowWordPain260) then
+                if Action.Utils.CastTargetIf(A.ShadowWordPain, 40, "min", EvaluateCycleShadowWordPain268) then
                     return A.ShadowWordPain:Show(icon) 
                 end
             end
             -- mind_sear,target_if=spell_targets.mind_sear>variable.mind_sear_cutoff,chain=1,interrupt_immediate=1,interrupt_if=ticks>=2
             if A.MindSear:IsReady(unit) then
-                if Action.Utils.CastTargetIf(A.MindSear, 40, "min", EvaluateCycleMindSear283) then
+                if Action.Utils.CastTargetIf(A.MindSear, 40, "min", EvaluateCycleMindSear291) then
                     return A.MindSear:Show(icon) 
                 end
             end

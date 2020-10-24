@@ -79,8 +79,10 @@ Action[ACTION_CONST_ROGUE_SUBTLETY] = {
     SliceandDice                           = Create({ Type = "Spell", ID =  }),
     ShadowBladesBuff                       = Create({ Type = "Spell", ID = 121471 }),
     ShadowBlades                           = Create({ Type = "Spell", ID = 121471 }),
+    MarkoftheMasterAssassin                = Create({ Type = "Spell", ID =  }),
     Shiv                                   = Create({ Type = "Spell", ID =  }),
     Nightstalker                           = Create({ Type = "Spell", ID = 14062 }),
+    TinyToxicBlade                         = Create({ Type = "Spell", ID =  }),
     ShurikenStorm                          = Create({ Type = "Spell", ID = 197835 }),
     Gloomblade                             = Create({ Type = "Spell", ID = 200758 }),
     Perforate                              = Create({ Type = "Spell", ID =  }),
@@ -94,6 +96,7 @@ Action[ACTION_CONST_ROGUE_SUBTLETY] = {
     FlagellationCleanse                    = Create({ Type = "Spell", ID =  }),
     FlagellationDebuff                     = Create({ Type = "Spell", ID =  }),
     Vanish                                 = Create({ Type = "Spell", ID = 1856 }),
+    DeathlyShadows                         = Create({ Type = "Spell", ID =  }),
     SymbolsofDeathBuff                     = Create({ Type = "Spell", ID = 212283 }),
     DeathlyShadowsBuff                     = Create({ Type = "Spell", ID =  }),
     BreathoftheDying                       = Create({ Type = "Spell", ID =  }),
@@ -102,6 +105,7 @@ Action[ACTION_CONST_ROGUE_SUBTLETY] = {
     SerratedBoneSpikeDotDebuff             = Create({ Type = "Spell", ID =  }),
     EnvelopingShadows                      = Create({ Type = "Spell", ID = 238104 }),
     ShadowFocus                            = Create({ Type = "Spell", ID = 108209 }),
+    TheRotten                              = Create({ Type = "Spell", ID =  }),
     EchoingReprimand                       = Create({ Type = "Spell", ID =  }),
     Subterfuge                             = Create({ Type = "Spell", ID = 108208 }),
     BloodFury                              = Create({ Type = "Spell", ID = 20572 }),
@@ -114,6 +118,7 @@ Action[ACTION_CONST_ROGUE_SUBTLETY] = {
     DarkShadow                             = Create({ Type = "Spell", ID = 245687 }),
     Rupture                                = Create({ Type = "Spell", ID =  }),
     SecretTechnique                        = Create({ Type = "Spell", ID =  }),
+    BlackPowder                            = Create({ Type = "Spell", ID =  }),
     Eviscerate                             = Create({ Type = "Spell", ID = 196819 }),
     Sepsis                                 = Create({ Type = "Spell", ID =  }),
     Shadowmeld                             = Create({ Type = "Spell", ID = 58984 }),
@@ -126,7 +131,11 @@ Action[ACTION_CONST_ROGUE_SUBTLETY] = {
     Inevitability                          = Create({ Type = "Spell", ID =  }),
     PremeditationBuff                      = Create({ Type = "Spell", ID =  }),
     TheRottenBuff                          = Create({ Type = "Spell", ID =  }),
+    AkaarisSoulFragment                    = Create({ Type = "Spell", ID =  }),
+    DeeperDaggers                          = Create({ Type = "Spell", ID =  }),
     PerforatedVeinsBuff                    = Create({ Type = "Spell", ID =  }),
+    PerforatedVeins                        = Create({ Type = "Spell", ID =  }),
+    DeeperDagger                           = Create({ Type = "Spell", ID =  }),
     Vigor                                  = Create({ Type = "Spell", ID = 14983 }),
     MasterofShadows                        = Create({ Type = "Spell", ID =  }),
     Alacrity                               = Create({ Type = "Spell", ID =  }),
@@ -180,8 +189,8 @@ Action[ACTION_CONST_ROGUE_SUBTLETY] = {
     ConductiveInkDebuff                    = Create({ Type = "Spell", ID = 302565, Hidden = true     }),
 };
 
--- To create essences use next code:
-Action:CreateEssencesFor(ACTION_CONST_ROGUE_SUBTLETY)  -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
+-- To create covenant use next code:
+A:CreateCovenantsFor(ACTION_CONST_ROGUE_SUBTLETY)  -- where PLAYERSPEC is Constance (example: ACTION_CONST_MONK_BM)
 local A = setmetatable(Action[ACTION_CONST_ROGUE_SUBTLETY], { __index = Action })
 
 
@@ -394,28 +403,28 @@ local function ExpectedCombatLength()
 end 
 ExpectedCombatLength = A.MakeFunctionCachedStatic(ExpectedCombatLength)
 
-local function EvaluateCycleSerratedBoneSpike96(unit)
+local function EvaluateCycleSerratedBoneSpike104(unit)
   return VarSndCondition and not Unit(unit):HasDeBuffs(A.SerratedBoneSpikeDotDebuff.ID, true) or fight_remains <= 5
 end
 
-local function EvaluateTargetIfFilterMarkedForDeath126(unit)
+local function EvaluateTargetIfFilterMarkedForDeath136(unit)
   return Unit(unit):TimeToDie()
 end
 
-local function EvaluateTargetIfMarkedForDeath131(unit)
+local function EvaluateTargetIfMarkedForDeath141(unit)
   return (MultiUnits:GetByRangeInCombat(40, 5, 10) > 1) and (Unit(unit):TimeToDie() < Player:ComboPointsDeficit() or not Unit("player"):IsStealthed(true, true) and Player:ComboPointsDeficit() >= CPMaxSpend())
 end
 
 
-local function EvaluateCycleReapingFlames265(unit)
+local function EvaluateCycleReapingFlames275(unit)
     return Unit(unit):TimeToDie() < 1.5 or ((Unit(unit):HealthPercent() > 80 or Unit(unit):HealthPercent() <= 20) and (MultiUnits:GetByRangeInCombat(40, 5, 10) == 1 or VarReapingDelay > 29)) or (target.time_to_pct_20 > 30 and (MultiUnits:GetByRangeInCombat(40, 5, 10) == 1 or VarReapingDelay > 44))
 end
 
-local function EvaluateCycleRupture318(unit)
+local function EvaluateCycleRupture328(unit)
   return not VarSkipRupture and not VarUsePriorityRotation and MultiUnits:GetByRangeInCombat(10, 5, 10) >= 2 and Unit(unit):TimeToDie() >= (5 + (2 * Player:ComboPoints())) and refreshable
 end
 
-local function EvaluateCycleShadowstrike427(unit)
+local function EvaluateCycleShadowstrike451(unit)
   return Unit(unit):HasDeBuffs(A.FindWeaknessDebuff.ID, true) < 1 and MultiUnits:GetByRangeInCombat(10, 5, 10) <= 3 and Unit(unit):TimeToDie() - remains > 6
 end
 
@@ -558,18 +567,18 @@ A[3] = function(icon, isMulti)
             
             -- serrated_bone_spike,cycle_targets=1,if=variable.snd_condition&!dot.serrated_bone_spike_dot.ticking|fight_remains<=5
             if A.SerratedBoneSpike:IsReady(unit) then
-                if Action.Utils.CastTargetIf(A.SerratedBoneSpike, 40, "min", EvaluateCycleSerratedBoneSpike96) then
+                if Action.Utils.CastTargetIf(A.SerratedBoneSpike, 40, "min", EvaluateCycleSerratedBoneSpike104) then
                     return A.SerratedBoneSpike:Show(icon) 
                 end
             end
-            -- symbols_of_death,if=variable.snd_condition&!cooldown.shadow_blades.up&(talent.enveloping_shadows.enabled|cooldown.shadow_dance.charges>=1)&(!talent.shuriken_tornado.enabled|talent.shadow_focus.enabled|cooldown.shuriken_tornado.remains>2)&(!essence.blood_of_the_enemy.major|cooldown.blood_of_the_enemy.remains>2)
-            if A.SymbolsofDeath:IsReady(unit) and (VarSndCondition and not A.ShadowBlades:GetCooldown() == 0 and (A.EnvelopingShadows:IsSpellLearned() or A.ShadowDance:GetSpellCharges() >= 1) and (not A.ShurikenTornado:IsSpellLearned() or A.ShadowFocus:IsSpellLearned() or A.ShurikenTornado:GetCooldown() > 2) and (not Azerite:EssenceHasMajor(A.BloodoftheEnemy.ID) or A.BloodoftheEnemy:GetCooldown() > 2)) then
+            -- symbols_of_death,if=variable.snd_condition&!cooldown.shadow_blades.up&(talent.enveloping_shadows.enabled|cooldown.shadow_dance.charges>=1)&(!talent.shuriken_tornado.enabled|talent.shadow_focus.enabled|cooldown.shuriken_tornado.remains>2)&(!runeforge.the_rotten.equipped|combo_points<=2)&(!essence.blood_of_the_enemy.major|cooldown.blood_of_the_enemy.remains>2)
+            if A.SymbolsofDeath:IsReady(unit) and (VarSndCondition and not A.ShadowBlades:GetCooldown() == 0 and (A.EnvelopingShadows:IsSpellLearned() or A.ShadowDance:GetSpellCharges() >= 1) and (not A.ShurikenTornado:IsSpellLearned() or A.ShadowFocus:IsSpellLearned() or A.ShurikenTornado:GetCooldown() > 2) and (not runeforge.the_rotten.equipped or Player:ComboPoints() <= 2) and (not Azerite:EssenceHasMajor(A.BloodoftheEnemy.ID) or A.BloodoftheEnemy:GetCooldown() > 2)) then
                 return A.SymbolsofDeath:Show(icon)
             end
             
             -- marked_for_death,target_if=min:target.time_to_die,if=raid_event.adds.up&(target.time_to_die<combo_points.deficit|!stealthed.all&combo_points.deficit>=cp_max_spend)
             if A.MarkedForDeath:IsReady(unit) then
-                if Action.Utils.CastTargetIf(A.MarkedForDeath, 40, "min", EvaluateTargetIfFilterMarkedForDeath126, EvaluateTargetIfMarkedForDeath131) then 
+                if Action.Utils.CastTargetIf(A.MarkedForDeath, 40, "min", EvaluateTargetIfFilterMarkedForDeath136, EvaluateTargetIfMarkedForDeath141) then 
                     return A.MarkedForDeath:Show(icon) 
                 end
             end
@@ -701,7 +710,7 @@ A[3] = function(icon, isMulti)
             
             -- reaping_flames,target_if=target.time_to_die<1.5|((target.health.pct>80|target.health.pct<=20)&(active_enemies=1|variable.reaping_delay>29))|(target.time_to_pct_20>30&(active_enemies=1|variable.reaping_delay>44))
             if A.ReapingFlames:IsReady(unit) then
-                if Action.Utils.CastTargetIf(A.ReapingFlames, 40, "min", EvaluateCycleReapingFlames265) then
+                if Action.Utils.CastTargetIf(A.ReapingFlames, 40, "min", EvaluateCycleReapingFlames275) then
                     return A.ReapingFlames:Show(icon) 
                 end
             end
@@ -730,13 +739,18 @@ A[3] = function(icon, isMulti)
             
             -- rupture,cycle_targets=1,if=!variable.skip_rupture&!variable.use_priority_rotation&spell_targets.shuriken_storm>=2&target.time_to_die>=(5+(2*combo_points))&refreshable
             if A.Rupture:IsReady(unit) then
-                if Action.Utils.CastTargetIf(A.Rupture, 40, "min", EvaluateCycleRupture318) then
+                if Action.Utils.CastTargetIf(A.Rupture, 40, "min", EvaluateCycleRupture328) then
                     return A.Rupture:Show(icon) 
                 end
             end
             -- rupture,if=!variable.skip_rupture&remains<cooldown.symbols_of_death.remains+10&cooldown.symbols_of_death.remains<=5&target.time_to_die-remains>cooldown.symbols_of_death.remains+5
             if A.Rupture:IsReady(unit) and (not VarSkipRupture and remains < A.SymbolsofDeath:GetCooldown() + 10 and A.SymbolsofDeath:GetCooldown() <= 5 and Unit(unit):TimeToDie() - remains > A.SymbolsofDeath:GetCooldown() + 5) then
                 return A.Rupture:Show(icon)
+            end
+            
+            -- black_powder,if=!variable.use_priority_rotation&spell_targets>=3
+            if A.BlackPowder:IsReady(unit) and (not VarUsePriorityRotation and MultiUnits:GetByRangeInCombat(40, 5, 10) >= 3) then
+                return A.BlackPowder:Show(icon)
             end
             
             -- eviscerate
@@ -833,7 +847,7 @@ A[3] = function(icon, isMulti)
             
             -- shadowstrike,cycle_targets=1,if=debuff.find_weakness.remains<1&spell_targets.shuriken_storm<=3&target.time_to_die-remains>6
             if A.Shadowstrike:IsReady(unit) then
-                if Action.Utils.CastTargetIf(A.Shadowstrike, 40, "min", EvaluateCycleShadowstrike427) then
+                if Action.Utils.CastTargetIf(A.Shadowstrike, 40, "min", EvaluateCycleShadowstrike451) then
                     return A.Shadowstrike:Show(icon) 
                 end
             end
@@ -859,7 +873,7 @@ A[3] = function(icon, isMulti)
             
             -- pool_resource,for_next=1
             -- gloomblade,if=!runeforge.akaaris_soul_fragment.equipped&buff.perforated_veins.stack>=3&conduit.perforated_veins.rank>=13-(9*conduit.deeper_dagger.enabled+conduit.deeper_dagger.rank)
-            if A.Gloomblade:IsReady(unit) and (not runeforge.akaaris_soul_fragment.equipped and Unit("player"):HasBuffsStacks(A.PerforatedVeinsBuff.ID, true) >= 3 and conduit.perforated_veins.rank >= 13 - (9 * conduit.deeper_dagger.enabled + conduit.deeper_dagger.rank)) then
+            if A.Gloomblade:IsReady(unit) and (not runeforge.akaaris_soul_fragment.equipped and Unit("player"):HasBuffsStacks(A.PerforatedVeinsBuff.ID, true) >= 3 and conduit.perforated_veins.rank >= 13 - (9 * A.DeeperDagger:IsConduitLearned() + conduit.deeper_dagger.rank)) then
                 if A.Gloomblade:IsUsablePPool() then
                     return A.Gloomblade:Show(icon)
                 else
@@ -933,6 +947,13 @@ A[3] = function(icon, isMulti)
             
             -- call_action_list,name=finish,if=runeforge.deathly_shadows.equipped&dot.sepsis.ticking&dot.sepsis.remains<=2&combo_points>=2
             if (runeforge.deathly_shadows.equipped and Unit(unit):HasDeBuffs(A.SepsisDebuff.ID, true) and Unit(unit):HasDeBuffs(A.SepsisDebuff.ID, true) <= 2 and Player:ComboPoints() >= 2) then
+                if Finish(unit) then
+                    return true
+                end
+            end
+            
+            -- call_action_list,name=finish,if=cooldown.symbols_of_death.remains<=2&combo_points>=2&runeforge.the_rotten.equipped
+            if (A.SymbolsofDeath:GetCooldown() <= 2 and Player:ComboPoints() >= 2 and runeforge.the_rotten.equipped) then
                 if Finish(unit) then
                     return true
                 end
