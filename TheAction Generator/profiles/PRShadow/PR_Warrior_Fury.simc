@@ -1,0 +1,112 @@
+warrior="Axecute"
+source=blizzard
+origin="/tmp/fepHrmzGCSXCjSLA3fA17Z.armoryv2.profile.json,equipment=/tmp/fepHrmzGCSXCjSLA3fA17Z.armoryv2.equipment.json,spec=/tmp/fepHrmzGCSXCjSLA3fA17Z.armoryv2.spec.json"
+spec=fury
+level=50
+race=human
+role=attack
+position=back
+talents=https://worldofwarcraft.com/en-us/game/talent-calculator#warrior/fury/talents=2123223
+azerite_essences=23:3:1/35:3:0/12:4:0/5:4:0
+
+# Default consumables
+potion=disabled
+flask=disabled
+food=disabled
+augmentation=disabled
+
+# This default action priority list is automatically created based on your character.
+# It is a attempt to provide you with a action list that is both simple and practicable,
+# while resulting in a meaningful and good simulation. It may not result in the absolutely highest possible dps.
+# Feel free to edit, adapt and improve it to your own needs.
+# SimulationCraft is always looking for updates and improvements to the default action lists.
+
+# Executed before combat begins. Accepts non-harmful actions only.
+actions.precombat=flask
+actions.precombat+=/food
+actions.precombat+=/augmentation
+# Snapshot raid buffed stats before combat begins and pre-potting is done.
+actions.precombat+=/snapshot_stats
+actions.precombat+=/use_item,name=azsharas_font_of_power
+actions.precombat+=/worldvein_resonance
+actions.precombat+=/memory_of_lucid_dreams
+actions.precombat+=/guardian_of_azeroth
+actions.precombat+=/recklessness
+actions.precombat+=/potion
+
+# Executed every time the actor is available.
+actions=auto_attack
+actions+=/charge
+# This is mostly to prevent cooldowns from being accidentally used during movement.
+actions+=/run_action_list,name=movement,if=movement.distance>5
+actions+=/heroic_leap,if=(raid_event.movement.distance>25&raid_event.movement.in>45)
+actions+=/rampage,if=cooldown.recklessness.remains<3&talent.reckless_abandon.enabled
+actions+=/blood_of_the_enemy,if=(buff.recklessness.up|cooldown.recklessness.remains<1)&(rage>80&(buff.meat_cleaver.up&buff.enrage.up|spell_targets.whirlwind=1)|dot.noxious_venom.remains)
+actions+=/purifying_blast,if=!buff.recklessness.up&!buff.siegebreaker.up
+actions+=/ripple_in_space,if=!buff.recklessness.up&!buff.siegebreaker.up
+actions+=/worldvein_resonance,if=!buff.recklessness.up&!buff.siegebreaker.up
+actions+=/focused_azerite_beam,if=!buff.recklessness.up&!buff.siegebreaker.up
+actions+=/reaping_flames,if=!buff.recklessness.up&!buff.siegebreaker.up
+actions+=/concentrated_flame,if=!buff.recklessness.up&!buff.siegebreaker.up&dot.concentrated_flame_burn.remains=0
+actions+=/the_unbound_force,if=buff.reckless_force.up
+actions+=/guardian_of_azeroth,if=!buff.recklessness.up&(target.time_to_die>195|target.health.pct<20)
+actions+=/memory_of_lucid_dreams,if=!buff.recklessness.up
+actions+=/recklessness,if=gcd.remains=0&(!essence.condensed_lifeforce.major&!essence.blood_of_the_enemy.major|cooldown.guardian_of_azeroth.remains>1|buff.guardian_of_azeroth.up|buff.blood_of_the_enemy.up)
+actions+=/whirlwind,if=spell_targets.whirlwind>1&!buff.meat_cleaver.up
+actions+=/blood_fury,if=buff.recklessness.up
+actions+=/berserking,if=buff.recklessness.up
+actions+=/lights_judgment,if=buff.recklessness.down&debuff.siegebreaker.down
+actions+=/fireblood,if=buff.recklessness.up
+actions+=/ancestral_call,if=buff.recklessness.up
+actions+=/bag_of_tricks,if=buff.recklessness.down&debuff.siegebreaker.down&buff.enrage.up
+actions+=/run_action_list,name=single_target
+
+actions.movement=heroic_leap
+
+actions.single_target=siegebreaker
+actions.single_target+=/rampage,if=(buff.recklessness.up|buff.memory_of_lucid_dreams.up)|(buff.enrage.remains<gcd|rage>90)
+actions.single_target+=/execute
+actions.single_target+=/bladestorm,if=prev_gcd.1.rampage
+actions.single_target+=/bloodthirst,if=buff.enrage.down|azerite.cold_steel_hot_blood.rank>1
+actions.single_target+=/Bloodbath,if=buff.enrage.down|azerite.cold_steel_hot_blood.rank>1
+actions.single_target+=/onslaught
+actions.single_target+=/dragon_roar,if=buff.enrage.up
+actions.single_target+=/raging_blow,if=charges=2
+actions.single_target+=/Crushing Blow,if=charges=2
+actions.single_target+=/bloodthirst
+actions.single_target+=/Bloodbath
+actions.single_target+=/raging_blow
+actions.single_target+=/Crushing Blow
+actions.single_target+=/whirlwind
+
+head=malignant_leviathans_headguard,id=173457,bonus_id=1505/4786/6505/4775,azerite_powers=13/15/31/582/119
+neck=heart_of_azeroth,id=158075,bonus_id=6316/4932/4933,ilevel=146,azerite_level=92
+shoulders=skyscorcher_pauldrons,id=159415,bonus_id=5448/1543/4786/6512/4775,azerite_powers=13/87/459/176/438
+back=ashjrakamas_shroud_of_resolve,id=169223,bonus_id=6580/1472
+chest=breastplate_of_the_vengeful,id=159448,bonus_id=5442/1513/4786/6504/4775,azerite_powers=13/44/31/193/176
+shirt=recruits_shirt,id=38
+tabard=loremasters_colors,id=43300
+wrists=malignant_leviathans_wristguards,id=173482,bonus_id=6412/6513/6578/1519/4786/6516
+hands=malignant_leviathans_gauntlets,id=173466,bonus_id=6412/6515/6578/1514/4786/6482/6470
+waist=welloiled_plate_girdle,id=169057,bonus_id=6536/4802/6516/6515/1514/4786,gems=7crit
+legs=petrified_wickerplate_greaves,id=159456,bonus_id=6536/6578/6515/1533/4786/6516
+feet=pyroclastic_greatboots,id=168972,bonus_id=6536/4802/6578/6579/6476/6470/6515/1524/4786,gems=7crit
+finger1=band_of_the_ancient_dredger,id=159461,bonus_id=6536/6516/6513/1533/4786,enchant=9crit
+finger2=charged_sandstone_band,id=158366,bonus_id=6536/6578/6515/1543/4786/6482/6470,enchant=9crit
+trinket1=awakened_alchemist_stone,id=171087,gems=7crit
+trinket2=briny_barnacle,id=159619,bonus_id=6536/6515/1533/4786
+main_hand=mutineers_fate,id=159972,bonus_id=6536/6513/1543/4786,enchant=deadly_navigation
+off_hand=devastations_hour,id=172187,bonus_id=4823/42/6578/1502/4786/6513/6482/6470,enchant=quick_navigation
+
+# Gear Summary
+# gear_ilvl=125.44
+# gear_strength=393
+# gear_stamina=709
+# gear_crit_rating=334
+# gear_haste_rating=179
+# gear_mastery_rating=147
+# gear_versatility_rating=79
+# gear_speed_rating=21
+# gear_corruption=80
+# gear_corruption_resistance=56
+# gear_armor=483

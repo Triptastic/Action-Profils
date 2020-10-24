@@ -1,0 +1,130 @@
+hunter="Rawdohunt"
+source=default
+spec=marksmanship
+level=50
+race=human
+role=attack
+position=ranged_back
+talents=0000000
+azerite_essences=0:0/300573/0:0/300575/300576/0:0/300577/312927/0:0/312928
+
+# Default consumables
+potion=unbridled_fury
+flask=greater_flask_of_the_currents
+food=bountiful_captains_feast
+augmentation=battle_scarred
+
+# This default action priority list is automatically created based on your character.
+# It is a attempt to provide you with a action list that is both simple and practicable,
+# while resulting in a meaningful and good simulation. It may not result in the absolutely highest possible dps.
+# Feel free to edit, adapt and improve it to your own needs.
+# SimulationCraft is always looking for updates and improvements to the default action lists.
+
+# Executed before combat begins. Accepts non-harmful actions only.
+actions.precombat=flask
+actions.precombat+=/augmentation
+actions.precombat+=/food
+# Snapshot raid buffed stats before combat begins and pre-potting is done.
+actions.precombat+=/snapshot_stats
+# Precast this as early as possible to potentially gain another cast during the fight.
+actions.precombat+=/double_tap,precast_time=10
+actions.precombat+=/use_item,name=azsharas_font_of_power
+actions.precombat+=/worldvein_resonance
+actions.precombat+=/guardian_of_azeroth
+actions.precombat+=/memory_of_lucid_dreams
+actions.precombat+=/trueshot,precast_time=1.5,if=active_enemies>2
+actions.precombat+=/potion,dynamic_prepot=1
+actions.precombat+=/aimed_shot,if=active_enemies<3
+
+# Executed every time the actor is available.
+actions=auto_shot
+actions+=/use_item,name=lurkers_insidious_gift,if=cooldown.trueshot.remains_guess<15|target.time_to_die<30
+actions+=/use_item,name=azsharas_font_of_power,if=(target.time_to_die>cooldown+34|target.health.pct<20|target.time_to_pct_20<15)&cooldown.trueshot.remains_guess<15|target.time_to_die<35
+actions+=/use_item,name=lustrous_golden_plumage,if=cooldown.trueshot.remains_guess<5|target.time_to_die<20
+actions+=/use_item,name=galecallers_boon,if=buff.trueshot.remains>14|!talent.calling_the_shots.enabled|target.time_to_die<10
+actions+=/use_item,name=ashvanes_razor_coral,if=buff.trueshot.remains>14&(buff.guardian_of_azeroth.up|!essence.condensed_lifeforce.major&ca_active)|debuff.razor_coral_debuff.down|target.time_to_die<20
+actions+=/use_item,name=pocketsized_computation_device,if=!buff.trueshot.up&!essence.blood_of_the_enemy.major|debuff.blood_of_the_enemy.up|target.time_to_die<5
+# Try to line up activated trinkets with Trueshot
+actions+=/use_items,if=buff.trueshot.remains>14|!talent.calling_the_shots.enabled|target.time_to_die<20
+actions+=/call_action_list,name=cds
+actions+=/call_action_list,name=st,if=active_enemies<3
+actions+=/call_action_list,name=trickshots,if=active_enemies>2
+
+actions.cds=double_tap,if=cooldown.rapid_fire.remains<gcd|cooldown.rapid_fire.remains<cooldown.aimed_shot.remains|target.time_to_die<20
+actions.cds+=/berserking,if=buff.trueshot.remains>14&(target.time_to_die>cooldown.berserking.duration+duration|(target.health.pct<20|!talent.careful_aim.enabled))|target.time_to_die<13
+actions.cds+=/blood_fury,if=buff.trueshot.remains>14&(target.time_to_die>cooldown.blood_fury.duration+duration|(target.health.pct<20|!talent.careful_aim.enabled))|target.time_to_die<16
+actions.cds+=/ancestral_call,if=buff.trueshot.remains>14&(target.time_to_die>cooldown.ancestral_call.duration+duration|(target.health.pct<20|!talent.careful_aim.enabled))|target.time_to_die<16
+actions.cds+=/fireblood,if=buff.trueshot.remains>14&(target.time_to_die>cooldown.fireblood.duration+duration|(target.health.pct<20|!talent.careful_aim.enabled))|target.time_to_die<9
+actions.cds+=/lights_judgment,if=buff.trueshot.down
+actions.cds+=/bag_of_tricks,if=buff.trueshot.down
+actions.cds+=/reaping_flames,if=buff.trueshot.down&(target.health.pct>80|target.health.pct<=20|target.time_to_pct_20>30)
+actions.cds+=/worldvein_resonance,if=(trinket.azsharas_font_of_power.cooldown.remains>20|!equipped.azsharas_font_of_power|target.time_to_die<trinket.azsharas_font_of_power.cooldown.duration+34&target.health.pct>20)&(cooldown.trueshot.remains_guess<3|(essence.vision_of_perfection.minor&target.time_to_die>cooldown+buff.worldvein_resonance.duration))|target.time_to_die<20
+actions.cds+=/guardian_of_azeroth,if=(ca_active|target.time_to_die>cooldown+30)&(buff.trueshot.up|cooldown.trueshot.remains<16)|target.time_to_die<31
+actions.cds+=/ripple_in_space,if=cooldown.trueshot.remains<7
+actions.cds+=/memory_of_lucid_dreams,if=!buff.trueshot.up
+actions.cds+=/potion,if=buff.trueshot.react&buff.bloodlust.react|buff.trueshot.remains>14&target.health.pct<20|((consumable.potion_of_unbridled_fury|consumable.unbridled_fury)&target.time_to_die<61|target.time_to_die<26)
+actions.cds+=/trueshot,if=buff.trueshot.down&cooldown.rapid_fire.remains|target.time_to_die<15
+
+actions.st=steady_shot,if=talent.steady_focus.enabled&prev_gcd.1.steady_shot&buff.steady_focus.remains<5
+actions.st+=/kill_shot
+actions.st+=/explosive_shot
+actions.st+=/barrage,if=active_enemies>1
+actions.st+=/a_murder_of_crows
+actions.st+=/volley
+actions.st+=/serpent_sting,if=refreshable&!action.serpent_sting.in_flight
+actions.st+=/rapid_fire,if=buff.trueshot.down|focus<35|focus<60&!talent.lethal_shots.enabled|buff.in_the_rhythm.remains<execute_time
+actions.st+=/blood_of_the_enemy,if=buff.trueshot.up&(buff.unerring_vision.stack>4|!azerite.unerring_vision.enabled)|target.time_to_die<11
+actions.st+=/focused_azerite_beam,if=!buff.trueshot.up|target.time_to_die<5
+actions.st+=/aimed_shot,if=buff.trueshot.up|(buff.double_tap.down|ca_active)&buff.precise_shots.down|full_recharge_time<cast_time&cooldown.trueshot.remains
+actions.st+=/purifying_blast,if=!buff.trueshot.up|target.time_to_die<8
+actions.st+=/concentrated_flame,if=focus+focus.regen*gcd<focus.max&buff.trueshot.down&(!dot.concentrated_flame_burn.remains&!action.concentrated_flame.in_flight)|full_recharge_time<gcd|target.time_to_die<5
+actions.st+=/the_unbound_force,if=buff.reckless_force.up|buff.reckless_force_counter.stack<10|target.time_to_die<5
+actions.st+=/arcane_shot,if=buff.trueshot.down&(buff.precise_shots.up&(focus>55)|focus>75|target.time_to_die<5)
+actions.st+=/chimaera_shot,if=buff.trueshot.down&(buff.precise_shots.up&(focus>55)|focus>75|target.time_to_die<5)
+actions.st+=/steady_shot
+
+actions.trickshots=kill_shot
+actions.trickshots+=/volley
+actions.trickshots+=/barrage
+actions.trickshots+=/explosive_shot
+actions.trickshots+=/aimed_shot,if=buff.trick_shots.up&ca_active&buff.double_tap.up
+actions.trickshots+=/rapid_fire,if=buff.trick_shots.up&(azerite.focused_fire.enabled|azerite.in_the_rhythm.rank>1|azerite.surging_shots.enabled|talent.streamline.enabled)
+actions.trickshots+=/aimed_shot,if=buff.trick_shots.up&(buff.precise_shots.down|cooldown.aimed_shot.full_recharge_time<action.aimed_shot.cast_time|buff.trueshot.up)
+actions.trickshots+=/rapid_fire,if=buff.trick_shots.up
+actions.trickshots+=/multishot,if=buff.trick_shots.down|buff.precise_shots.up&!buff.trueshot.up|focus>70
+actions.trickshots+=/focused_azerite_beam
+actions.trickshots+=/purifying_blast
+actions.trickshots+=/concentrated_flame
+actions.trickshots+=/blood_of_the_enemy,if=prev_gcd.1.volley|!talent.volley.enabled|target.time_to_die<11
+actions.trickshots+=/the_unbound_force,if=buff.reckless_force.up|buff.reckless_force_counter.stack<10
+actions.trickshots+=/a_murder_of_crows
+actions.trickshots+=/serpent_sting,if=refreshable&!action.serpent_sting.in_flight
+actions.trickshots+=/steady_shot
+
+head=sweetes_jeweled_headgear,id=155887,bonus_id=5448/1543/4786/6511/4775,azerite_powers=211/505/22/44/13
+neck=heart_of_azeroth,id=158075,bonus_id=4932/4933/6316/1556,azerite_level=88
+shoulders=cannoneers_mantle,id=159393,bonus_id=5445/1528/4786/6509/4775,azerite_powers=211/366/31/85/13
+back=ashjrakamas_shroud_of_resolve,id=169223,bonus_id=6582/1472
+chest=shrapneldampening_chestguard,id=158307,bonus_id=5448/1543/4786/6510/4775,azerite_powers=211/369/21/87/13
+wrists=arcglass_bindings,id=159380,bonus_id=6534/6516/6515/1533/4786
+hands=linked_pummeler_grips,id=159357,bonus_id=6534/6516/6515/1533/4786
+waist=belt_of_the_consecrated_tomb,id=159369,bonus_id=6534/6516/6513/1533/4786
+legs=breeches_of_the_sacred_hall,id=159313,bonus_id=6536/6516/6513/1533/4786
+feet=sabatons_of_coruscating_energy,id=159388,bonus_id=6536/6578/6579/6554/6513/1533/4786
+finger1=logic_loop_of_division,id=169157,bonus_id=6536/6516/6513/1514/4786,enchant_id=6108
+finger2=lord_waycrests_signet,id=158362,bonus_id=6536/6578/6579/6537/6513/1543/4786
+trinket1=harlans_loaded_dice,id=155881,bonus_id=6536/6513/1543/4786
+trinket2=lustrous_golden_plumage,id=159617,bonus_id=6534/6515/1533/4786
+main_hand=p.a.c.i.f.i.s.t._mk7,id=159639,bonus_id=6534/6516/6515/1533/4786,enchant_id=5950
+
+# Gear Summary
+# gear_ilvl=127.13
+# gear_agility=407
+# gear_stamina=667
+# gear_crit_rating=246
+# gear_haste_rating=158
+# gear_mastery_rating=92
+# gear_versatility_rating=128
+# gear_corruption=100
+# gear_corruption_resistance=62
+# gear_armor=333

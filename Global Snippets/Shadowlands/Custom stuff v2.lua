@@ -867,3 +867,4 @@ end
 --if TR.OptimalConfiguration ~= true then
 --    A.SendNotification("[WARNING]You are currently using Taste Rotations with outdated Action, please update.", 182530, 10, false)  
 --end	
+

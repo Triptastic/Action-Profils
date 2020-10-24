@@ -189,25 +189,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Enhancement Shaman !
 		
-List of latest changes :
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Fixed some Fury of Air logic (need feedbacks)
-- Fixed issue with Tremor Totem logic
-- Big UI update
-- New UnbridledFury settings
-- New Focused Azerite Beam settings
-- New buff refresh settings
-- New SkyFury settings
-- New Feral Lounge settings
-- New Counterstrike Totem settings
-- Added new conditions on Lavalash
-- Malestrom should be more used
-- Improved PvP Logics
-- Fixed Interrupts
-- Added logic for Counter Strike Totem				
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]  
 
 	end
@@ -225,21 +211,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Retribution Paladin !
 		
-List of latest changes :
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- Fixed bug with Cleanse
-- New : Blocked Spells Status Frame (see 2nd tab)
-- New UI settings
-- Added new condition for Unbridled Fury potion
-- Added new condition for Focused Azerite Beam
-- Templar Verdict now correctly used if AoE Disabled OR enemies around < 2
-- Fixed Wake of Ashes
-- Fixed Party Dispell texture icon
-- Fixed Divine Storm usage
-- Fixed Templar Verdict never used				
-- Added Interrupt UI settings
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]  
 					
 	end
@@ -249,14 +225,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Protection Paladin !
 		
-List of latest changes :
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Fixed Auto taunt issue
-- Fixed Consecration logic
-- Added moves in ProfileUI			
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]  
 					
 	end
@@ -268,22 +241,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    
 		***** TEST BUILD *****	
 		
-List of latest changes :
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- Lot of optimizations done
-- New mythic + logic
-- New raid logic
-- Lot of new UI settings available
-- Improved Glimmer spread
-- Added Quaking affix support
-- Added Bursting affix support
-- Fixed cooldowns logic ? 
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Fixed Auto taunt issue
-- Fixed Consecration logic
-- Added moves in ProfileUI			
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]  				
 	end
 
@@ -295,15 +257,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Affliction Warlock !
 		
-List of latest changes :
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Fixed lua error that stuck the rotation
-- Added Player ping to spells prediction
-- Fixed Fear spam in certain situations			
-- Added Interrupt UI settings
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]  
 					
 	end
@@ -313,24 +271,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Demonology Warlock !
 		
-List of latest changes :
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- Added Mortal Coil to spell list
-- Added Shadow Fury to spell list (Uncheck auto hide in tab3 if spell don't appear)
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Added CDs check on Summon Demonic Tyran and big cooldowns >= 2min
-- Third version of Imp Tracker system. Now really good ! NO MOAR LUA ERROR
-- Fixed issue with DreadStalkers
-- Added logic for PvP Fear (arena123)
-- Added Auto NetherWard in Arena if dangerous or cc is casted by unit
-- Pet Stun should be fixed now
-- Added more UI settings for Implosion
-- Added multiple range detection mode in ProfileUI		
-- Added Interrupt UI settings
+Rotations will stay in an unstable state until Shadowlands release.
 
-IMPORTANT: IF YOU SEE THE ROTATION IS NOT USING IMPLOSION AND YOU GOT SUFFISANT NUMBER OF IMPS THEN TRY A /RELOAD 		
-
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]  
 					
 	end
@@ -340,20 +285,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Destruction Warlock !
 		
-List of latest changes :
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- Fixed double Immolation issue
-- Added Check for Immolate and Explosives orbs
-- Force Conflagrate on Explosives orbs if ready
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Fixed the fix for Shards being capped at infinite...
-- Reworked AoE logic with Havoc
-- Fixed issue with Chaos Bolt not being used with 4+ shards
-- Fixed issue with Havoc pool when AoE is off
-- Fixed Fear spam issue
-- Added Interrupt UI settings
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]  
 					
 	end	
@@ -368,18 +304,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Arms Warrior !
 		
-List of latest changes :
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- Damn good optimization from Johan (thanks mate)
-- Fixed range check with Whirlwind and Warbreaker 
-- Added Smart reflect option 
-- Added Smart Stormbolt option
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Arms still missing some stuff but will be worked hard till its good ! (Feedback me)
-- Massive update for 8.3
-- Fixed issue with Battle Shout spam			
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]  
 					
 	end
@@ -389,20 +318,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Fury Warrior !
 		
-List of latest changes :
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- Damn good optimization from Johan (thanks mate)
-- Added Smart reflect option 
-- Added Smart Stormbolt option
-- Reimported discord optimized file
-- Fixed Stormbolt error
-- Adjusted some Rage values thanks to feedback !
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Better state than Arms (Need feedbacks !)
-- Massive update for 8.3
-- Fixed issue with Battle Shout spam				
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]  
 					
 	end
@@ -412,24 +332,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Protection Warrior !
 		
-List of latest changes :
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- Added Smart reflect option 
-- Added Smart Stormbolt option
-- Added New UI for ShieldBlock
-- Fixed issue with ThunderClap and massive haste amount
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Massive 8.3 update
-- Massive UI rework
-- Reworked all defensives logic
-- Fixed ShieldBlock used twice
-- Fixed Rallying Cry issue
-- Added UI for Rallying Cry
-- Heroic Throw fix
-- Victory Rush fix
-- Revenge free procs should now work as intended			
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]  
 					
 	end
@@ -443,18 +350,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Blood Death Knight !
 		
-List of latest changes :
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- Smart Asphyxiate in next build (Mythic+)
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Reworked all defensives logic
-- Fixed Auto Taunt
-- Fixed Arcane Torrent
-- Improved DnD logic
-- Added Area Time To Die for better AoE logic
-- Improved Death Strike logic			
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]  
 					
 	end
@@ -464,20 +364,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Frost Death Knight !
 		
-List of latest changes :
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- Smart Asphyxiate in next build (Mythic+)
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Improvement on Profile performance
-- APLs update to 8.3
-- Added Dummy Test option
-- Reworked Breath of Sindragosa 
-- Added new special macro for Breath of Sindragosa
-- Fixed Pillar of Frost not being used without Breath of Sindragosa
-- Added Memory of Lucid Dream UI
-- Reworked Defensives logic			
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]  
 					
 	end
@@ -487,23 +378,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Unholy Death Knight !
 		
-List of latest changes :
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- Smart Asphyxiate in next build (Mythic+)
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Fixed issue with rotation stucked in Mythic+
-- Improvement on Profile performance
-- APLs update to 8.3
-- Added Dummy Test option
-- Added PvP Features
-- Pet Summon fixed
-- Added UI for trinkets
-- Fixed Single Target Apocalypse usage		
-- Fixed Condensed Life Force logic
-- Fixed Scourge Strike usage
-- Reworked AoE logic with Feastering Wounds	
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]  
 					
 	end
@@ -517,23 +396,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Havoc Demon Hunter !
 		
-List of latest changes :
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- Fixed Reaping Flame Essence
-- Fixed latency check for channeled spells
-- Added missing option for Eyebeam when its totally disabled
-- Added special Twisted Appendage tentacles rotation
-- Improved ConsumeMagic dispell (should dispell more)
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Changed priority between Eyebeam and Deathsweep (Little dps increase)
-- Added UI for BladeDance pool/sync with Eyebeam
-- Added FelEruption + Manarift combo
-- Added Imprison + Manarift combo
-- Fixed DBM pull opener
-- Added UI for Felblade PvP
-			
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]  
 					
 	end
@@ -543,14 +410,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Vengeance Demon Hunter !
 		
-List of latest changes :
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Updated to 8.3 APLs
-- Added Imprison as interrupt
-- Fixed Concentrated Flame usage			
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]  
 					
 	end
@@ -564,18 +428,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Assassination Rogue !
 		
-List of latest changes :
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Fixed Rupture not being refreshed
-- Fixed Toxic Blade usage
-- Added check on Azerite Beam essence
-- Fixed Crimson Tempest talent
-- Updated APLs to 8.3
-- Added Toxic Blade pool UI settings
-- Reworked ST opener			
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]  
 					
 	end
@@ -585,18 +442,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Outlaw Rogue !
 		
-List of latest changes :
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Fixed Arcane Torrent logic
-- Improved Profile performance
-- Updated APLs to 8.3
-- Fixed Auto SAP out of combat
-- Update Marked For Death snipping on low health units
-- Added BladeFlurry UI settings
-- Added check on Azerite Beam essence				
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]  
 					
 	end
@@ -606,17 +456,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Subtely Rogue !
 		
-List of latest changes :
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- Fixed Shuriken AoE Logics
-- Fixed burst logic
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Improved Profile performance
-- Updated APLs to 8.3 (T25)
-- Update Marked For Death snipping on low health units
-- Added check on Azerite Beam essence				
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]
 					
 	end
@@ -630,33 +474,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - BeastMastery Hunter !
 
-List of latest changes :
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- Added Intimidation in spell list
-- New UI settings for Blood of the Enemy
-- New Mythic+ settings ! 
-- Aspect of the wild can be forced in Keys with Rapid Reload enabled
-- New AoE optimizations ! 
-- Fixed some wrong Cobra Shot calls
-- New UI settings for Multishot
-- Pet revive and heal should work
-- Added Masters Call and Survival of the Fittest
-- Added RapidReload check with Multishot when 4+ targets are present
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Changed priority of Barbed Shot
-- Changed default Barbed Shot refresh value from 1.8 to 2 considering feedbacks
-- Added check on pet type to avoid using spells they don't have
-- Reworked the AoE mode a little (don't forget to add pet spell in YOUR spellbar)
-- Added little padding and gutter to ProfileUI
-- Fixed chat spam cause of pet spell not being in player spell bar (see above)
-- Updated to 8.3 APLs
-- Bestial Wrath special UI settings
-- AoE detection fix
-- Added new AoE detection choice for user
-- Added Feign Death to avoid Thing from Beyond
-- Reworked AoE rotation to improve uptime on Frenzy buff
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]  
 					
 	end
@@ -666,16 +488,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Marksmanship Hunter !
 				
-        ***** TEST BUILD *****
-		
-- Updated to latest T25 APLs
-- Fixed most lua errors issues
-- Fixed interrupters spells
-- Added detection AoE system like BM
-- New UI settings
-- Test Release Need Feedbacks :) 
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-As always, please report on Discord or message me directly if you need anything !
+Rotations will stay in an unstable state until Shadowlands release.
+
+Thanks for comprehension.
 ]]
 					
 	end
@@ -685,13 +502,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Survival Hunter !
 				
-        ***** TEST BUILD *****
-		
-- Fixed Wildfire Infusions talent		
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Test Release Need Feedbacks :) 
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-As always, please report on Discord or message me directly if you need anything !
+Rotations will stay in an unstable state until Shadowlands release.
+
+Thanks for comprehension.
 ]]  
 					
 	end
@@ -705,21 +520,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Arcane Mage !
 		
-        ***** TEST BUILD *****
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- Fixed most trinket error
-- Fixed Arcane Explosion not always being used
-- Reworked Burn & Conserve phase and added mana check
-- Added auto Stop Cast on Evocation if we are full mana		
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Need feedback !!
-- Reworked all the rotation
-- Updated  to latest T25 APLs
-- Fixed most lua errors
-- Added Burn & Conserve logic
-				
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 
 ]]  				
 	end
@@ -729,16 +534,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Fire Mage !
 		
-        ***** TEST BUILD *****
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- Fixed FireBlast issue with double cast in a row
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Need feedback !!
-- Reworked all the rotation
-- Updated  to latest T25 APLs
-- Initial Test Release				
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 
 ]] 				
 	end
@@ -748,18 +548,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Frost Mage !
 		
-        ***** TEST BUILD *****
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- Fixed Ray of Frost not being properly used
-- Fixed IceLance & Flurry logic	
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Need feedback !!
-- Reworked all the rotation
-- Updated  to latest T25 APLs
-- Fixed most lua errors
-- Initial Test Release				
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 
 ]] 				
 	end
@@ -773,22 +566,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Balance Druid !
 		
-***** TEST BUILD *****
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- Fixed Futur Maelstrom prediction
-- Fixed Arcanic Pulsar logic
-- Reworked all UI
-- New Trinkets settings
-- New Azerite Beam settings
-- Fixed Streaking Star azerite special rotation (should not repeat two spells)
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Need feedback !!
-- Reworked all the rotation
-- Updated  to latest T25 APLs
-- Fixed most lua errors
-- Initial Test Release						
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]  
 					
 	end
@@ -798,36 +580,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Feral Druid !
 		
-        ***** TEST BUILD *****
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- Added Main support
-- Added fix to avoid double Regrowth
-- New : Blocked Spells Status Frame (see 2nd tab)
-- AutoWild Charge fix
-- Range Rotation option
-- Blood of the enemy AoE / CD options
-- Mass root Thing from Beyond 
-- Tigers Fury fix
-- Range check on most spells 
-- Death check on most spells
-- Added Entangling root on mouseover
-- Bear Form issue should be fixed (no more spam)
-- Trinkets range check
-- Reworked all the rotation
-- Added Thing From Below mouseover roots
-- Updated APLs to latest T25
-- Added Damage formula for all simc reference
-- Added AttackPowerDamageMod simc reference
-- Reworked all the UI 
-- Added Party dispell
-- Added IsUsablePPool (check next spell cost against primary ressource for pooling)
-- Added Wildcharge cat out of range
-- Added Wildcharge bear out of range
-- Added Stampeding Roar
-- Added Dash
-				
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]  
 					
 	end
@@ -856,20 +613,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Restoration Druid !
 		
-List of latest changes :
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-- Improved burst logic
-- Reworked Regrowth usage
-- Rotation is now less manavore (less spam)
-- Removed Prehot waiting for proper fixes
-- Fixed auto DPS feral rotation
-- New : Blocked Spells Status Frame (see 2nd tab)
-- Fixed Catweaving rotation
-- Reworked cooldowns usage
-- Added more notification for user
-- Profile performance improvements
+Rotations will stay in an unstable state until Shadowlands release.
 
-As always, please report on Discord or message me directly if you need anything !
+Thanks for comprehension.
 ]]  
 					
 	end
@@ -912,16 +660,11 @@ As always, please report on Discord or message me directly if you need anything 
 	    ChangeLog = [[
 		Welcome to Taste - Shadow Priest !
 
-- Fixed double vampiric Touch issue		
-- New Multidot UI settings
-- More improvements on AoE Cycle
-- Fixed error with mindsear
-- Fixed error with mindflay
-- Improved Shadowvoid usage
-- New reupdated all rotation to T25 APLs
-			
+Prepatch rotations are not optimized and are just a way to play until Shadowlands is out. 
 
-As always, please report on Discord or message me directly if you need anything !
+Rotations will stay in an unstable state until Shadowlands release.
+
+Thanks for comprehension.
 ]]  
 					
 	end

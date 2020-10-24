@@ -1,0 +1,1541 @@
+---
+--- 25.08.2019
+--- ============================ HEADER ============================
+local TMW                 = TMW
+local CNDT                 = TMW.CNDT
+local Env                 = CNDT.Env
+
+local A                 = Action 
+local strElemBuilder     = A.strElemBuilder
+
+local tableexist, pairs, setmetatable, unpack = tableexist, pairs, setmetatable, unpack
+local GetTotemInfo, GetSpellInfo, GetNetStats, GetInventoryItemID = GetTotemInfo, GetSpellInfo, GetNetStats, GetInventoryItemID
+local UnitExists, UnitIsPlayer, UnitClass, UnitCreatureType, UnitInRange, UnitInRaid, UnitInParty, UnitGUID, UnitPower, UnitPowerMax = 
+UnitExists, UnitIsPlayer, UnitClass, UnitCreatureType, UnitInRange, UnitInRaid, UnitInParty, UnitGUID, UnitPower, UnitPowerMax
+
+--- PSEUDO CLASS
+local function PseudoClass(methods)
+    local Class = setmetatable(methods, {
+            __call = function(self, ...)
+                self:New(...)
+                return self                 
+            end,
+    })
+    return Class
+end
+
+local Cache = {
+    bufer = {},    
+    newEl = function(this, inv, keyArg, func, ...)
+        if not this.bufer[func][keyArg] then 
+            this.bufer[func][keyArg] = {}
+        end 
+        this.bufer[func][keyArg].t = TMW.time + (inv or ACTION_CONST_CACHE_DEFAULT_TIMER_UNIT) + 0.001  -- Add small delay to make sure what it's not previous corroute  
+        this.bufer[func][keyArg].v = { func(...) } 
+        
+        return unpack(this.bufer[func][keyArg].v)
+    end,
+    Wrap = function(this, func, name)
+        if ACTION_CONST_CACHE_DISABLE then 
+            return func 
+        end 
+        
+        if not this.bufer[func] then 
+            this.bufer[func] = setmetatable({}, { __mode == "kv" })
+        end
+        
+        return function(...)   
+            -- The reason of all this view look is memory hungry eating, this way use less memory 
+            local self = ...        
+            local keyArg = strElemBuilder(UnitGUID(name) or name, ...)        
+            
+            if TMW.time > (this.bufer[func][keyArg] and this.bufer[func][keyArg].t or 0) then
+                return this:newEl(self.Refresh, keyArg, func, ...)
+            else
+                return unpack(this.bufer[func][keyArg].v)
+            end
+        end        
+    end,
+}
+
+--- ============================ Toggles ============================
+--- Note: /script TMW.CNDT.Env.Toggle("name here") 
+function Env.Toggle(name)
+    local statement
+    if name == "MOUSEOVER" then                 
+        if A.GetToggle(2, "mouseover") then 
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 2")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 1")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)        
+        else 
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 1")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 2")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        end    
+        A.GetToggle(2, "mouseover") = not A.GetToggle(2, "mouseover")
+        statement = A.GetToggle(2, "mouseover")        
+    end 
+    
+    if name == "TARGETTARGET" then         
+        if A.GetToggle(2, "targettarget") then 
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 4")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 3")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)        
+        else 
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 3")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 4")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        end    
+        A.GetToggle(2, "targettarget") = not A.GetToggle(2, "targettarget")
+        statement = A.GetToggle(2, "targettarget")        
+    end 
+    
+    if name == "AOE" then         
+        if A.GetToggle(2, "AoE") then 
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 6")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 5")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)        
+        else 
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 5")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 6")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        end   
+        A.GetToggle(2, "AoE") = not A.GetToggle(2, "AoE")
+        statement = A.GetToggle(2, "AoE")        
+    end 
+    
+    if name == "BURST" then         
+        if A.BurstIsON(unit) then 
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 8")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 7")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)        
+        else 
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 7")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 8")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        end
+        A.BurstIsON(unit) = not A.BurstIsON(unit)
+        statement = A.BurstIsON(unit)        
+    end 
+    
+    if name == "SELFDEFF" then         
+        if SelfDeff_Toggle then 
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 10")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 9")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)        
+        else 
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 9")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 10")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        end  
+        SelfDeff_Toggle = not SelfDeff_Toggle
+        statement = SelfDeff_Toggle        
+    end 
+    
+    if name == "TEAMDEFF" then         
+        if TeamDeff_Toggle then 
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 12")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 11")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)        
+        else 
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 11")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 12")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        end  
+        TeamDeff_Toggle = not TeamDeff_Toggle
+        statement = TeamDeff_Toggle        
+    end 
+    
+    if name == "LEVITATE" then         
+        if Levitate_Toggle then 
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 14")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 13")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)        
+        else 
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 13")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 14")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        end   
+        Levitate_Toggle = not Levitate_Toggle 
+        statement = Levitate_Toggle        
+    end 
+    
+    if name == "LEAPOFFAITH" then         
+        if LeapofFaith_Toggle then 
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 16")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 15")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)        
+        else 
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 15")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 16")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        end     
+        LeapofFaith_Toggle = not LeapofFaith_Toggle
+        statement = LeapofFaith_Toggle        
+    end 
+    
+    if name == "SPELLKICK" then         
+        if SpellKick_Toggle then 
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 18")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 17")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)        
+        else 
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 17")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 18")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        end  
+        SpellKick_Toggle = not SpellKick_Toggle
+        statement = SpellKick_Toggle        
+    end 
+    
+    if name == "PURJE" then         
+        if Purje_Toggle then            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 20")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 19")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        else            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 19")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 20")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)                    
+        end
+        Purje_Toggle = not Purje_Toggle
+        statement = Purje_Toggle             
+    end 
+    
+    if name == "DISPEL" then         
+        if Dispel_Toggle then            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 22")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 21")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        else            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 21")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 22")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)                    
+        end
+        Dispel_Toggle = not Dispel_Toggle
+        statement = Dispel_Toggle            
+    end 
+    
+    if name == "MASSDISPEL" then         
+        if MassDispel_Toggle then            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 24")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 23")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        else            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 23")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 24")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)                    
+        end
+        MassDispel_Toggle = not MassDispel_Toggle
+        statement = MassDispel_Toggle     
+    end 
+    
+    if name == "SHADOWPRIESTDISPEL" then         
+        if SPDispel_Toggle then            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 26")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 25")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        else            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 25")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 26")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)                    
+        end
+        SPDispel_Toggle = not SPDispel_Toggle
+        statement = SPDispel_Toggle          
+    end 
+    
+    if name == "KICK" then         
+        if Kick_Toggle then            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 28")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 27")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        else            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 27")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 28")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)                    
+        end
+        Kick_Toggle = not Kick_Toggle
+        statement = Kick_Toggle         
+    end 
+    
+    if name == "ANGELICFEATHER" then         
+        if AngelicFeather_Toggle then            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 30")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 29")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        else            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 29")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 30")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)                    
+        end
+        AngelicFeather_Toggle = not AngelicFeather_Toggle
+        statement = AngelicFeather_Toggle       
+    end 
+    
+    if name == "PENANCE" then         
+        if Penance_Toggle == "BOTH" then 
+            Penance_Toggle = "HEAL"
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 32")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 31")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        elseif Penance_Toggle == "HEAL" then    
+            Penance_Toggle = "DMG"
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 33")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 32")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        else 
+            Penance_Toggle = "BOTH"
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 33")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 31")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)            
+        end
+        statement = Penance_Toggle         
+    end 
+    
+    if name == "OPENER" then         
+        if Opener_Toggle then            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 35")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 34")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        else            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 34")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 35")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)                    
+        end
+        Opener_Toggle = not Opener_Toggle
+        statement = Opener_Toggle         
+    end 
+    
+    if name == "VAMPIRICEMBRACE" then         
+        if VampiricEmbrace_Toggle then            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 35")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 34")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        else            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 34")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 35")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)                    
+        end
+        VampiricEmbrace_Toggle = not VampiricEmbrace_Toggle
+        statement = VampiricEmbrace_Toggle        
+    end 
+    
+    if name == "HE:ABSORB" then         
+        if HE_Absorb then            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 40")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 39")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        else            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 39")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 40")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)                    
+        end
+        HE_Absorb = not HE_Absorb
+        statement = HE_Absorb           
+    end 
+    
+    if name == "HE:PETS" then         
+        if HE_Pets then            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 42")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 41")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        else            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 41")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 42")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)                    
+        end
+        HE_Pets = not HE_Pets
+        statement = HE_Pets          
+    end 
+    
+    if name == "HE:MODE" then         
+        if HE_Toggle == nil then  
+            HE_Toggle = "RAID"
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 44")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 43")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        elseif HE_Toggle == "RAID" then            
+            HE_Toggle = "TANK"
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 45")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 44")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)   
+        elseif HE_Toggle == "TANK" then
+            HE_Toggle = "HEALER"
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 46")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 45")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)          
+        elseif HE_Toggle == "HEALER" then 
+            HE_Toggle = "DAMAGER"
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 47")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 46")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)          
+        elseif HE_Toggle == "DAMAGER" then 
+            HE_Toggle = nil
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 43")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 47")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)          
+        end
+        statement = HE_Toggle or "ALL"        
+    end 
+    
+    if name == "ARENAKICK" then         
+        if ArenaKick_Toggle == "EVERYTHING" then  
+            ArenaKick_Toggle = "CHAIN CC"
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 50")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 49")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        elseif ArenaKick_Toggle == "CHAIN CC" then            
+            ArenaKick_Toggle = "AGRESSIVE"
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 51")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 50")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)   
+        elseif ArenaKick_Toggle == "AGRESSIVE" then
+            ArenaKick_Toggle = "DEFENSIVE"
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 52")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 51")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)          
+        elseif ArenaKick_Toggle == "DEFENSIVE" then 
+            ArenaKick_Toggle = "OFF"
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 53")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 52")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)          
+        elseif ArenaKick_Toggle == "OFF" then 
+            ArenaKick_Toggle = "EVERYTHING"
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 49")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 53")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)          
+        end
+        statement = ArenaKick_Toggle        
+    end 
+    
+    if name == "ARENACC" then         
+        if ArenaCC_Toggle == "EVERYTHING" then  
+            ArenaCC_Toggle = "CHAIN CC"
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 55")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 54")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        elseif ArenaCC_Toggle == "AGRESSIVE" then            
+            ArenaCC_Toggle = "DEFENSIVE"
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 56")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 55")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)   
+        elseif ArenaCC_Toggle == "DEFENSIVE" then
+            ArenaCC_Toggle = "OFF"
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 57")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 56")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)          
+        elseif ArenaCC_Toggle == "OFF" then 
+            ArenaCC_Toggle = "EVERYTHING"
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 54")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 57")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)              
+        end
+        statement = ArenaCC_Toggle       
+    end     
+    
+    if name == "CC" then         
+        if CC_Toggle then            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 59")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 58")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        else            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 58")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 59")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)                    
+        end
+        CC_Toggle = not CC_Toggle
+        statement = CC_Toggle         
+    end 
+    
+    if name == "BREAKABLECHECKCC" then         
+        if BreakAbleCheckCC_Toggle then            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 61")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 60")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        else            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 60")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 61")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)                    
+        end
+        BreakAbleCheckCC_Toggle = not BreakAbleCheckCC_Toggle
+        statement = BreakAbleCheckCC_Toggle         
+    end     
+    
+    if name == "HE:ATONEMENT/RENEW" then         
+        if AtonementRenew_Toggle then            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 63")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 62")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+        else            
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw enable " .. ptgroup .. " 62")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)
+            DEFAULT_CHAT_FRAME.editBox:SetText("/tmw disable " .. ptgroup .. " 63")
+            ChatEdit_SendText(DEFAULT_CHAT_FRAME.editBox, 0)                    
+        end
+        AtonementRenew_Toggle = not AtonementRenew_Toggle
+        statement = AtonementRenew_Toggle         
+    end    
+    
+    DEFAULT_CHAT_FRAME.editBox:SetHistoryLines(1)
+    DEFAULT_CHAT_FRAME.editBox:AddHistoryLine("")
+    print("[Priest] Toggle " .. name .. ": " .. tostring(statement))
+end 
+
+--- ============================ CONTENT ============================
+--- Unit to heal conditions
+TR.CanHeal = PseudoClass({
+        Mouse = Cache:Wrap(function(self, isPlayer)       
+                return 
+                A.GetToggle(2, "mouseover") and
+                A.MouseHasFrame() and
+                Unit("mouseover"):IsExists() and
+                not Unit("mouseover"):IsEnemy() and
+                ( not isPlayer or Unit("mouseover"):IsPlayer() ) and
+                (
+                    -- Mass Dispel     
+                    self.SpellID == 32375 or
+                    Unit("mouseover"):DeBuffCyclone() <= self.CastTime
+                )  
+        end, "mouseover"),
+        Target = Cache:Wrap(function(self, isPlayer)       
+                return 
+                (
+                    not A.GetToggle(2, "mouseover") or 
+                    not Unit("mouseover"):IsExists() or 
+                    Unit("mouseover"):IsEnemy()
+                ) and        
+                not Unit("target"):IsEnemy() and
+                ( not isPlayer or Unit("target"):IsPlayer() ) and
+                (
+                    -- Mass Dispel
+                    self.SpellID == 32375 or
+                    Unit("target"):DeBuffCyclone() <= self.CastTime                 
+                )    
+        end, "target"),
+})
+function Env.CanHeal:New(Spell, Refresh) 
+    -- Exception Penance (this is for Cyclone prediction)
+    self.CastTime = (Spell and Spell ~= 47540 and Unit("player"):CastTime(Spell)) or 0
+    self.SpellID = Spell or 0 
+    self.Refresh = Refresh or 0.01
+end
+
+--- Unit to damage conditions
+Env.CanDMG = PseudoClass({
+        Mouse = Cache:Wrap(function (self, isPlayer)       
+                return 
+                A.GetToggle(2, "mouseover") and
+                Unit("mouseover"):IsEnemy() and
+                ( not isPlayer or Unit("mouseover"):IsPlayer() ) and
+                Unit("mouseover"):DeBuffCyclone() <= self.CastTime and 
+                -- 107079 Pandaren Kick, 232633 Arcane Torrent 
+                ( self.SpellID == 107079 or self.SpellID == 232633 or not A.IsInPvP or Unit("mouseover"):WithOutKarmed() )
+        end, "mouseover"),
+        Target = Cache:Wrap(function (self, isPlayer)       
+                return 
+                (
+                    not A.GetToggle(2, "mouseover") or
+                    not A.MouseHasFrame()
+                ) and        
+                Unit("target"):IsEnemy() and
+                ( not isPlayer or Unit("target"):IsPlayer() ) and
+                Unit("target"):DeBuffCyclone() <= self.CastTime and 
+                -- 107079 Pandaren Kick, 232633 Arcane Torrent 
+                ( self.SpellID == 107079 or self.SpellID == 232633 or not A.IsInPvP or Unit("target"):WithOutKarmed() )  
+        end, "target"),
+        TargetTarget = Cache:Wrap(function (self, isPlayer)   
+                if not A.GetToggle(2, "targettarget") then 
+                    return false 
+                end 
+                local NotInLOS = true 
+                if LOSCheck then 
+                    local TimeLOS = Env.oPR["TargetTargetLOS"][UnitGUID("targettarget")] or 0
+                    NotInLOS = not TimeLOS or TMW.time - TimeLOS > 0
+                end     
+                return 
+                (
+                    not A.GetToggle(2, "mouseover") or
+                    not A.MouseHasFrame() or
+                    not Unit("mouseover"):IsEnemy()
+                ) and
+                -- LOS Checking
+                NotInLOS and 
+                -- Exception to don't pull by mistake mob
+                Unit("targettarget"):CombatTime() > 0 and
+                not Unit("target"):IsEnemy() and
+                Unit("targettarget"):IsEnemy() and
+                ( not isPlayer or UnitIsPlayer("targettarget") ) and
+                Unit("targettarget"):DeBuffCyclone() <= self.CastTime and 
+                -- 107079 Pandaren Kick, 232633 Arcane Torrent 
+                ( self.SpellID == 107079 or self.SpellID == 232633 or not A.IsInPvP or Unit("targettarget"):WithOutKarmed() )  
+        end, "targettarget"),
+})
+
+function Env.CanDMG:New(Spell, Refresh) 
+    -- Exception Penance (this is for Cyclone prediction)
+    self.CastTime = (Spell and Spell ~= 47540 and Unit("player"):CastTime(Spell)) or 0
+    self.SpellID = Spell or 0
+    self.Refresh = Refresh or 0.01
+end
+
+--- ============================= CORE ==============================
+Env.oPR = {
+    ["TargetTargetLOS"] = {},
+    ["active_enemies"] = 0,
+}
+Env.oPRBurstBuffs = {
+    [256] = 197871, -- Discipline
+    --[257] = {}, -- Holy
+    [258] = 194249, -- Shadow
+}
+
+function Env.RefreshoPR()
+    Env.oPR["DamageSpellRace"] = Env.SpellRace("DAMAGE")
+    Env.oPR["pBurst"] = Env.pBurst()
+    -- Discipline
+    if Env.UNITSpec("player", 256) then 
+        local CurrentSpeed = Env.Unit("player"):GetCurrentSpeed()
+        -- HealingEngine 
+        A.HealingEngine.GetMembersAll() = HealingEngine.GetMembersAll()
+        -- Penance
+        Env.oPR["IsChanneling"] = select(2, Unit("player"):CastTime(47540)) > select(4, GetNetStats()) / 1000
+        -- Applied Atonement Count
+        Env.oPR["Atonements"] = HealingEngine.GetBuffsCount(81749, Env.CurrentTimeGCD())
+        Env.oPR["AtonementHPS"] = getDPS("player") * 0.55
+        -- Member's controllers
+        Env.oPR["Frequency"] = FrequencyAHP(Env.GCD() * 3 + Env.CurrentTimeGCD())
+        -- Enemies 
+        Env.oPR["AoE12"] = AoE(nil, 12)
+        Env.oPR["AoE30"] = (Env.TalentLearn(120517) and Env.SpellUsable(120517) and AoE(nil, 30)) or 0
+        -- AoE healing 
+        -- Toggle dependence
+        Env.oPR["CanHealPWR"] = A.GetToggle(2, "AoE") and not Env.oPR["IsChanneling"] and (CurrentSpeed == 0 or (A.IsInPvP and Env.PvPTalentLearn(236499))) and Env.SpellUsable(194509) and Env.CanHealPWR() 
+        Env.oPR["CanHealHalo"] = A.GetToggle(2, "AoE") and not Env.oPR["IsChanneling"] and Env.TalentLearn(120517) and CurrentSpeed == 0 and Env.SpellUsable(120517) and Env.CanHealHalo() 
+        Env.oPR["CanHealShadowCovenant"] = A.GetToggle(2, "AoE") and not Env.oPR["IsChanneling"] and A.ShadowCovenant:IsSpellLearned() and Env.SpellUsable(204065) and Env.CanHealShadowCovenant()   
+        -- Always checking
+        Env.oPR["CanEvangelism"] = not Env.oPR["IsChanneling"] and Env.TalentLearn(246287) and Env.SpellUsable(246287) and Env.CanEvangelism()
+        Env.oPR["CanHealHolyNova"] = not Env.oPR["IsChanneling"] and Env.CanHealHolyNova()        
+    end 
+    -- Holy 
+    if Env.UNITSpec("player", 257) then 
+        local CurrentSpeed = Env.Unit("player"):GetCurrentSpeed()
+        -- HealingEngine 
+        A.HealingEngine.GetMembersAll() = HealingEngine.GetMembersAll()
+        -- Symvol of Hope & Divine Hymn
+        Env.oPR["IsChanneling"] = select(2, Unit("player"):CastTime(64901)) > 0 or select(2, Unit("player"):CastTime(64843)) > 0
+        -- Apotheosis
+        Env.oPR["Apotheosis"] = (Env.TalentLearn(200183) and Env.Unit("player"):HasBuffs(200183, "player")) or 0
+        -- Member's controllers
+        Env.oPR["Frequency"] = FrequencyAHP(Env.GCD() * 3 + Env.CurrentTimeGCD())
+        -- Enemies >= 2
+        Env.oPR["AoE12"] = AoE(2, 12)
+        -- AoE healing 
+        Env.oPR["CanHealHalo"] = A.GetToggle(2, "AoE") and not Env.oPR["IsChanneling"] and Env.TalentLearn(120517) and CurrentSpeed == 0 and Env.SpellUsable(120517) and Env.CanHealHaloHOLY() 
+    end 
+    -- Shadow 
+    if Env.UNITSpec("player", 258) then         
+        -- Void Torrent
+        Env.oPR["IsChanneling"] = select(2, Unit("player"):CastTime(263165)) > 0
+        -- Enemies 
+        Env.oPR["active_enemies"] = active_enemies() or 0
+        Env.oPR["MultiDots"] = MultiDots(40, 34914, 10, 1)
+        -- Misc 
+        Env.oPR["VoidFormStack"] = Env.BuffStack("player", 194249, "player") or 0
+        Env.oPR["VoidFormDrain"] = 6 + 0.68 * Env.oPR["VoidFormStack"]
+        Env.oPR["SurrenderedToMadness"] = Env.Unit("player"):HasBuffs(263406, "player")
+        -- PvP 
+        Env.oPR["BreakAbleCC-Condition"] = 
+        not BreakAbleCheckCC_Toggle or
+        not A.IsInPvP or
+        Zone ~= "pvp" or
+        not Env.EnemyTeam("HEALER", 1):IsBreakAble(40)    
+    end 
+end
+
+--- TargetTarget LOS 
+Listener:Add('PriestUI_Events', "UI_ERROR_MESSAGE", function(...)    
+        if LOSCheck and select(2, ...) == ACTION_CONST_SPELL_FAILED_LINE_OF_SIGHT and Env.CanDMG():TargetTarget() then          
+            Env.oPR["TargetTargetLOS"][UnitGUID("targettarget")] = TMW.time + 5
+        end
+end)
+
+--- Reset
+for k, v in pairs({"PLAYER_ENTERING_WORLD", "ACTIVE_TALENT_GROUP_CHANGED", "PLAYER_SPECIALIZATION_CHANGED"}) do
+    Listener:Add('PriestReset_Events', v, function()
+            Env.RefreshoPR()
+            -- Discipline Resets 
+            Env.oPR["IsChanneling"] = false            
+    end)
+end
+Env.oPR["IsChanneling"] = false    
+
+Listener:Add('PriestReset_Events', 'PLAYER_REGEN_ENABLED', function()
+        if Env.oPR["TargetTargetLOS"] and TrailOfLightGUID then 
+            wipe(Env.oPR["TargetTargetLOS"])     
+            wipe(TrailOfLightGUID)
+        end 
+end)
+
+Listener:Add('PriestReset_Events', 'PLAYER_REGEN_DISABLED', function()
+        if Env.oPR["TargetTargetLOS"] and TrailOfLightGUID then 
+            wipe(Env.oPR["TargetTargetLOS"])     
+            wipe(TrailOfLightGUID)
+        end 
+end)
+
+--- ========================== FUNCTIONAL ===========================
+function Env.MassDispel(unit)
+    return     
+    MassDispel_Toggle and     
+    Env.SpellUsable(32375) and
+    UnitExists(unit) and      
+    (
+        -- Enemy 
+        (
+            Env.Unit(unit):IsEnemy() and
+            Env.Unit(unit):GetRange() <= 30 and 
+            (
+                -- PvP 
+                (
+                    A.IsInPvP and 
+                    Env.Unit(unit):HasBuffs("ImportantPurje") > 3
+                ) or
+                -- PvE 
+                (
+                    not A.IsInPvP and 
+                    (
+                        Env.UNITPW("player") > 50 or 
+                        -- Inervate
+                        Env.Unit("player"):HasBuffs(29166) > 0
+                    ) and 
+                    Env.Unit(unit):HasBuffs("PvEPurje") > 3
+                )
+            )            
+        ) or
+        -- Friendly 
+        (
+            not Env.Unit(unit):IsEnemy() and
+            Env.LastPlayerCastID ~= 527 and -- Cleanse (normal dispel)
+            UnitInRange(unit) and 
+            (
+                -- PvP 
+                (
+                    A.IsInPvP and 
+                    (
+                        -- Mind Control (exactly Buff)
+                        Env.Unit(unit):HasBuffs(605) > 0 or 
+                        (
+                            ( 
+                                Env.UNITPW("player") > 50 or                                 
+                                -- Inervate
+                                Env.Unit("player"):HasBuffs(29166) > 0
+                            ) and 
+                            Env.Unit(unit):HasDeBuffs("Magic") > 3
+                        ) or
+                        Env.Unit(unit):DeBuffCyclone() > Unit("player"):CastTime(32375)
+                    )
+                ) or 
+                -- PvE 
+                (
+                    not A.IsInPvP and
+                    (
+                        Env.UNITPW("player") > 60 or 
+                        -- Inervate
+                        Env.Unit("player"):HasBuffs(29166) > 0
+                    ) and 
+                    Env.PvEDispel(unit)
+                )
+            )
+        )
+    )    
+end
+
+function Env.Dispel(unit, ICON)
+    return
+    (
+        MacroSpells(ICON, "Dispel") or
+        Dispel_Toggle
+    ) and
+    Env.SpellUsable(527) and
+    UnitExists(unit) and
+    not Env.InLOS(unit) and      
+    Env.SpellInRange(unit, 527) and    
+    Env.LastPlayerCastID ~= 527 and
+    Env.Unit(unit):DeBuffCyclone() == 0 and
+    (
+        (
+            A.IsInPvP and 
+            (                             
+                Env.Unit(unit):HasDeBuffs("Magic") > 2 or
+                (
+                    select(2, UnitClass(unit)) ~= "DRUID" and
+                    Env.Unit(unit):IsMelee() and
+                    Env.Unit(unit):HasDeBuffs("MagicRooted") > 2
+                )
+            ) 
+        ) or 
+        (
+            not A.IsInPvP and 
+            Env.PvEDispel(unit)
+        )
+    )
+end
+
+function Env.Purje(unit, ICON)
+    return
+    (
+        MacroSpells(ICON, "Dispel") or
+        Purje_Toggle
+    ) and
+    Env.SpellUsable(528) and
+    UnitExists(unit) and    
+    not Env.InLOS(unit) and  
+    Env.SpellInRange(unit, 528) and   
+    Env.Unit(unit):DeBuffCyclone() == 0 and    
+    (
+        (
+            A.IsInPvP and 
+            (                             
+                -- Friendly Mind Control (this is a BUFF type)
+                (
+                    (UnitInRaid(unit) or UnitInParty(unit)) and                     
+                    Env.Unit(unit):HasBuffs(605) > 0
+                ) or
+                -- Enemy 
+                (
+                    Env.Unit(unit):IsEnemy() and 
+                    not UnitInRaid(unit) and 
+                    not UnitInParty(unit) and 
+                    (
+                        Env.Unit(unit):HasBuffs("ImportantPurje") > Env.CurrentTimeGCD() or 
+                        Env.Unit(unit):HasBuffs("SecondPurje") > Env.CurrentTimeGCD()
+                    )
+                )
+            ) 
+        ) or 
+        (
+            not A.IsInPvP and 
+            Env.Unit(unit):IsEnemy() and 
+            Env.Unit(unit):HasBuffs("PvEPurje") > Env.CurrentTimeGCD()
+        )
+    )
+end
+
+function Env.Shadowfiend()
+    local have, name, start, duration = GetTotemInfo(1)
+    return duration and duration ~= 0 and (duration - (TMW.time - start)) or 0
+end
+
+function Env.pBurst()
+    local sf = Env.Shadowfiend()
+    local spec_burst = (Env.oPRBurstBuffs[Env.PlayerSpec] and Env.Unit("player"):HasBuffs(Env.oPRBurstBuffs[Env.PlayerSpec], "player")) or 0
+    local heroism = Env.Unit("player"):HasBuffs("BurstHaste")
+    local racial = (Env.oPR["DamageSpellRace"] and Env.Unit("player"):HasBuffs(Env.oPR["DamageSpellRace"], "player")) or 0
+    return (sf > 0 and sf) or (spec_burst > 0 and spec_burst) or (heroism > 0 and heroism) or (Env.oPR["DamageSpellRace"] and racial > 0 and racial) or 0
+end
+
+--- PvE
+function Env.WipeAgro()
+    local units = GetActiveUnitPlates("enemy")
+    if tableexist(units) then
+        for k, unit in pairs(units) do
+            if CombatTime(unit) > 0 and Env.UNITAgro("player", unit) then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+function Env.UnitIsUndead(unit)
+    return A.Unit(unit):IsUndead()
+end
+
+--- PvP
+function Env.UnitMagicImun(unit)
+    local total = Env.Unit(unit):HasBuffs("TotalImun")
+    if total > 0 then
+        return total
+    end
+    total = Env.Unit(unit):HasBuffs("DamageMagicImun")
+    return total
+end
+
+function Env.UnitPhysImun(unit)
+    local total = Env.Unit(unit):HasBuffs("TotalImun")
+    if total > 0 then
+        return total
+    end
+    total = Env.Unit(unit):HasBuffs("DamagePhysImun")
+    return total
+end
+
+function Env.UnitInCC(unit)
+    local total = Env.Unit(unit):HasDeBuffs("Silenced")
+    if total > 0 then
+        return total
+    end
+    total = Env.Unit(unit):HasDeBuffs("Stuned")
+    if total > 0 then
+        return total
+    end
+    total = Env.Unit(unit):HasDeBuffs("Sleep")
+    if total > 0 then
+        return total
+    end
+    total = Env.Unit(unit):HasDeBuffs("Charmed")
+    if total > 0 then
+        return total
+    end
+    total = Env.Unit(unit):HasDeBuffs("Fear")
+    if total > 0 then
+        return total
+    end
+    total = Env.Unit(unit):HasDeBuffs("Disoriented")
+    if total > 0 then
+        return total
+    end
+    total = Env.Unit(unit):HasDeBuffs("Incapacitated")
+    if total > 0 then
+        return total
+    end
+    total = Env.Unit(unit):HasDeBuffs("CrowdControl")
+    return total
+end 
+
+function Env.AntiFakeFear(unitID)
+    local statement = 0  
+    if not unitID then 
+        local units = GetActiveUnitPlates("enemy")     
+        if tableexist(units) then 
+            -- Query by NamePlates
+            for k, unit in pairs(units) do
+                -- In Range and NO Imun and NO Tremor Totem  
+                if Env.Unit(unit):GetRange() <= 8 then 
+                    statement = statement + 1
+                    if Env.UnitMagicImun(unit) > 0 or Env.Unit(unit):HasBuffs(8143) > 0 then
+                        return false
+                    end 
+                end
+            end
+        elseif Env.PvPCache["Group_EnemySize"] and Env.PvPCache["Group_EnemySize"] > 0 then  
+            -- Query by UnitID if nameplates are empty (disabled for example)
+            for i = 1, Env.PvPCache["Group_EnemySize"] do
+                local arena = "arena" .. i
+                -- In Range and NO Imun and NO Tremor Totem  
+                if Env.Unit(arena):GetRange() <= 8 then 
+                    statement = statement + 1
+                    if Env.UnitMagicImun(arena) > 0 or Env.Unit(arena):HasBuffs(8143) > 0 then
+                        return false
+                    end 
+                end
+            end        
+        end
+    else
+        -- In Range and NO Imun and NO Tremor
+        if Env.Unit(unitID):GetRange() <= 8 and Env.UnitMagicImun(unitID) == 0 and Env.Unit(unitID):HasBuffs(8143) == 0 then 
+            statement = 1
+        end 
+    end 
+    return statement > 0 
+end
+
+function Env.PvPSpellKick(unitID)
+    for k, v in pairs(Env.GetAuraList("AllPvPKickCasts")) do
+        if select(2, Unit("player"):CastTime(v, unitID)) > Env.CurrentTimeGCD() then 
+            return true 
+        end 
+    end 
+    return false 
+end 
+
+-- Function which return true if enemy healer in range without CC and Imun for Fear
+function Env.HealerFearPvP()
+    if tableexist(Env.PvPCache["EnemyHealerUnitID"]) then  
+        for unit in pairs(Env.PvPCache["EnemyHealerUnitID"]) do
+            -- If enemy healer in range and No CC and No Imun
+            if not UnitIsUnit("target", unit) and Env.Unit(unit):GetRange() <= 8 and Env.UnitMagicImun(unit) <= Env.CurrentTimeGCD() and Env.Unit(unit):HasBuffs("FearImun") <= Env.CurrentTimeGCD() and Env.UnitInCC(unit) <= Env.CurrentTimeGCD() then
+                return true 
+            end             
+        end        
+    end
+    return false
+end
+
+function Env.IsItemDPS(slot)
+    return Env.Item(slot):IsDPS()
+end
+
+function Env.IsItemDEFF(slot)
+    return Env.Item(slot):IsDEFF()
+end
+
+--- ========================== Discipline ============================
+--- SINGLE
+--- When switch damage to heal (when we will heal by ShadowMend and Penance single target)
+function Env.IsNotEnoughAtonementHPS(unit) 
+    return 
+    CombatTime(unit) == 0 or 
+    -- NO Atonement 
+    Env.Unit(unit):HasBuffs(81749, "player") <= Env.CurrentTimeGCD() or 
+    (
+        Env.oPR["AtonementHPS"] and 
+        Env.oPR["AtonementHPS"] > 0 and 
+        (
+            (
+                HE_Absorb and
+                incdmg(unit) > Env.oPR["AtonementHPS"] + getAbsorb(unit, 17) 
+            ) or 
+            (
+                not HE_Absorb and 
+                incdmg(unit) > Env.oPR["AtonementHPS"]
+            )
+        )
+    )
+end
+
+--- AOE ( 2+ units minimum )
+--- Only players for Rapture
+function Env.CanRaptureAoE(hp) 
+    local members = A.HealingEngine.GetMembersAll()    
+    if tableexist(members) then 
+        local total = 0    
+        local valid = AoEMembers(true, 2, math.floor((10 - (Env.GCD() + Env.CurrentTimeGCD())) / (Env.GCD() + Env.CurrentTimeGCD())))
+        if valid > 1 then 
+            for i = 1, #members do
+                if UnitIsPlayer(members[i].Unit) and (not hp or Env.UNITHP(members[i].Unit) <= hp) then 
+                    local predicted, amount = Env.PredictHeal("PW:S", members[i].Unit, 300)
+                    -- If can predicted heal
+                    if predicted then                     
+                        total = total + 1 
+                    end 
+                end 
+                
+                -- If we reached count of units to shield them                 
+                if total >= valid then 
+                    return true 
+                end 
+            end
+        end 
+    end 
+    return false 
+end 
+
+function Env.CanHealPenanceDMG()
+    local members = A.HealingEngine.GetMembersAll()
+    if tableexist(members) and #members > 1 then 
+        local total, totalamount = 0, 0
+        for i = 1, #members do
+            -- Applied Atonement while channeling Penance and predicted for PenanceDMG        
+            if Env.Unit(members[i].Unit):HasBuffs(81749, "player") > Unit("player"):CastTime(47540) then
+                local predicted, amount = Env.PredictHeal("PenanceDMG", members[i].Unit)
+                if predicted then 
+                    total = total + 1
+                    totalamount = totalamount + amount
+                end
+            end
+            
+            -- If we reached >= 2 possible to heal as damage by Penance             
+            if total >= 2 and totalamount >= Env.GetDescription(47540)[1] then 
+                return true 
+            end 
+        end
+    end 
+    return false 
+end 
+
+function Env.CanHealShadowCovenant()
+    local members, validmembers = A.HealingEngine.GetMembersAll(), AoEMembers(nil, 3, 4)
+    local total = 0
+    if tableexist(members) and validmembers > 1 then 
+        for i = 1, #members do            
+            if Env.PredictHeal("ShadowCovenant", members[i].Unit) then
+                total = total + 1
+            end
+            -- If we reached count of units depend on valid in range units                 
+            if total >= validmembers then 
+                return true 
+            end 
+        end
+    end 
+    return false 
+end 
+
+-- Only players for Evangelism and if we reached near max possible count Atonements buffs
+function Env.CanEvangelism()
+    local members, validmembers = A.HealingEngine.GetMembersAll(), AoEMembers(true, 1, 5)
+    local total = 0
+    if tableexist(members) and validmembers >= 2 then 
+        for i = 1, #members do
+            -- IsPlayer and has Atonement    
+            if UnitIsPlayer(members[i].Unit) and Env.Unit(members[i].Unit):HasBuffs(81749, "player") > Env.CurrentTimeGCD() then
+                total = total + 1
+            end
+            -- If we reached count of units depend on valid in range units                 
+            if total >= validmembers then 
+                return true 
+            end 
+        end
+    end 
+    return false 
+end 
+
+--- When cast Power Word: Radiance 
+function Env.CanHealPWR()    
+    if Env.Zone == "none" then 
+        return true 
+    else
+        local members, validmembers = A.HealingEngine.GetMembersAll(), AoEMembers(nil, 2, 4)
+        local total = 0
+        if tableexist(members) and validmembers > 1 then 
+            for i = 1, #members do
+                -- Spell PWR in range and NO Atonement and predicted for PWR
+                -- Env.SpellInRange(members[i].Unit, 194509) and -- its already in range by "members" 40yards
+                if Env.Unit(members[i].Unit):HasBuffs(81749, "player") <= Unit("player"):CastTime(194509) + Env.CurrentTimeGCD() and Env.PredictHeal("PW:R", members[i].Unit) then
+                    total = total + 1
+                end
+                -- If we reached count of units depend on valid in range units                 
+                if total >= validmembers then 
+                    return true 
+                end 
+            end
+        end 
+    end 
+    return false 
+end 
+
+--- AoE ( no units limit - limit by ShadowMend )
+--- When cast Holy Nova for profit heal 
+function Env.CanHealHolyNova() 
+    local members = A.HealingEngine.GetMembersAll()    
+    if tableexist(members) and (not A.IsInPvP or not Env.EnemyTeam():IsBreakAble(12)) then 
+        local total = 0
+        local Enemies = Env.oPR["AoE12"] or 0
+        for i = 1, #members do                
+            -- In range
+            if Env.Unit(members[i].Unit):GetRange() <= 12 then
+                local predicted, amount = Env.PredictHeal("HolyNova", members[i].Unit, nil, Enemies)
+                -- If can predicted heal
+                if predicted then 
+                    -- SummUp output healing by that 
+                    total = total + amount 
+                end 
+            end
+            -- If we reached condition when HolyNova heals more than ShadowMend                 
+            if total >= Env.GetDescription(186263)[1] then 
+                return true 
+            end 
+        end
+    end 
+    return false 
+end 
+
+function Env.CanHealHalo(VARIATION) 
+    local members = A.HealingEngine.GetMembersAll()    
+    if tableexist(members) and (not A.IsInPvP or not Env.EnemyTeam():IsBreakAble(30)) then 
+        local total = 0
+        local Enemies = Env.oPR["AoE30"] or 0
+        for i = 1, #members do    
+            -- In range
+            if Env.Unit(members[i].Unit):GetRange() <= 30 then
+                local predicted, amount = Env.PredictHeal("Halo", members[i].Unit, VARIATION, Enemies)
+                -- If can predicted heal
+                if predicted then 
+                    -- SummUp output healing by that 
+                    total = total + amount 
+                end 
+            end
+            -- If we reached condition when Halo heals more than ShadowMend                 
+            if total >= Env.GetDescription(186263)[1] then 
+                return true 
+            end 
+        end
+    end 
+    return false 
+end 
+
+--- =========================== HOLY ================================
+local TrailOfLightGUID = {}
+Listener:Add('Holy_Events', "COMBAT_LOG_EVENT_UNFILTERED", function(...)
+        local _, EVENT, _, SourceGUID, _,_,_, DestGUID, _, _, _, SpellID, SpellName = CombatLogGetCurrentEventInfo()
+        if Env.UNITSpec("player", 257) and EVENT == "SPELL_CAST_SUCCESS" and SourceGUID == UnitGUID("player") and (SpellName == GetSpellInfo(2060) or SpellName == GetSpellInfo(2061)) then 
+            if TrailOfLightGUID[#TrailOfLightGUID] ~= DestGUID then 
+                TrailOfLightGUID[#TrailOfLightGUID + 1] = DestGUID
+            end 
+        end 
+end)        
+
+function Env.UnitIsTrailOfLight(unit) 
+    local GUID = UnitGUID(unit)    
+    return (Env.TalentLearn(200128) and ((#TrailOfLightGUID == 1 and TrailOfLightGUID[#TrailOfLightGUID] == GUID) or (#TrailOfLightGUID > 1 and TrailOfLightGUID[#TrailOfLightGUID - 1] == GUID))) or false 
+end     
+
+--- Condition if we can heal previous unit 
+function Env.PredictTrailOfLight(SpellName) 
+    if #TrailOfLightGUID > 1 then
+        local members = A.HealingEngine.GetMembersAll()
+        for i = 1, #members do 
+            if Env.UnitIsTrailOfLight(members[i].Unit) then
+                if not Env.UNITDead(members[i].Unit) and Env.PredictHeal(SpellName, members[i].Unit, 35) and Env.Unit(members[i].Unit):DeBuffCyclone() <= 1 then 
+                    return true 
+                end 
+                break 
+            end 
+        end 
+    end 
+    return false 
+end 
+
+--- AoE ( 2+ units minimum )
+--- Holy Word: Sanctify 
+function Env.CanHealHolyWordSanctify(unit) 
+    local members = A.HealingEngine.GetMembersAll()    
+    if tableexist(members) then 
+        local total = 0
+        local units = AoEMembers(nil, 2, 5)
+        if units < 2 then 
+            return false 
+        end         
+        if UnitIsUnit("player", unit) then 
+            -- Clear true position
+            for i = 1, #members do    
+                -- In range
+                if Env.Unit(members[i].Unit):GetRange() <= 10 and Env.PredictHeal("HW:Sanctify", members[i].Unit) then
+                    total = total + 1
+                end 
+                -- If we reached limit of required units
+                if total >= units then 
+                    return true 
+                end 
+            end 
+        else  
+            -- Worn rest position 
+            for i = 1, #members do    
+                -- In range (they are already into by table of members) 
+                if Env.PredictHeal("HW:Sanctify", members[i].Unit) then
+                    total = total + 1
+                end
+                -- If we reached limit of required units
+                if total >= units then 
+                    return true 
+                end 
+            end
+        end 
+    end 
+    return false 
+end 
+
+--- Circle of Healing 
+function Env.CanHealCircleOfHealing(unit) 
+    local members = A.HealingEngine.GetMembersAll()    
+    if tableexist(members) then 
+        local total = 0
+        local units = AoEMembers(nil, 2, 4)
+        if units < 2 then 
+            return false 
+        end         
+        if UnitIsUnit("player", unit) then 
+            -- Clear true position
+            for i = 1, #members do    
+                -- In range
+                if Env.Unit(members[i].Unit):GetRange() <= 30 and Env.PredictHeal("CircleOfHealing", members[i].Unit) then
+                    total = total + 1
+                end 
+                -- If we reached limit of required units
+                if total >= units then 
+                    return true 
+                end 
+            end 
+        else  
+            -- Worn rest position 
+            for i = 1, #members do    
+                -- In range (they are already into by table of members) 
+                if Env.PredictHeal("CircleOfHealing", members[i].Unit) then
+                    total = total + 1
+                end
+                -- If we reached limit of required units
+                if total >= units then 
+                    return true 
+                end 
+            end
+        end 
+    end 
+    return false 
+end 
+
+--- Prayer Of Mending (fixed >= 2 units)
+function Env.CanHealPrayerOfMending(unit) 
+    local members = A.HealingEngine.GetMembersAll()    
+    if tableexist(members) then 
+        local total = 0                
+        if UnitIsUnit("player", unit) then 
+            -- Clear true position
+            for i = 1, #members do    
+                -- In range
+                if Env.Unit(members[i].Unit):GetRange() <= 20 and Env.PredictHeal("PrayerOfMendingHoT", members[i].Unit) then
+                    total = total + 1
+                end 
+                -- If we reached limit of required units
+                if total >= 2 then 
+                    return true 
+                end 
+            end 
+        else  
+            -- Worn rest position 
+            for i = 1, #members do    
+                -- In range (they are already into by table of members) 
+                if Env.PredictHeal("PrayerOfMendingHoT", members[i].Unit) then
+                    total = total + 1
+                end
+                -- If we reached limit of required units
+                if total >= 2 then 
+                    return true 
+                end 
+            end
+        end 
+    end 
+    return false 
+end 
+
+--- Halo 
+function Env.CanHealHaloHOLY(VARIATION) 
+    local members = A.HealingEngine.GetMembersAll() 
+    if tableexist(members) and (not A.IsInPvP or not Env.EnemyTeam():IsBreakAble(30)) then 
+        local total = 0
+        local units = AoEMembers(nil, 2, 4)
+        if units < 2 then 
+            return false 
+        end     
+        for i = 1, #members do    
+            -- In range
+            if Env.Unit(members[i].Unit):GetRange() <= 30 and Env.PredictHeal("Halo", members[i].Unit, VARIATION) then                               
+                total = total + 1                 
+            end
+            -- If we reached limit of required units               
+            if total >= units then 
+                return true 
+            end 
+        end
+    end 
+    return false 
+end 
+
+--- Prayer Of Healing
+function Env.CanHealPrayerOfHealing() 
+    local members = A.HealingEngine.GetMembersAll()    
+    if tableexist(members) then 
+        local total = 0    
+        local units = AoEMembers(nil, 2, 4)
+        if units < 2 then 
+            return false 
+        end     
+        -- Worn rest position 
+        for i = 1, #members do    
+            -- In range (they are already into by table of members) 
+            if Env.PredictHeal("PrayerOfHealing", members[i].Unit) then
+                total = total + 1
+            end
+            -- If we reached limit of required units
+            if total >= units then 
+                return true 
+            end 
+        end         
+    end 
+    return false 
+end 
+
+--- Binding Heal ( fixed 2+ units )
+function Env.CanHealBindingHeal(unit) 
+    local members = A.HealingEngine.GetMembersAll()    
+    if tableexist(members) then 
+        local total = 0    
+        -- Worn rest position 
+        for i = 1, #members do            
+            -- In range (they are already into by table of members) and it's not our target/mouseover unit 
+            if not UnitIsUnit(unit, members[i].Unit) and Env.PredictHeal("BindingHeal", members[i].Unit) then
+                total = total + 1
+            end
+            -- If we reached limit of required units
+            if total >= 1 then 
+                return true 
+            end 
+        end                  
+    end 
+    return false 
+end 
+
+--- Divine Star
+function Env.CanHealDivineStarHOLY() 
+    local members = A.HealingEngine.GetMembersAll()    
+    if tableexist(members) then 
+        local total = 0    
+        local units = AoEMembers(nil, 2, 3)
+        if units < 2 then 
+            return false 
+        end     
+        -- Worn rest position 
+        for i = 1, #members do    
+            -- In range
+            if Env.Unit(members[i].Unit):GetRange() <= 24 and Env.PredictHeal("PrayerOfHealing", members[i].Unit) then
+                total = total + 1
+            end
+            -- If we reached limit of required units
+            if total >= units then 
+                return true 
+            end 
+        end         
+    end 
+    return false 
+end 
+
+--- Holy Nova (if in range 1+ or self)
+function Env.CanHealHolyNovaHOLY() 
+    local members = A.HealingEngine.GetMembersAll()    
+    if tableexist(members) and (not A.IsInPvP or not Env.EnemyTeam():IsBreakAble(12)) then    
+        for i = 1, #members do                
+            -- In range
+            if Env.Unit(members[i].Unit):GetRange() <= 12 and Env.PredictHeal("HolyNova", members[i].Unit) then
+                return true 
+            end           
+        end
+    end 
+    return false 
+end 
+
+--- Symbol of Hope
+function Env.CanSymbolOfHope(offset)
+    local members = A.HealingEngine.GetMembersAll()    
+    if tableexist(members) then    
+        for i = 1, #members do                
+            -- In range
+            if Env.Unit(members[i].Unit):IsHealer() and Env.UNITPW(members[i].Unit) <= offset then
+                return true 
+            end           
+        end
+    end 
+    return false 
+end 
+
+--- ========================== SHADOW ===============================
+function Env.Insanity()
+    return Env.UnitPower("player", Enum.PowerType.Insanity) or 0
+end
+
+function Env.InsanityDeficit()
+    local max = Env.UnitPowerMax("player", Enum.PowerType.Insanity) or 0
+    return (Env.Unit("player"):HasDeBuffs(263406, "player") > 0 and max) or max - Env.Insanity()
+end
+
+function Env.PurifyDisease(unit, ICON)
+    return
+    (
+        MacroSpells(ICON, "Dispel") or
+        SPDispel_Toggle
+    ) and
+    Env.SpellUsable(213634) and
+    UnitExists(unit) and
+    not Env.InLOS(unit) and      
+    Env.SpellInRange(unit, 213634) and    
+    Env.LastPlayerCastID ~= 213634 and
+    Env.Unit(unit):DeBuffCyclone() == 0 and
+    (
+        (
+            A.IsInPvP and                                      
+            Env.Unit(unit):HasDeBuffs("Disease") > 2             
+        ) or 
+        (
+            not A.IsInPvP and 
+            Env.PvEDispel(unit)
+        )
+    )
+end 
+
+-- PvP 
+function Env.CanVoidShift(unit)
+    local ID = 108968
+    return
+    Env.UNITSpec("player", 258) and
+    Env.PvPTalentLearn(ID) and
+    Env.SpellUsable(ID) and
+    UnitExists(unit) and
+    not Env.InLOS(unit) and      
+    Env.SpellInRange(unit, ID) and 
+    Env.Unit(unit):DeBuffCyclone() == 0 and    
+    (
+        (
+            TimeToDieX(unit, 15) <= Env.GCD() * 2 and
+            Env.UNITHP(unit) < 40 and
+            Env.Unit("player"):HealthPercent() >= Env.UNITHP(unit) * 2           
+        ) or 
+        (
+            -- Surrendered To Madness
+            Env.Unit("player"):HasDeBuffs(263406, "player") > 14 - Env.GCD() and
+            Env.Unit("player"):HealthPercent() <= 15 and 
+            Env.UNITHP(unit) >= Env.Unit("player"):HealthPercent() * 4 and 
+            not Env.Unit(unit):IsFocused()
+        )
+    )
+end 
+--- PLAYER LOGIN
+Env.RefreshoPR()
+

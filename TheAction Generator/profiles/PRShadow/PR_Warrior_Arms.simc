@@ -1,0 +1,123 @@
+warrior="Zethir"
+source=default
+spec=arms
+level=50
+race=human
+role=attack
+position=back
+professions=herbalism=41/engineering=112
+talents=3121311
+azerite_essences=27:3/300573/5:3/300575/300576/35:3/300577/312927/32:3/312928
+
+# Default consumables
+potion=disabled
+flask=disabled
+food=disabled
+augmentation=disabled
+
+# This default action priority list is automatically created based on your character.
+# It is a attempt to provide you with a action list that is both simple and practicable,
+# while resulting in a meaningful and good simulation. It may not result in the absolutely highest possible dps.
+# Feel free to edit, adapt and improve it to your own needs.
+# SimulationCraft is always looking for updates and improvements to the default action lists.
+
+# Executed before combat begins. Accepts non-harmful actions only.
+actions.precombat=flask
+actions.precombat+=/food
+actions.precombat+=/augmentation
+# Snapshot raid buffed stats before combat begins and pre-potting is done.
+actions.precombat+=/snapshot_stats
+actions.precombat+=/use_item,name=azsharas_font_of_power
+actions.precombat+=/worldvein_resonance
+actions.precombat+=/memory_of_lucid_dreams
+actions.precombat+=/guardian_of_azeroth
+actions.precombat+=/potion
+
+# Executed every time the actor is available.
+actions=charge
+actions+=/auto_attack
+actions+=/blood_fury,if=buff.memory_of_lucid_dreams.remains<5|(!essence.memory_of_lucid_dreams.major&debuff.colossus_smash.up)
+actions+=/berserking,if=buff.memory_of_lucid_dreams.up|(!essence.memory_of_lucid_dreams.major&debuff.colossus_smash.up)
+actions+=/arcane_torrent,if=cooldown.mortal_strike.remains>1.5&buff.memory_of_lucid_dreams.down&rage<50
+actions+=/lights_judgment,if=debuff.colossus_smash.down&buff.memory_of_lucid_dreams.down&cooldown.mortal_strike.remains
+actions+=/fireblood,if=buff.memory_of_lucid_dreams.remains<5|(!essence.memory_of_lucid_dreams.major&debuff.colossus_smash.up)
+actions+=/ancestral_call,if=buff.memory_of_lucid_dreams.remains<5|(!essence.memory_of_lucid_dreams.major&debuff.colossus_smash.up)
+actions+=/bag_of_tricks,if=debuff.colossus_smash.down&buff.memory_of_lucid_dreams.down&cooldown.mortal_strike.remains
+actions+=/avatar,if=!essence.memory_of_lucid_dreams.major|(buff.memory_of_lucid_dreams.up|cooldown.memory_of_lucid_dreams.remains>45)
+actions+=/sweeping_strikes,if=spell_targets.whirlwind>1&(cooldown.bladestorm.remains>10|cooldown.colossus_smash.remains>8|azerite.test_of_might.enabled)
+actions+=/blood_of_the_enemy,if=buff.test_of_might.up|(debuff.colossus_smash.up&!azerite.test_of_might.enabled)
+actions+=/purifying_blast,if=!debuff.colossus_smash.up&!buff.test_of_might.up
+actions+=/ripple_in_space,if=!debuff.colossus_smash.up&!buff.test_of_might.up
+actions+=/worldvein_resonance,if=!debuff.colossus_smash.up&!buff.test_of_might.up
+actions+=/focused_azerite_beam,if=!debuff.colossus_smash.up&!buff.test_of_might.up
+actions+=/reaping_flames,if=!debuff.colossus_smash.up&!buff.test_of_might.up
+actions+=/concentrated_flame,if=!debuff.colossus_smash.up&!buff.test_of_might.up&dot.concentrated_flame_burn.remains=0
+actions+=/the_unbound_force,if=buff.reckless_force.up
+actions+=/guardian_of_azeroth,if=cooldown.colossus_smash.remains<10
+actions+=/memory_of_lucid_dreams,if=!talent.warbreaker.enabled&cooldown.colossus_smash.remains<gcd&(target.time_to_die>150|target.health.pct<20)
+actions+=/memory_of_lucid_dreams,if=talent.warbreaker.enabled&cooldown.warbreaker.remains<gcd&(target.time_to_die>150|target.health.pct<20)
+actions+=/run_action_list,name=execute,if=(talent.massacre.enabled&target.health.pct<35)|target.health.pct<20
+actions+=/run_action_list,name=single_target
+
+actions.execute=rend,if=remains<=duration*0.3
+actions.execute+=/deadly_calm
+actions.execute+=/skullsplitter,if=rage<52&buff.memory_of_lucid_dreams.down|rage<20
+actions.execute+=/ravager,,if=cooldown.colossus_smash.remains<2|(talent.warbreaker.enabled&cooldown.warbreaker.remains<2)
+actions.execute+=/colossus_smash,if=!essence.memory_of_lucid_dreams.major|(buff.memory_of_lucid_dreams.up|cooldown.memory_of_lucid_dreams.remains>10)
+actions.execute+=/warbreaker,if=!essence.memory_of_lucid_dreams.major|(buff.memory_of_lucid_dreams.up|cooldown.memory_of_lucid_dreams.remains>10)
+actions.execute+=/mortal_strike,if=dot.deep_wounds.remains<=duration*0.3&(spell_targets.whirlwind=1|!spell_targets.whirlwind>1&!talent.cleave.enabled)
+actions.execute+=/cleave,if=(spell_targets.whirlwind>2&dot.deep_wounds.remains<=duration*0.3)|(spell_targets.whirlwind>3)
+actions.execute+=/bladestorm,if=!buff.memory_of_lucid_dreams.up&buff.test_of_might.up&rage<30&!buff.deadly_calm.up
+actions.execute+=/execute,if=buff.memory_of_lucid_dreams.up|buff.deadly_calm.up|debuff.colossus_smash.up|buff.test_of_might.up
+actions.execute+=/slam,if=buff.crushing_assault.up&buff.memory_of_lucid_dreams.down
+actions.execute+=/overpower
+actions.execute+=/execute
+
+actions.single_target=rend,if=remains<=duration*0.3
+actions.single_target+=/deadly_calm
+actions.single_target+=/skullsplitter,if=rage<60&buff.deadly_calm.down&buff.memory_of_lucid_dreams.down|rage<20
+actions.single_target+=/ravager,if=(cooldown.colossus_smash.remains<2|(talent.warbreaker.enabled&cooldown.warbreaker.remains<2))
+actions.single_target+=/mortal_strike,if=dot.deep_wounds.remains<=duration*0.3&(spell_targets.whirlwind=1|!talent.cleave.enabled)
+actions.single_target+=/cleave,if=spell_targets.whirlwind>2&dot.deep_wounds.remains<=duration*0.3
+actions.single_target+=/colossus_smash,if=!essence.condensed_lifeforce.enabled&!talent.massacre.enabled&(target.time_to_pct_20>10|target.time_to_die>50)|essence.condensed_lifeforce.enabled&!talent.massacre.enabled&(target.time_to_pct_20>10|target.time_to_die>80)|talent.massacre.enabled&(target.time_to_pct_35>10|target.time_to_die>50)
+actions.single_target+=/warbreaker,if=!essence.condensed_lifeforce.enabled&!talent.massacre.enabled&(target.time_to_pct_20>10|target.time_to_die>50)|essence.condensed_lifeforce.enabled&!talent.massacre.enabled&(target.time_to_pct_20>10|target.time_to_die>80)|talent.massacre.enabled&(target.time_to_pct_35>10|target.time_to_die>50)
+actions.single_target+=/execute,if=buff.sudden_death.react
+actions.single_target+=/bladestorm,if=cooldown.mortal_strike.remains&debuff.colossus_smash.down&(!talent.deadly_calm.enabled|buff.deadly_calm.down)&((debuff.colossus_smash.up&!azerite.test_of_might.enabled)|buff.test_of_might.up)&buff.memory_of_lucid_dreams.down&rage<40
+actions.single_target+=/mortal_strike,if=spell_targets.whirlwind=1|!talent.cleave.enabled
+actions.single_target+=/cleave,if=spell_targets.whirlwind>2
+actions.single_target+=/whirlwind,if=(((buff.memory_of_lucid_dreams.up)|(debuff.colossus_smash.up)|(buff.deadly_calm.up))&talent.fervor_of_battle.enabled)|((buff.memory_of_lucid_dreams.up|rage>89)&debuff.colossus_smash.up&buff.test_of_might.down&!talent.fervor_of_battle.enabled)
+actions.single_target+=/slam,if=!talent.fervor_of_battle.enabled&(buff.memory_of_lucid_dreams.up|debuff.colossus_smash.up)
+actions.single_target+=/overpower
+actions.single_target+=/whirlwind,if=talent.fervor_of_battle.enabled&(buff.test_of_might.up|debuff.colossus_smash.down&buff.test_of_might.down&rage>60)
+actions.single_target+=/slam,if=!talent.fervor_of_battle.enabled
+
+head=greathelm_of_phantasmic_reality,id=174167,bonus_id=4823/1502/4786/6508/4775,azerite_powers=226/582/21/476/13
+neck=heart_of_azeroth,id=158075,bonus_id=6316/4932/4933/1560,azerite_level=92
+shoulders=pauldrons_of_infinite_darkness,id=174166,bonus_id=4823/1502/4786/6509/4775,azerite_powers=226/582/31/477/13
+back=ashjrakamas_shroud_of_resolve,id=169223,bonus_id=6603/1472
+chest=ashvane_wardens_cuirass,id=159440,bonus_id=5448/1543/4786/6510/4775,azerite_powers=226/192/30/14/13
+shirt=orange_martial_shirt,id=10052
+tabard=tabard_of_the_argent_dawn,id=22999
+wrists=stonefury_vambraces,id=158359,bonus_id=6534/6515/1533/4786/6476/6470
+hands=high_speed_gauntlets,id=169063,bonus_id=6536/42/6578/1524/4786/6476/6470/6514,gem_id=168641
+waist=malignant_leviathans_greatbelt,id=173461,bonus_id=6412/6515/6578/1519/4786/6476/6470
+legs=living_obsidian_legguards,id=174172,bonus_id=4824/1517/4786/6476/6470/6514,gem_id=168641
+feet=boots_of_hallucinatory_reality,id=174173,bonus_id=4824/1517/4786/6476/6470/6514,gem_id=168641
+finger1=logic_loop_of_division,id=169157,bonus_id=6534/6515/1514/4786/6476/6470,enchant_id=6109
+finger2=overclocking_bit_band,id=169159,bonus_id=6536/40/6578/6515/1514/4786/6476/6470,enchant_id=6109
+trinket1=vitacharged_titanshard,id=174500,bonus_id=4823/6513/1502/4786
+trinket2=humming_black_dragonscale,id=174044,bonus_id=4824/6515/1517/4786
+main_hand=skshuul_vaz,id=172200,bonus_id=4824/6578/1517/4786/6476/6470/6514,gem_id=168641,enchant_id=5950
+
+# Gear Summary
+# gear_ilvl=129.73
+# gear_strength=388
+# gear_stamina=684
+# gear_crit_rating=181
+# gear_haste_rating=359
+# gear_mastery_rating=153
+# gear_speed_rating=31
+# gear_avoidance_rating=15
+# gear_corruption=160
+# gear_corruption_resistance=125
+# gear_armor=513

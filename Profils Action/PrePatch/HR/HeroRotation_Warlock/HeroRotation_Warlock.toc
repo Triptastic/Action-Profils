@@ -1,0 +1,15 @@
+## Interface: 90001
+
+## Title: Hero|cFFA330C9Rotation|r [|cFF8787EDWarlock|r]
+## Author: Cilraaz
+## Notes: Hero Rotation - Warlock Module.
+
+## DefaultState: Enabled
+## LoadOnDemand: 1
+## Dependencies: HeroRotation
+
+Settings.lua
+Warlock.lua
+Events.lua
+Demonology.lua
+Overrides.lua

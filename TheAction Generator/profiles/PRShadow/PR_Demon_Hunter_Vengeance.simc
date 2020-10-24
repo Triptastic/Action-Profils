@@ -1,0 +1,110 @@
+demonhunter="Speedh"
+source=blizzard
+origin="/tmp/m1epWmsLFFvZ23pmoNAHfN.armoryv2.profile.json,equipment=/tmp/m1epWmsLFFvZ23pmoNAHfN.armoryv2.equipment.json,spec=/tmp/m1epWmsLFFvZ23pmoNAHfN.armoryv2.spec.json"
+spec=vengeance
+level=50
+race=blood_elf
+role=tank
+position=front
+talents=https://worldofwarcraft.com/en-us/game/talent-calculator#demon-hunter/vengeance/talents=1233321
+azerite_essences=22:4:1/32:4:0/12:4:0/25:3:0
+
+# Default consumables
+potion=potion_of_unbridled_fury
+flask=greater_flask_of_the_currents
+food=famine_evaluator_and_snack_table
+augmentation=battle_scarred
+
+# This default action priority list is automatically created based on your character.
+# It is a attempt to provide you with a action list that is both simple and practicable,
+# while resulting in a meaningful and good simulation. It may not result in the absolutely highest possible dps.
+# Feel free to edit, adapt and improve it to your own needs.
+# SimulationCraft is always looking for updates and improvements to the default action lists.
+
+# Executed before combat begins. Accepts non-harmful actions only.
+actions.precombat=flask
+actions.precombat+=/augmentation
+actions.precombat+=/food
+# Snapshot raid buffed stats before combat begins and pre-potting is done.
+actions.precombat+=/snapshot_stats
+actions.precombat+=/potion
+actions.precombat+=/use_item,name=azsharas_font_of_power
+
+# Executed every time the actor is available.
+actions=auto_attack
+actions+=/consume_magic
+actions+=/call_action_list,name=brand
+actions+=/call_action_list,name=defensives
+actions+=/call_action_list,name=cooldowns
+actions+=/call_action_list,name=normal
+
+# Fiery Brand Rotation
+actions.brand=sigil_of_flame,if=cooldown.fiery_brand.remains<2
+actions.brand+=/infernal_strike,if=cooldown.fiery_brand.remains=0
+actions.brand+=/fiery_brand
+actions.brand+=/immolation_aura,if=dot.fiery_brand.ticking
+actions.brand+=/infernal_strike,if=dot.fiery_brand.ticking
+actions.brand+=/sigil_of_flame,if=dot.fiery_brand.ticking
+
+actions.cooldowns=potion
+actions.cooldowns+=/concentrated_flame,if=(!dot.concentrated_flame_burn.ticking&!action.concentrated_flame.in_flight|full_recharge_time<gcd.max)
+actions.cooldowns+=/worldvein_resonance,if=buff.lifeblood.stack<3
+actions.cooldowns+=/memory_of_lucid_dreams
+# Default fallback for usable essences.
+actions.cooldowns+=/heart_essence
+actions.cooldowns+=/use_item,effect_name=cyclotronic_blast,if=buff.memory_of_lucid_dreams.down
+actions.cooldowns+=/use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.down|debuff.conductive_ink_debuff.up&target.health.pct<31|target.time_to_die<20
+# Default fallback for usable items.
+actions.cooldowns+=/use_items
+
+# Defensives
+actions.defensives=demon_spikes
+actions.defensives+=/metamorphosis
+actions.defensives+=/fiery_brand
+
+# Normal Rotation
+actions.normal=infernal_strike
+actions.normal+=/bulk_extraction
+actions.normal+=/spirit_bomb,if=((buff.metamorphosis.up&soul_fragments>=3)|soul_fragments>=4)
+actions.normal+=/soul_cleave,if=(!talent.spirit_bomb.enabled&((buff.metamorphosis.up&soul_fragments>=3)|soul_fragments>=4))
+actions.normal+=/soul_cleave,if=talent.spirit_bomb.enabled&soul_fragments=0
+actions.normal+=/immolation_aura,if=fury<=90
+actions.normal+=/felblade,if=fury<=70
+actions.normal+=/fracture,if=soul_fragments<=3
+actions.normal+=/sigil_of_flame
+actions.normal+=/shear
+actions.normal+=/throw_glaive
+
+head=stygian_guise,id=174132,bonus_id=4824/1517/4786/6511/4775,azerite_powers=13/83/20/582/134
+neck=heart_of_azeroth,id=158075,bonus_id=6316/4932/4933,ilevel=149,azerite_level=95
+shoulders=pauldrons_of_the_great_convergence,id=174133,bonus_id=4823/1502/4786/6509/4775,azerite_powers=13/202/20/582/246
+back=ashjrakamas_shroud_of_resolve,id=169223,bonus_id=6603/1472
+chest=spymasters_wrap,id=155860,bonus_id=5448/1543/4786/6510/4775,azerite_powers=13/202/20/160/221
+shirt=the_boomshirt,id=98081
+tabard=dread_gladiators_tabard,id=164572
+wrists=sea_dogs_cuffs,id=158305,bonus_id=6536/6578/1543/4786/6479/6470/6514,gems=18agi
+hands=handwraps_of_the_insatiable_maw,id=173492,bonus_id=6412/4802/6513/1519/4786/6479/6470,gems=7vers
+waist=belt_of_gleaming_determination,id=158306,bonus_id=6536/4802/6515/1543/4786,gems=7vers,addon=belt_enchant_miniaturized_plasma_shield
+legs=breeches_of_the_sacred_hall,id=159313,bonus_id=6536/4802/42/6578/6515/1543/4786/6479/6470,gems=7vers
+feet=besiegers_deckstalkers,id=159320,bonus_id=6536/6578/1543/4786/6479/6470/6514,gems=7vers
+finger1=corrupted_gladiators_ring,id=172663,bonus_id=41/6578/6479/6470/6388/6379/1537/4786/6514,gems=7vers,enchant=9vers
+finger2=ring_of_cosmic_potential,id=174533,bonus_id=4824/1517/4786/6514/6516,gems=7vers,enchant=9vers
+trinket1=lingering_psychic_shell,id=174277,bonus_id=4823/6513/1502/4786
+trinket2=corrupted_gladiators_insignia,id=172668,bonus_id=40/6514/6389/6382/1542/4786,gems=7vers
+main_hand=mishun_blade_of_tyrants,id=174105,bonus_id=4824/6513/1517/4786/6479/6470,enchant=quick_navigation
+off_hand=warglaive_of_the_sand_queen,id=160110,bonus_id=6536/4802/6513/1533/4786/6479/6470,gems=7vers,enchant=versatile_navigation
+
+# Gear Summary
+# gear_ilvl=132.44
+# gear_agility=409
+# gear_stamina=696
+# gear_crit_rating=85
+# gear_haste_rating=224
+# gear_mastery_rating=72
+# gear_versatility_rating=357
+# gear_leech_rating=14
+# gear_speed_rating=21
+# gear_avoidance_rating=15
+# gear_corruption=140
+# gear_corruption_resistance=125
+# gear_armor=253
