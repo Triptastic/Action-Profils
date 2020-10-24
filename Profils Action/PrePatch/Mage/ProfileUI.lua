@@ -4,11 +4,9 @@
 local TMW											= TMW 
 local CNDT											= TMW.CNDT
 local Env											= CNDT.Env
-
 local A												= Action
 local GetToggle										= A.GetToggle
 local InterruptIsValid								= A.InterruptIsValid
-
 local UnitCooldown									= A.UnitCooldown
 local Unit											= A.Unit 
 local Player										= A.Player 
@@ -22,9 +20,15 @@ local InstanceInfo									= A.InstanceInfo
 local TR                                            = Action.TasteRotation
 local select, setmetatable							= select, setmetatable
 
+-- Shadowlands Spell Info fix for empty spells
+local GetSpellInfo_original                                = _G.GetSpellInfo
+local function GetSpellInfo(...)
+    return GetSpellInfo_original(...) or ""
+end
+
 A.Data.ProfileEnabled[Action.CurrentProfile] = true
 A.Data.ProfileUI = {    
-    DateTime = "v4.2.1 (02.08.2020)",
+    DateTime = "v5.0.1 (24.10.2020)",
     -- Class settings
     [2] = {        
         [ACTION_CONST_MAGE_FIRE] = {  
@@ -162,7 +166,7 @@ A.Data.ProfileUI = {
                     DBV = 99, -- Set healthpercentage @99% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(235313) .. " (%)",
+                        ANY = GetSpellInfo(235313) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -174,7 +178,7 @@ A.Data.ProfileUI = {
                     DBV = 30, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(45438) .. " (%)",
+                        ANY = GetSpellInfo(45438) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -204,7 +208,7 @@ A.Data.ProfileUI = {
                     DB = "PolymorphPvP",
                     DBV = "ON MELEE BURST",
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(118),
+                        ANY = "PvP " .. GetSpellInfo(118),
                     }, 
                     TT = { 
                         enUS = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Only if melee player has damage buffs\nON COOLDOWN - means will use always on melee players\nOFF - Cut out from rotation but still allow work through Queue and MSG systems\nIf you want fully turn it OFF then you should make SetBlocker in 'Actions' tab", 
@@ -229,7 +233,7 @@ A.Data.ProfileUI = {
                         [4] = true,
                     }, 
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(118) .. " units",
+                        ANY = "PvP " .. GetSpellInfo(118) .. " units",
                     }, 
                     TT = { 
                         enUS = "primary - is @target, @mouseover, @targettarget (these units are depend on toggles above)", 
@@ -388,7 +392,7 @@ A.Data.ProfileUI = {
                     DBV = 99, -- Set healthpercentage @99% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(235450) .. " (%)",
+                        ANY = GetSpellInfo(235450) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -400,7 +404,7 @@ A.Data.ProfileUI = {
                     DBV = 30, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(45438) .. " (%)",
+                        ANY = GetSpellInfo(45438) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -462,7 +466,7 @@ A.Data.ProfileUI = {
                     DB = "PolymorphPvP",
                     DBV = "ON MELEE BURST",
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(118),
+                        ANY = "PvP " .. GetSpellInfo(118),
                     }, 
                     TT = { 
                         enUS = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Only if melee player has damage buffs\nON COOLDOWN - means will use always on melee players\nOFF - Cut out from rotation but still allow work through Queue and MSG systems\nIf you want fully turn it OFF then you should make SetBlocker in 'Actions' tab", 
@@ -487,7 +491,7 @@ A.Data.ProfileUI = {
                         [4] = true,
                     }, 
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(118) .. " units",
+                        ANY = "PvP " .. GetSpellInfo(118) .. " units",
                     }, 
                     TT = { 
                         enUS = "primary - is @target, @mouseover, @targettarget (these units are depend on toggles above)", 
@@ -713,7 +717,7 @@ A.Data.ProfileUI = {
                 {
                     E = "Header",
                     L = {
-                        ANY = " -- " .. A.GetSpellInfo(295258) .. " -- ",
+                        ANY = " -- " .. GetSpellInfo(295258) .. " -- ",
                     },
                 },
             },
@@ -727,12 +731,12 @@ A.Data.ProfileUI = {
                     DBV = 10, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(295258) .. " TTD",
+                        ANY = GetSpellInfo(295258) .. " TTD",
                     },
                     TT = { 
-                        enUS = "Set the minimum Time To Die for a unit before using " .. A.GetSpellInfo(295258) .. " \nDoes not apply to Boss.", 
-                        ruRU = "Установите минимальное время смерти для отряда перед использованием " .. A.GetSpellInfo(295258) .. " \nНе применимо к боссу.", 
-                        frFR = "Définissez le temps minimum pour mourir pour une unité avant d'utiliser " .. A.GetSpellInfo(295258) .. " \nNe s'applique pas aux boss.", 
+                        enUS = "Set the minimum Time To Die for a unit before using " .. GetSpellInfo(295258) .. " \nDoes not apply to Boss.", 
+                        ruRU = "Установите минимальное время смерти для отряда перед использованием " .. GetSpellInfo(295258) .. " \nНе применимо к боссу.", 
+                        frFR = "Définissez le temps minimum pour mourir pour une unité avant d'utiliser " .. GetSpellInfo(295258) .. " \nNe s'applique pas aux boss.", 
                     }, 					
                     M = {},
                 },
@@ -744,12 +748,12 @@ A.Data.ProfileUI = {
                     DBV = 3, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(295258) .. " TTD",
+                        ANY = GetSpellInfo(295258) .. " TTD",
                     },
                     TT = { 
-                        enUS = "Set the minimum Time To Die for a unit before using " .. A.GetSpellInfo(295258) .. " \nDoes not apply to Boss.", 
-                        ruRU = "Установите минимальное время смерти для отряда перед использованием " .. A.GetSpellInfo(295258) .. " \nНе применимо к боссу.", 
-                        frFR = "Définissez le temps minimum pour mourir pour une unité avant d'utiliser " .. A.GetSpellInfo(295258) .. " \nNe s'applique pas aux boss.", 
+                        enUS = "Set the minimum Time To Die for a unit before using " .. GetSpellInfo(295258) .. " \nDoes not apply to Boss.", 
+                        ruRU = "Установите минимальное время смерти для отряда перед использованием " .. GetSpellInfo(295258) .. " \nНе применимо к боссу.", 
+                        frFR = "Définissez le temps minimum pour mourir pour une unité avant d'utiliser " .. GetSpellInfo(295258) .. " \nNe s'applique pas aux boss.", 
                     }, 					
                     M = {},
                 }, 				
@@ -758,7 +762,7 @@ A.Data.ProfileUI = {
                 {
                     E = "Header",
                     L = {
-                        ANY = " -- " .. A.GetSpellInfo(300714) .. " -- ",
+                        ANY = " -- " .. GetSpellInfo(300714) .. " -- ",
                     },
                 },
             },
@@ -803,12 +807,12 @@ A.Data.ProfileUI = {
                     DBV = 40, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(300714) .. " TTD",
+                        ANY = GetSpellInfo(300714) .. " TTD",
                     },
                     TT = { 
-                        enUS = "Set the minimum Time To Die for a unit before using " .. A.GetSpellInfo(300714) .. " \nDoes not apply to Boss.", 
-                        ruRU = "Установите минимальное время смерти для отряда перед использованием " .. A.GetSpellInfo(300714) .. " \nНе применимо к боссу.", 
-                        frFR = "Définissez le temps minimum pour mourir pour une unité avant d'utiliser " .. A.GetSpellInfo(300714) .. " \nNe s'applique pas aux boss.", 
+                        enUS = "Set the minimum Time To Die for a unit before using " .. GetSpellInfo(300714) .. " \nDoes not apply to Boss.", 
+                        ruRU = "Установите минимальное время смерти для отряда перед использованием " .. GetSpellInfo(300714) .. " \nНе применимо к боссу.", 
+                        frFR = "Définissez le temps minimum pour mourir pour une unité avant d'utiliser " .. GetSpellInfo(300714) .. " \nNe s'applique pas aux boss.", 
                     }, 					
                     M = {},
                 },				
@@ -941,7 +945,7 @@ A.Data.ProfileUI = {
                     DBV = 99, -- Set healthpercentage @99% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(11426) .. " (%)",
+                        ANY = GetSpellInfo(11426) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -953,7 +957,7 @@ A.Data.ProfileUI = {
                     DBV = 30, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(45438) .. " (%)",
+                        ANY = GetSpellInfo(45438) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -983,7 +987,7 @@ A.Data.ProfileUI = {
                     DB = "PolymorphPvP",
                     DBV = "ON MELEE BURST",
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(118),
+                        ANY = "PvP " .. GetSpellInfo(118),
                     }, 
                     TT = { 
                         enUS = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Only if melee player has damage buffs\nON COOLDOWN - means will use always on melee players\nOFF - Cut out from rotation but still allow work through Queue and MSG systems\nIf you want fully turn it OFF then you should make SetBlocker in 'Actions' tab", 
@@ -1008,7 +1012,7 @@ A.Data.ProfileUI = {
                         [4] = true,
                     }, 
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(118) .. " units",
+                        ANY = "PvP " .. GetSpellInfo(118) .. " units",
                     }, 
                     TT = { 
                         enUS = "primary - is @target, @mouseover, @targettarget (these units are depend on toggles above)", 

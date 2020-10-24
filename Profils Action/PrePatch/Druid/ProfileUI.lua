@@ -4,11 +4,9 @@
 local TMW											= TMW 
 local CNDT											= TMW.CNDT
 local Env											= CNDT.Env
-
 local A												= Action
 local GetToggle										= A.GetToggle
 local InterruptIsValid								= A.InterruptIsValid
-
 local UnitCooldown									= A.UnitCooldown
 local Unit											= A.Unit 
 local Player										= A.Player 
@@ -22,10 +20,15 @@ local InstanceInfo									= A.InstanceInfo
 local TR                                            = A.TasteRotation
 local select, setmetatable							= select, setmetatable
 	
+-- Shadowlands Spell Info fix for empty spells
+local GetSpellInfo_original                                = _G.GetSpellInfo
+local function GetSpellInfo(...)
+    return GetSpellInfo_original(...) or ""
+end
 
 A.Data.ProfileEnabled[Action.CurrentProfile] = true
 A.Data.ProfileUI = {    
-    DateTime = "v5.0.1 (19.10.2020) BETA",
+    DateTime = "v5.0.1 (24.10.2020)",
     -- Class settings
     [2] = {
         [ACTION_CONST_DRUID_FERAL] = {             
@@ -177,14 +180,14 @@ A.Data.ProfileUI = {
                     DB = "RootThingFromBeyond",
                     DBV = true,
                     L = { 
-                        enUS = A.GetSpellInfo(339) .. "\nThing from Beyond", 
-                        ruRU = A.GetSpellInfo(339) .. "\nThing from Beyond", 
-                        frFR = A.GetSpellInfo(339) .. "\nThing from Beyond", 
+                        enUS = GetSpellInfo(339) .. "\nThing from Beyond", 
+                        ruRU = GetSpellInfo(339) .. "\nThing from Beyond", 
+                        frFR = GetSpellInfo(339) .. "\nThing from Beyond", 
                     }, 
                     TT = { 
-                        enUS = "Will auto use " .. A.GetSpellInfo(339) .. " as soon as you mouseover the Thing from Beyond.", 
-                        ruRU = "Will auto use " .. A.GetSpellInfo(339) .. " as soon as you mouseover the Thing from Beyond.",
-                        frFR = "Will auto use " .. A.GetSpellInfo(339) .. " as soon as you mouseover the Thing from Beyond.", 
+                        enUS = "Will auto use " .. GetSpellInfo(339) .. " as soon as you mouseover the Thing from Beyond.", 
+                        ruRU = "Will auto use " .. GetSpellInfo(339) .. " as soon as you mouseover the Thing from Beyond.",
+                        frFR = "Will auto use " .. GetSpellInfo(339) .. " as soon as you mouseover the Thing from Beyond.", 
                     }, 
                     M = {},
                 },
@@ -193,14 +196,14 @@ A.Data.ProfileUI = {
                     DB = "MassEntanglementThingFromBeyond",
                     DBV = true,
                     L = { 
-                        enUS = A.GetSpellInfo(102359) .. "\nThing from Beyond", 
-                        ruRU = A.GetSpellInfo(102359) .. "\nThing from Beyond", 
-                        frFR = A.GetSpellInfo(102359) .. "\nThing from Beyond", 
+                        enUS = GetSpellInfo(102359) .. "\nThing from Beyond", 
+                        ruRU = GetSpellInfo(102359) .. "\nThing from Beyond", 
+                        frFR = GetSpellInfo(102359) .. "\nThing from Beyond", 
                     }, 
                     TT = { 
-                        enUS = "Will auto use " .. A.GetSpellInfo(102359) .. " as soon as you mouseover the Thing from Beyond.\nOnly works if " .. A.GetSpellInfo(102359) .. " is talented.", 
-                        ruRU = "Will auto use " .. A.GetSpellInfo(102359) .. " as soon as you mouseover the Thing from Beyond.\nOnly works if " .. A.GetSpellInfo(102359) .. " is talented.",
-                        frFR = "Will auto use " .. A.GetSpellInfo(102359) .. " as soon as you mouseover the Thing from Beyond.\nOnly works if " .. A.GetSpellInfo(102359) .. " is talented.",
+                        enUS = "Will auto use " .. GetSpellInfo(102359) .. " as soon as you mouseover the Thing from Beyond.\nOnly works if " .. GetSpellInfo(102359) .. " is talented.", 
+                        ruRU = "Will auto use " .. GetSpellInfo(102359) .. " as soon as you mouseover the Thing from Beyond.\nOnly works if " .. GetSpellInfo(102359) .. " is talented.",
+                        frFR = "Will auto use " .. GetSpellInfo(102359) .. " as soon as you mouseover the Thing from Beyond.\nOnly works if " .. GetSpellInfo(102359) .. " is talented.",
                     }, 
                     M = {},
                 },
@@ -228,14 +231,14 @@ A.Data.ProfileUI = {
                     DB = "AutoCatForm",
                     DBV = true,
                     L = { 
-                        enUS = "Auto " .. A.GetSpellInfo(768), 
-                        ruRU = "Авто " .. A.GetSpellInfo(768), 
-                        frFR = "Auto " .. A.GetSpellInfo(768), 
+                        enUS = "Auto " .. GetSpellInfo(768), 
+                        ruRU = "Авто " .. GetSpellInfo(768), 
+                        frFR = "Auto " .. GetSpellInfo(768), 
                     }, 
                     TT = { 
-                        enUS = "Automatically use " .. A.GetSpellInfo(768), 
-                        ruRU = "Автоматически использовать " .. A.GetSpellInfo(768), 
-                        frFR = "Utiliser automatiquement " .. A.GetSpellInfo(768), 
+                        enUS = "Automatically use " .. GetSpellInfo(768), 
+                        ruRU = "Автоматически использовать " .. GetSpellInfo(768), 
+                        frFR = "Utiliser automatiquement " .. GetSpellInfo(768), 
                     }, 
                     M = {},
                 },				
@@ -256,14 +259,14 @@ A.Data.ProfileUI = {
                     DB = "MoonfireOnlyOutOfRange",
                     DBV = true,
                     L = { 
-                        enUS = A.GetSpellInfo(8921) .. "\nOut of range only", 
-                        ruRU = A.GetSpellInfo(8921) .. "\nOut of range only", 
-                        frFR = A.GetSpellInfo(8921) .. "\nOut of range only",
+                        enUS = GetSpellInfo(8921) .. "\nOut of range only", 
+                        ruRU = GetSpellInfo(8921) .. "\nOut of range only", 
+                        frFR = GetSpellInfo(8921) .. "\nOut of range only",
                     }, 
                     TT = { 
-                        enUS = "Will only use " .. A.GetSpellInfo(8921) .. " if target is out of range.\nWill bypass using it when unit is in range.", 
-                        ruRU = "Will only use " .. A.GetSpellInfo(8921) .. " if target is out of range.\nWill bypass using it when unit is in range.", 
-                        frFR = "Will only use " .. A.GetSpellInfo(8921) .. " if target is out of range.\nWill bypass using it when unit is in range.", 
+                        enUS = "Will only use " .. GetSpellInfo(8921) .. " if target is out of range.\nWill bypass using it when unit is in range.", 
+                        ruRU = "Will only use " .. GetSpellInfo(8921) .. " if target is out of range.\nWill bypass using it when unit is in range.", 
+                        frFR = "Will only use " .. GetSpellInfo(8921) .. " if target is out of range.\nWill bypass using it when unit is in range.", 
                     }, 
                     M = {},
                 },
@@ -272,14 +275,14 @@ A.Data.ProfileUI = {
                     DB = "UseBalanceRotation",
                     DBV = true,
                     L = { 
-                        enUS = "Use " .. A.GetSpellInfo(197488), 
-                        ruRU = "Use " .. A.GetSpellInfo(197488), 
-                        frFR = "Use " .. A.GetSpellInfo(197488), 
+                        enUS = "Use " .. GetSpellInfo(197488), 
+                        ruRU = "Use " .. GetSpellInfo(197488), 
+                        frFR = "Use " .. GetSpellInfo(197488), 
                     }, 
                     TT = { 
-                        enUS = "If you morph into Moonkin form, will auto use balance rotation if " .. A.GetSpellInfo(197488) .. " is learned.", 
-                        ruRU = "If you morph into Moonkin form, will auto use balance rotation if " .. A.GetSpellInfo(197488) .. " is learned.", 
-                        frFR = "If you morph into Moonkin form, will auto use balance rotation if " .. A.GetSpellInfo(197488) .. " is learned.", 
+                        enUS = "If you morph into Moonkin form, will auto use balance rotation if " .. GetSpellInfo(197488) .. " is learned.", 
+                        ruRU = "If you morph into Moonkin form, will auto use balance rotation if " .. GetSpellInfo(197488) .. " is learned.", 
+                        frFR = "If you morph into Moonkin form, will auto use balance rotation if " .. GetSpellInfo(197488) .. " is learned.", 
                     }, 
                     M = {},
                 },
@@ -300,14 +303,14 @@ A.Data.ProfileUI = {
                     DB = "UseStampedingRoar",
                     DBV = true,
                     L = { 
-                        enUS = "Auto" .. A.GetSpellInfo(106898), 
-                        ruRU = "Авто" .. A.GetSpellInfo(106898), 
-                        frFR = "Auto" .. A.GetSpellInfo(106898), 
+                        enUS = "Auto" .. GetSpellInfo(106898), 
+                        ruRU = "Авто" .. GetSpellInfo(106898), 
+                        frFR = "Auto" .. GetSpellInfo(106898), 
                     }, 
                     TT = { 
-                        enUS = "Automatically use " .. A.GetSpellInfo(106898), 
-                        ruRU = "Автоматически использовать " .. A.GetSpellInfo(106898), 
-                        frFR = "Utiliser automatiquement " .. A.GetSpellInfo(106898), 
+                        enUS = "Automatically use " .. GetSpellInfo(106898), 
+                        ruRU = "Автоматически использовать " .. GetSpellInfo(106898), 
+                        frFR = "Utiliser automatiquement " .. GetSpellInfo(106898), 
                     }, 
                     M = {},
                 },
@@ -319,12 +322,12 @@ A.Data.ProfileUI = {
                     DBV = 3, -- Set healthpercentage @60% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(106898) .. " if moving for",
+                        ANY = GetSpellInfo(106898) .. " if moving for",
                     }, 
                     TT = { 
-                        enUS = "If " .. A.GetSpellInfo(106898) .. " is talented and ready, will use it if moving for set value.", 
-                        ruRU = "Если " .. A.GetSpellInfo(106898) .. " изучен и готов, будет использовать его при переходе на заданное значение.", 
-                        frFR = "Si " .. A.GetSpellInfo(106898) .. " est prêt, l'utilisera s'il se déplace pour la valeur définie.", 
+                        enUS = "If " .. GetSpellInfo(106898) .. " is talented and ready, will use it if moving for set value.", 
+                        ruRU = "Если " .. GetSpellInfo(106898) .. " изучен и готов, будет использовать его при переходе на заданное значение.", 
+                        frFR = "Si " .. GetSpellInfo(106898) .. " est prêt, l'utilisera s'il se déplace pour la valeur définie.", 
                     }, 
                     M = {},
                 },
@@ -335,14 +338,14 @@ A.Data.ProfileUI = {
                     DB = "UseDash",
                     DBV = true,
                     L = { 
-                        enUS = "Auto" .. A.GetSpellInfo(1850), 
-                        ruRU = "Авто" .. A.GetSpellInfo(1850), 
-                        frFR = "Auto" .. A.GetSpellInfo(1850), 
+                        enUS = "Auto" .. GetSpellInfo(1850), 
+                        ruRU = "Авто" .. GetSpellInfo(1850), 
+                        frFR = "Auto" .. GetSpellInfo(1850), 
                     }, 
                     TT = { 
-                        enUS = "Automatically use " .. A.GetSpellInfo(1850), 
-                        ruRU = "Автоматически использовать " .. A.GetSpellInfo(1850), 
-                        frFR = "Utiliser automatiquement " .. A.GetSpellInfo(1850), 
+                        enUS = "Automatically use " .. GetSpellInfo(1850), 
+                        ruRU = "Автоматически использовать " .. GetSpellInfo(1850), 
+                        frFR = "Utiliser automatiquement " .. GetSpellInfo(1850), 
                     }, 
                     M = {},
                 },
@@ -354,12 +357,12 @@ A.Data.ProfileUI = {
                     DBV = 3, -- Set healthpercentage @60% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(1850) .. " if moving for",
+                        ANY = GetSpellInfo(1850) .. " if moving for",
                     }, 
                     TT = { 
-                        enUS = "If " .. A.GetSpellInfo(1850) .. " is talented and ready, will use it if moving for set value.", 
-                        ruRU = "Если " .. A.GetSpellInfo(1850) .. " изучен и готов, будет использовать его при переходе на заданное значение.", 
-                        frFR = "Si " .. A.GetSpellInfo(1850) .. " est prêt, l'utilisera s'il se déplace pour la valeur définie.", 
+                        enUS = "If " .. GetSpellInfo(1850) .. " is talented and ready, will use it if moving for set value.", 
+                        ruRU = "Если " .. GetSpellInfo(1850) .. " изучен и готов, будет использовать его при переходе на заданное значение.", 
+                        frFR = "Si " .. GetSpellInfo(1850) .. " est prêt, l'utilisera s'il se déplace pour la valeur définie.", 
                     }, 
                     M = {},
                 },
@@ -370,14 +373,14 @@ A.Data.ProfileUI = {
                     DB = "UseWildChargeCat",
                     DBV = true,
                     L = { 
-                        enUS = "Auto " .. A.GetSpellInfo(49376) .. " Cat", 
-                        ruRU = "Авто " .. A.GetSpellInfo(49376) .. " Cat", 
-                        frFR = "Auto " .. A.GetSpellInfo(49376) .. " Cat", 
+                        enUS = "Auto " .. GetSpellInfo(49376) .. " Cat", 
+                        ruRU = "Авто " .. GetSpellInfo(49376) .. " Cat", 
+                        frFR = "Auto " .. GetSpellInfo(49376) .. " Cat", 
                     }, 
                     TT = { 
-                        enUS = "Automatically use " .. A.GetSpellInfo(49376), 
-                        ruRU = "Автоматически использовать " .. A.GetSpellInfo(49376), 
-                        frFR = "Utiliser automatiquement " .. A.GetSpellInfo(49376), 
+                        enUS = "Automatically use " .. GetSpellInfo(49376), 
+                        ruRU = "Автоматически использовать " .. GetSpellInfo(49376), 
+                        frFR = "Utiliser automatiquement " .. GetSpellInfo(49376), 
                     }, 
                     M = {},
                 },
@@ -388,14 +391,14 @@ A.Data.ProfileUI = {
                     DB = "UseWildChargeBear",
                     DBV = true,
                     L = { 
-                        enUS = "Auto " .. A.GetSpellInfo(16979) .. " Bear",  
-                        ruRU = "Авто " .. A.GetSpellInfo(16979) .. " Bear", 
-                        frFR = "Auto " .. A.GetSpellInfo(16979) .. " Bear",
+                        enUS = "Auto " .. GetSpellInfo(16979) .. " Bear",  
+                        ruRU = "Авто " .. GetSpellInfo(16979) .. " Bear", 
+                        frFR = "Auto " .. GetSpellInfo(16979) .. " Bear",
                     }, 
                     TT = { 
-                        enUS = "Automatically use " .. A.GetSpellInfo(16979), 
-                        ruRU = "Автоматически использовать " .. A.GetSpellInfo(16979), 
-                        frFR = "Utiliser automatiquement " .. A.GetSpellInfo(16979), 
+                        enUS = "Automatically use " .. GetSpellInfo(16979), 
+                        ruRU = "Автоматически использовать " .. GetSpellInfo(16979), 
+                        frFR = "Utiliser automatiquement " .. GetSpellInfo(16979), 
                     }, 
                     M = {},
                 },
@@ -405,7 +408,7 @@ A.Data.ProfileUI = {
                 {
                     E = "Header",
                     L = {
-                        ANY = " -- " .. A.GetSpellInfo(298277) .. " -- ",
+                        ANY = " -- " .. GetSpellInfo(298277) .. " -- ",
                     },
                 },
             },
@@ -415,14 +418,14 @@ A.Data.ProfileUI = {
                     DB = "BloodoftheEnemySyncAoE",
                     DBV = true,
                     L = { 
-                        enUS = A.GetSpellInfo(298277) .. " AoE sync", 
-                        ruRU = A.GetSpellInfo(298277) .. " AoE sync",  
-                        frFR = A.GetSpellInfo(298277) .. " AoE sync", 
+                        enUS = GetSpellInfo(298277) .. " AoE sync", 
+                        ruRU = GetSpellInfo(298277) .. " AoE sync",  
+                        frFR = GetSpellInfo(298277) .. " AoE sync", 
                     }, 
                     TT = { 
-                        enUS = "Enable this to option to keep " .. A.GetSpellInfo(298277) .. " for maximum AoE damage.", 
-                        ruRU = "Enable this to option to keep " .. A.GetSpellInfo(298277) .. " for maximum AoE damage.", 
-                        frFR = "Enable this to option to keep " .. A.GetSpellInfo(298277) .. " for maximum AoE damage.", 
+                        enUS = "Enable this to option to keep " .. GetSpellInfo(298277) .. " for maximum AoE damage.", 
+                        ruRU = "Enable this to option to keep " .. GetSpellInfo(298277) .. " for maximum AoE damage.", 
+                        frFR = "Enable this to option to keep " .. GetSpellInfo(298277) .. " for maximum AoE damage.", 
                     }, 
                     M = {},
                 },
@@ -434,7 +437,7 @@ A.Data.ProfileUI = {
                     DBV = 10, -- Set healthpercentage @60% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(298277) .. " AoE TTD",
+                        ANY = GetSpellInfo(298277) .. " AoE TTD",
                     }, 
                     M = {},
                 },
@@ -446,12 +449,12 @@ A.Data.ProfileUI = {
                     DBV = 3, -- Set healthpercentage @60% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(298277) .. " AoE units",
+                        ANY = GetSpellInfo(298277) .. " AoE units",
                     }, 
                     TT = { 
-                        enUS = "Minimum active units around before using " .. A.GetSpellInfo(298277) .. ".", 
-                        ruRU = "Minimum active units around before using " .. A.GetSpellInfo(298277) .. ".", 
-                        frFR = "Minimum active units around before using " .. A.GetSpellInfo(298277) .. ".", 
+                        enUS = "Minimum active units around before using " .. GetSpellInfo(298277) .. ".", 
+                        ruRU = "Minimum active units around before using " .. GetSpellInfo(298277) .. ".", 
+                        frFR = "Minimum active units around before using " .. GetSpellInfo(298277) .. ".", 
                     },
                     M = {},
                 },
@@ -460,7 +463,7 @@ A.Data.ProfileUI = {
                 {
                     E = "Header",
                     L = {
-                        ANY = " -- " .. A.GetSpellInfo(295258) .. " -- ",
+                        ANY = " -- " .. GetSpellInfo(295258) .. " -- ",
                     },
                 },
             },
@@ -474,12 +477,12 @@ A.Data.ProfileUI = {
                     DBV = 10, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(295258) .. " TTD",
+                        ANY = GetSpellInfo(295258) .. " TTD",
                     },
                     TT = { 
-                        enUS = "Set the minimum Time To Die for a unit before using " .. A.GetSpellInfo(295258) .. " \nDoes not apply to Boss.", 
-                        ruRU = "Установите минимальное время смерти для отряда перед использованием " .. A.GetSpellInfo(295258) .. " \nНе применимо к боссу.", 
-                        frFR = "Définissez le temps minimum pour mourir pour une unité avant d'utiliser " .. A.GetSpellInfo(295258) .. " \nNe s'applique pas aux boss.", 
+                        enUS = "Set the minimum Time To Die for a unit before using " .. GetSpellInfo(295258) .. " \nDoes not apply to Boss.", 
+                        ruRU = "Установите минимальное время смерти для отряда перед использованием " .. GetSpellInfo(295258) .. " \nНе применимо к боссу.", 
+                        frFR = "Définissez le temps minimum pour mourir pour une unité avant d'utiliser " .. GetSpellInfo(295258) .. " \nNe s'applique pas aux boss.", 
                     }, 					
                     M = {},
                 },
@@ -491,12 +494,12 @@ A.Data.ProfileUI = {
                     DBV = 3, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(295258) .. " units",
+                        ANY = GetSpellInfo(295258) .. " units",
                     },
                     TT = { 
-                        enUS = "Set the minimum number of units around before using " .. A.GetSpellInfo(295258) .. " \nDoes not apply to Boss.", 
-                        ruRU = "Set the minimum number of units around before using " .. A.GetSpellInfo(295258) .. " \nDoes not apply to Boss.",
-                        frFR = "Set the minimum number of units around before using " .. A.GetSpellInfo(295258) .. " \nDoes not apply to Boss.",
+                        enUS = "Set the minimum number of units around before using " .. GetSpellInfo(295258) .. " \nDoes not apply to Boss.", 
+                        ruRU = "Set the minimum number of units around before using " .. GetSpellInfo(295258) .. " \nDoes not apply to Boss.",
+                        frFR = "Set the minimum number of units around before using " .. GetSpellInfo(295258) .. " \nDoes not apply to Boss.",
                     }, 					
                     M = {},
                 }, 				
@@ -584,7 +587,7 @@ A.Data.ProfileUI = {
                 {
                     E = "Header",
                     L = {
-                        ANY = " -- " .. A.GetSpellInfo(300714) .. " -- ",
+                        ANY = " -- " .. GetSpellInfo(300714) .. " -- ",
                     },
                 },
             },
@@ -629,12 +632,12 @@ A.Data.ProfileUI = {
                     DBV = 40, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(300714) .. " TTD",
+                        ANY = GetSpellInfo(300714) .. " TTD",
                     },
                     TT = { 
-                        enUS = "Set the minimum Time To Die for a unit before using " .. A.GetSpellInfo(300714) .. " \nDoes not apply to Boss.", 
-                        ruRU = "Установите минимальное время смерти для отряда перед использованием " .. A.GetSpellInfo(300714) .. " \nНе применимо к боссу.", 
-                        frFR = "Définissez le temps minimum pour mourir pour une unité avant d'utiliser " .. A.GetSpellInfo(300714) .. " \nNe s'applique pas aux boss.", 
+                        enUS = "Set the minimum Time To Die for a unit before using " .. GetSpellInfo(300714) .. " \nDoes not apply to Boss.", 
+                        ruRU = "Установите минимальное время смерти для отряда перед использованием " .. GetSpellInfo(300714) .. " \nНе применимо к боссу.", 
+                        frFR = "Définissez le temps minimum pour mourir pour une unité avant d'utiliser " .. GetSpellInfo(300714) .. " \nNe s'applique pas aux boss.", 
                     }, 					
                     M = {},
                 },				
@@ -664,12 +667,12 @@ A.Data.ProfileUI = {
                     DBV = 30, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(300714) .. " HP",
+                        ANY = GetSpellInfo(300714) .. " HP",
                     },
                     TT = { 
-                        enUS = "Set the minimum health percent for a unit before using " .. A.GetSpellInfo(300714) .. ".", 
-                        ruRU = "Set the minimum health percent for a unit before using " .. A.GetSpellInfo(300714) .. ".",  
-                        frFR = "Set the minimum health percent for a unit before using " .. A.GetSpellInfo(300714) .. ".", 
+                        enUS = "Set the minimum health percent for a unit before using " .. GetSpellInfo(300714) .. ".", 
+                        ruRU = "Set the minimum health percent for a unit before using " .. GetSpellInfo(300714) .. ".",  
+                        frFR = "Set the minimum health percent for a unit before using " .. GetSpellInfo(300714) .. ".", 
                     }, 					
                     M = {},
                 },
@@ -802,7 +805,7 @@ A.Data.ProfileUI = {
                     DBV = 100, -- Set healthpercentage @99% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(61336) .. " (%)",
+                        ANY = GetSpellInfo(61336) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -814,7 +817,7 @@ A.Data.ProfileUI = {
                     DBV = 100, -- Set healthpercentage @99% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(5487) .. " (%)",
+                        ANY = GetSpellInfo(5487) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -851,10 +854,10 @@ A.Data.ProfileUI = {
 					DB 		= "AutoMoonkinForm",
 					DBV 	= true,
 					L 		= { 
-                        ANY	= "Auto " .. A.GetSpellInfo(24858),
+                        ANY	= "Auto " .. GetSpellInfo(24858),
                     }, 
                     TT 		= { 
-                        ANY = "Auto use " .. A.GetSpellInfo(24858),
+                        ANY = "Auto use " .. GetSpellInfo(24858),
 					}, 
 					M 		= {},
                 },					
@@ -923,14 +926,14 @@ A.Data.ProfileUI = {
 					Precision = 1,
 					ONLYOFF = true,
 					L 		= { 
-                        enUS = A.GetSpellInfo(93402) .. "\nRefresh", 
-                        ruRU = A.GetSpellInfo(93402) .. "\nRefresh",  
-                        frFR = A.GetSpellInfo(93402) .. "\nRefresh", 
+                        enUS = GetSpellInfo(93402) .. "\nRefresh", 
+                        ruRU = GetSpellInfo(93402) .. "\nRefresh",  
+                        frFR = GetSpellInfo(93402) .. "\nRefresh", 
                     }, 
 					TT		= { 
-                        enUS = "Choose the remaining time in seconds before refreshing " .. A.GetSpellInfo(93402), 
-                        ruRU = "Choose the remaining time in seconds before refreshing " .. A.GetSpellInfo(93402), 
-						frFR = "Choose the remaining time in seconds before refreshing " .. A.GetSpellInfo(93402), 
+                        enUS = "Choose the remaining time in seconds before refreshing " .. GetSpellInfo(93402), 
+                        ruRU = "Choose the remaining time in seconds before refreshing " .. GetSpellInfo(93402), 
+						frFR = "Choose the remaining time in seconds before refreshing " .. GetSpellInfo(93402), 
                     },
 					M 		= {},
                 },
@@ -943,14 +946,14 @@ A.Data.ProfileUI = {
 					Precision = 1,
 					ONLYOFF = true,
 					L 		= { 
-                        enUS = A.GetSpellInfo(8921) .. "\nRefresh", 
-                        ruRU = A.GetSpellInfo(8921) .. "\nRefresh",  
-                        frFR = A.GetSpellInfo(8921) .. "\nRefresh", 
+                        enUS = GetSpellInfo(8921) .. "\nRefresh", 
+                        ruRU = GetSpellInfo(8921) .. "\nRefresh",  
+                        frFR = GetSpellInfo(8921) .. "\nRefresh", 
                     }, 
 					TT		= { 
-                        enUS = "Choose the remaining time in seconds before refreshing " .. A.GetSpellInfo(8921), 
-                        ruRU = "Choose the remaining time in seconds before refreshing " .. A.GetSpellInfo(8921), 
-						frFR = "Choose the remaining time in seconds before refreshing " .. A.GetSpellInfo(8921), 
+                        enUS = "Choose the remaining time in seconds before refreshing " .. GetSpellInfo(8921), 
+                        ruRU = "Choose the remaining time in seconds before refreshing " .. GetSpellInfo(8921), 
+						frFR = "Choose the remaining time in seconds before refreshing " .. GetSpellInfo(8921), 
                     },
 					M 		= {},
                 },
@@ -963,14 +966,14 @@ A.Data.ProfileUI = {
 					Precision = 1,
 					ONLYOFF = true,
 					L 		= { 
-                        enUS = A.GetSpellInfo(202347) .. "\nRefresh", 
-                        ruRU = A.GetSpellInfo(202347) .. "\nRefresh",  
-                        frFR = A.GetSpellInfo(202347) .. "\nRefresh", 
+                        enUS = GetSpellInfo(202347) .. "\nRefresh", 
+                        ruRU = GetSpellInfo(202347) .. "\nRefresh",  
+                        frFR = GetSpellInfo(202347) .. "\nRefresh", 
                     }, 
 					TT		= { 
-                        enUS = "Choose the remaining time in seconds before refreshing " .. A.GetSpellInfo(202347), 
-                        ruRU = "Choose the remaining time in seconds before refreshing " .. A.GetSpellInfo(202347), 
-						frFR = "Choose the remaining time in seconds before refreshing " .. A.GetSpellInfo(202347), 
+                        enUS = "Choose the remaining time in seconds before refreshing " .. GetSpellInfo(202347), 
+                        ruRU = "Choose the remaining time in seconds before refreshing " .. GetSpellInfo(202347), 
+						frFR = "Choose the remaining time in seconds before refreshing " .. GetSpellInfo(202347), 
                     },
 					M 		= {},
                 },
@@ -1068,7 +1071,7 @@ A.Data.ProfileUI = {
                 {
                     E = "Header",
                     L = {
-                        ANY = " -- " .. A.GetSpellInfo(298277) .. " -- ",
+                        ANY = " -- " .. GetSpellInfo(298277) .. " -- ",
                     },
                 },
             },
@@ -1078,14 +1081,14 @@ A.Data.ProfileUI = {
                     DB = "BloodoftheEnemySyncAoE",
                     DBV = true,
                     L = { 
-                        enUS = A.GetSpellInfo(298277) .. " AoE sync", 
-                        ruRU = A.GetSpellInfo(298277) .. " AoE sync",  
-                        frFR = A.GetSpellInfo(298277) .. " AoE sync", 
+                        enUS = GetSpellInfo(298277) .. " AoE sync", 
+                        ruRU = GetSpellInfo(298277) .. " AoE sync",  
+                        frFR = GetSpellInfo(298277) .. " AoE sync", 
                     }, 
                     TT = { 
-                        enUS = "Enable this to option to keep " .. A.GetSpellInfo(298277) .. " for maximum AoE damage.", 
-                        ruRU = "Enable this to option to keep " .. A.GetSpellInfo(298277) .. " for maximum AoE damage.", 
-                        frFR = "Enable this to option to keep " .. A.GetSpellInfo(298277) .. " for maximum AoE damage.", 
+                        enUS = "Enable this to option to keep " .. GetSpellInfo(298277) .. " for maximum AoE damage.", 
+                        ruRU = "Enable this to option to keep " .. GetSpellInfo(298277) .. " for maximum AoE damage.", 
+                        frFR = "Enable this to option to keep " .. GetSpellInfo(298277) .. " for maximum AoE damage.", 
                     }, 
                     M = {},
                 },
@@ -1097,7 +1100,7 @@ A.Data.ProfileUI = {
                     DBV = 8, -- Set healthpercentage @60% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(298277) .. " AoE TTD",
+                        ANY = GetSpellInfo(298277) .. " AoE TTD",
                     }, 
                     M = {},
                 },
@@ -1109,12 +1112,12 @@ A.Data.ProfileUI = {
                     DBV = 3, -- Set healthpercentage @60% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(298277) .. " AoE units",
+                        ANY = GetSpellInfo(298277) .. " AoE units",
                     }, 
                     TT = { 
-                        enUS = "Minimum active units around before using " .. A.GetSpellInfo(298277) .. ".", 
-                        ruRU = "Minimum active units around before using " .. A.GetSpellInfo(298277) .. ".", 
-                        frFR = "Minimum active units around before using " .. A.GetSpellInfo(298277) .. ".", 
+                        enUS = "Minimum active units around before using " .. GetSpellInfo(298277) .. ".", 
+                        ruRU = "Minimum active units around before using " .. GetSpellInfo(298277) .. ".", 
+                        frFR = "Minimum active units around before using " .. GetSpellInfo(298277) .. ".", 
                     },
                     M = {},
                 },
@@ -1123,7 +1126,7 @@ A.Data.ProfileUI = {
                 {
                     E = "Header",
                     L = {
-                        ANY = " -- " .. A.GetSpellInfo(295258) .. " -- ",
+                        ANY = " -- " .. GetSpellInfo(295258) .. " -- ",
                     },
                 },
             },
@@ -1137,12 +1140,12 @@ A.Data.ProfileUI = {
                     DBV = 5, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(295258) .. " TTD",
+                        ANY = GetSpellInfo(295258) .. " TTD",
                     },
                     TT = { 
-                        enUS = "Set the minimum Time To Die for a unit before using " .. A.GetSpellInfo(295258) .. " \nDoes not apply to Boss.", 
-                        ruRU = "Установите минимальное время смерти для отряда перед использованием " .. A.GetSpellInfo(295258) .. " \nНе применимо к боссу.", 
-                        frFR = "Définissez le temps minimum pour mourir pour une unité avant d'utiliser " .. A.GetSpellInfo(295258) .. " \nNe s'applique pas aux boss.", 
+                        enUS = "Set the minimum Time To Die for a unit before using " .. GetSpellInfo(295258) .. " \nDoes not apply to Boss.", 
+                        ruRU = "Установите минимальное время смерти для отряда перед использованием " .. GetSpellInfo(295258) .. " \nНе применимо к боссу.", 
+                        frFR = "Définissez le temps minimum pour mourir pour une unité avant d'utiliser " .. GetSpellInfo(295258) .. " \nNe s'applique pas aux boss.", 
                     }, 					
                     M = {},
                 },
@@ -1154,12 +1157,12 @@ A.Data.ProfileUI = {
                     DBV = 3, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(295258) .. " units",
+                        ANY = GetSpellInfo(295258) .. " units",
                     },
                     TT = { 
-                        enUS = "Set the minimum number of units around before using " .. A.GetSpellInfo(295258) .. " \nDoes not apply to Boss.", 
-                        ruRU = "Set the minimum number of units around before using " .. A.GetSpellInfo(295258) .. " \nDoes not apply to Boss.",
-                        frFR = "Set the minimum number of units around before using " .. A.GetSpellInfo(295258) .. " \nDoes not apply to Boss.",
+                        enUS = "Set the minimum number of units around before using " .. GetSpellInfo(295258) .. " \nDoes not apply to Boss.", 
+                        ruRU = "Set the minimum number of units around before using " .. GetSpellInfo(295258) .. " \nDoes not apply to Boss.",
+                        frFR = "Set the minimum number of units around before using " .. GetSpellInfo(295258) .. " \nDoes not apply to Boss.",
                     }, 					
                     M = {},
                 }, 				
@@ -1247,7 +1250,7 @@ A.Data.ProfileUI = {
                 {
                     E = "Header",
                     L = {
-                        ANY = " -- " .. A.GetSpellInfo(300714) .. " -- ",
+                        ANY = " -- " .. GetSpellInfo(300714) .. " -- ",
                     },
                 },
             },
@@ -1292,12 +1295,12 @@ A.Data.ProfileUI = {
                     DBV = 40, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(300714) .. " TTD",
+                        ANY = GetSpellInfo(300714) .. " TTD",
                     },
                     TT = { 
-                        enUS = "Set the minimum Time To Die for a unit before using " .. A.GetSpellInfo(300714) .. " \nDoes not apply to Boss.", 
-                        ruRU = "Установите минимальное время смерти для отряда перед использованием " .. A.GetSpellInfo(300714) .. " \nНе применимо к боссу.", 
-                        frFR = "Définissez le temps minimum pour mourir pour une unité avant d'utiliser " .. A.GetSpellInfo(300714) .. " \nNe s'applique pas aux boss.", 
+                        enUS = "Set the minimum Time To Die for a unit before using " .. GetSpellInfo(300714) .. " \nDoes not apply to Boss.", 
+                        ruRU = "Установите минимальное время смерти для отряда перед использованием " .. GetSpellInfo(300714) .. " \nНе применимо к боссу.", 
+                        frFR = "Définissez le temps minimum pour mourir pour une unité avant d'utiliser " .. GetSpellInfo(300714) .. " \nNe s'applique pas aux boss.", 
                     }, 					
                     M = {},
                 },				
@@ -1327,12 +1330,12 @@ A.Data.ProfileUI = {
                     DBV = 30, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(300714) .. " HP",
+                        ANY = GetSpellInfo(300714) .. " HP",
                     },
                     TT = { 
-                        enUS = "Set the minimum health percent for a unit before using " .. A.GetSpellInfo(300714) .. ".", 
-                        ruRU = "Set the minimum health percent for a unit before using " .. A.GetSpellInfo(300714) .. ".",  
-                        frFR = "Set the minimum health percent for a unit before using " .. A.GetSpellInfo(300714) .. ".", 
+                        enUS = "Set the minimum health percent for a unit before using " .. GetSpellInfo(300714) .. ".", 
+                        ruRU = "Set the minimum health percent for a unit before using " .. GetSpellInfo(300714) .. ".",  
+                        frFR = "Set the minimum health percent for a unit before using " .. GetSpellInfo(300714) .. ".", 
                     }, 					
                     M = {},
                 },
@@ -1466,7 +1469,7 @@ A.Data.ProfileUI = {
 					DBV 	= 35,
 					ONOFF 	= true,
 					L 		= { 
-                        ANY	= A.GetSpellInfo(22812) .. " (%)"
+                        ANY	= GetSpellInfo(22812) .. " (%)"
                     },
 					M 		= {},
                 },
@@ -1478,7 +1481,7 @@ A.Data.ProfileUI = {
 					DBV 	= 50,
 					ONOFF 	= true,
 					L 		= { 
-                        ANY	= A.GetSpellInfo(18562) .. " (%)"
+                        ANY	= GetSpellInfo(18562) .. " (%)"
                     },
 					M 		= {},
                 },
@@ -1492,7 +1495,7 @@ A.Data.ProfileUI = {
 					DBV 	= 40,
 					ONOFF 	= true,
 					L 		= { 
-                        ANY	= A.GetSpellInfo(108238) .. " (%)"
+                        ANY	= GetSpellInfo(108238) .. " (%)"
                     },
 					M 		= {},
                 },
@@ -1717,14 +1720,14 @@ A.Data.ProfileUI = {
                     DB = "UseStampedingRoar",
                     DBV = true,
                     L = { 
-                        enUS = "Auto" .. A.GetSpellInfo(77761), 
-                        ruRU = "Авто" .. A.GetSpellInfo(77761), 
-                        frFR = "Auto" .. A.GetSpellInfo(77761), 
+                        enUS = "Auto" .. GetSpellInfo(77761), 
+                        ruRU = "Авто" .. GetSpellInfo(77761), 
+                        frFR = "Auto" .. GetSpellInfo(77761), 
                     }, 
                     TT = { 
-                        enUS = "Automatically use " .. A.GetSpellInfo(77761), 
-                        ruRU = "Автоматически использовать " .. A.GetSpellInfo(77761), 
-                        frFR = "Utiliser automatiquement " .. A.GetSpellInfo(77761), 
+                        enUS = "Automatically use " .. GetSpellInfo(77761), 
+                        ruRU = "Автоматически использовать " .. GetSpellInfo(77761), 
+                        frFR = "Utiliser automatiquement " .. GetSpellInfo(77761), 
                     }, 
                     M = {},
                 },
@@ -1736,12 +1739,12 @@ A.Data.ProfileUI = {
                     DBV = 3, -- Set healthpercentage @60% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(77761) .. " if moving for",
+                        ANY = GetSpellInfo(77761) .. " if moving for",
                     }, 
                     TT = { 
-                        enUS = "If " .. A.GetSpellInfo(77761) .. " is talented and ready, will use it if moving for set value.", 
-                        ruRU = "Если " .. A.GetSpellInfo(77761) .. " изучен и готов, будет использовать его при переходе на заданное значение.", 
-                        frFR = "Si " .. A.GetSpellInfo(77761) .. " est prêt, l'utilisera s'il se déplace pour la valeur définie.", 
+                        enUS = "If " .. GetSpellInfo(77761) .. " is talented and ready, will use it if moving for set value.", 
+                        ruRU = "Если " .. GetSpellInfo(77761) .. " изучен и готов, будет использовать его при переходе на заданное значение.", 
+                        frFR = "Si " .. GetSpellInfo(77761) .. " est prêt, l'utilisera s'il se déplace pour la valeur définie.", 
                     }, 
                     M = {},
                 },				
@@ -1750,7 +1753,7 @@ A.Data.ProfileUI = {
                 {
                     E = "Header",
                     L = {
-                        ANY = " -- " .. A.GetSpellInfo(299374) .. " -- ",
+                        ANY = " -- " .. GetSpellInfo(299374) .. " -- ",
                     },
                 },
             },
@@ -1763,9 +1766,9 @@ A.Data.ProfileUI = {
                     DBV     = 5,
                     ONLYOFF    = true,
                     L = { 
-                        enUS = A.GetSpellInfo(299374) .. "\n<= time to die (sec)", 
-                        ruRU = A.GetSpellInfo(299374) .. "\n<= time to die (sec)",  
-                        frFR = A.GetSpellInfo(299374) .. "\n<= time to die (sec)",  
+                        enUS = GetSpellInfo(299374) .. "\n<= time to die (sec)", 
+                        ruRU = GetSpellInfo(299374) .. "\n<= time to die (sec)",  
+                        frFR = GetSpellInfo(299374) .. "\n<= time to die (sec)",  
                     }, 
                     TT = { 
                         enUS = "OFF - The trigger is disabled\n0->100 Less than or equal to the specified percentage of your health\nWARNING: There must be at least one of several triggers turned on\nWhen selecting multiple triggers, they will be synchronized as one general condition", 
@@ -1782,9 +1785,9 @@ A.Data.ProfileUI = {
                     DBV     = 20,
                     ONLYOFF    = true,
                     L = { 
-                        enUS = A.GetSpellInfo(299374) .. "\n<= health (%)", 
-                        ruRU = A.GetSpellInfo(299374) .. "\n<= health (%)",  
-                        frFR = A.GetSpellInfo(299374) .. "\n<= health (%)", 
+                        enUS = GetSpellInfo(299374) .. "\n<= health (%)", 
+                        ruRU = GetSpellInfo(299374) .. "\n<= health (%)",  
+                        frFR = GetSpellInfo(299374) .. "\n<= health (%)", 
                     }, 
                     TT = { 
                         enUS = "OFF - The trigger is disabled\n0->100 Less than or equal to the specified percentage of your health\nWARNING: There must be at least one of several triggers turned on\nWhen selecting multiple triggers, they will be synchronized as one general condition",
@@ -1808,9 +1811,9 @@ A.Data.ProfileUI = {
                     DB = "BarkskinIgnoreBigDeff",
                     DBV = true,
                     L = { 
-                        enUS = A.GetSpellInfo(22812) .. "\nSkip if " .. A.GetSpellInfo(61336) .. " used",
-                        ruRU = A.GetSpellInfo(22812) .. "\nSkip if " .. A.GetSpellInfo(61336) .. " used",  
-                        frFR = A.GetSpellInfo(22812) .. "\nSkip if " .. A.GetSpellInfo(61336) .. " used", 
+                        enUS = GetSpellInfo(22812) .. "\nSkip if " .. GetSpellInfo(61336) .. " used",
+                        ruRU = GetSpellInfo(22812) .. "\nSkip if " .. GetSpellInfo(61336) .. " used",  
+                        frFR = GetSpellInfo(22812) .. "\nSkip if " .. GetSpellInfo(61336) .. " used", 
                     }, 
                     M = {},
                 }, 		    
@@ -1819,9 +1822,9 @@ A.Data.ProfileUI = {
                     DB = "BarkskinCatchKillStrike",
                     DBV = true,
                     L = { 
-                        enUS = A.GetSpellInfo(22812) .. "\nCatch death hit",
-                        ruRU = A.GetSpellInfo(22812) .. "\nCatch death hit",  
-                        frFR = A.GetSpellInfo(22812) .. "\nCatch death hit", 
+                        enUS = GetSpellInfo(22812) .. "\nCatch death hit",
+                        ruRU = GetSpellInfo(22812) .. "\nCatch death hit",  
+                        frFR = GetSpellInfo(22812) .. "\nCatch death hit", 
                     }, 
                     TT = { 
                         enUS = "Try to manage to use\nability before receiving a fatal strike\nThis option is not related to other triggers!", 
@@ -1840,9 +1843,9 @@ A.Data.ProfileUI = {
                     DBV     = 5,
                     ONLYOFF    = true,
                     L = { 
-                        enUS = A.GetSpellInfo(22812) .. "\n<= time to die (sec)", 
-                        ruRU = A.GetSpellInfo(22812) .. "\n<= time to die (sec)",  
-                        frFR = A.GetSpellInfo(22812) .. "\n<= time to die (sec)",  
+                        enUS = GetSpellInfo(22812) .. "\n<= time to die (sec)", 
+                        ruRU = GetSpellInfo(22812) .. "\n<= time to die (sec)",  
+                        frFR = GetSpellInfo(22812) .. "\n<= time to die (sec)",  
                     }, 
                     TT = { 
                         enUS = "OFF - The trigger is disabled\n0->100 Less than or equal to the specified percentage of your health\nWARNING: There must be at least one of several triggers turned on\nWhen selecting multiple triggers, they will be synchronized as one general condition", 
@@ -1859,9 +1862,9 @@ A.Data.ProfileUI = {
                     DBV     = 20,
                     ONLYOFF    = true,
                     L = { 
-                        enUS = A.GetSpellInfo(22812) .. "\n<= health (%)", 
-                        ruRU = A.GetSpellInfo(22812) .. "\n<= health (%)",  
-                        frFR = A.GetSpellInfo(22812) .. "\n<= health (%)", 
+                        enUS = GetSpellInfo(22812) .. "\n<= health (%)", 
+                        ruRU = GetSpellInfo(22812) .. "\n<= health (%)",  
+                        frFR = GetSpellInfo(22812) .. "\n<= health (%)", 
                     }, 
                     TT = { 
                         enUS = "OFF - The trigger is disabled\n0->100 Less than or equal to the specified percentage of your health\nWARNING: There must be at least one of several triggers turned on\nWhen selecting multiple triggers, they will be synchronized as one general condition",
@@ -1877,9 +1880,9 @@ A.Data.ProfileUI = {
                     DB = "SurvivalInstinctsCatchKillStrike",
                     DBV = true,
                     L = { 
-                        enUS = A.GetSpellInfo(61336) .. "\nCatch death hit",
-                        ruRU = A.GetSpellInfo(61336) .. "\nCatch death hit",  
-                        frFR = A.GetSpellInfo(61336) .. "\nCatch death hit", 
+                        enUS = GetSpellInfo(61336) .. "\nCatch death hit",
+                        ruRU = GetSpellInfo(61336) .. "\nCatch death hit",  
+                        frFR = GetSpellInfo(61336) .. "\nCatch death hit", 
                     }, 
                     TT = { 
                         enUS = "Try to manage to use\nability before receiving a fatal strike\nThis option is not related to other triggers!", 
@@ -1896,9 +1899,9 @@ A.Data.ProfileUI = {
                     DBV     = 5,
                     ONLYOFF    = true,
                     L = { 
-                        enUS = A.GetSpellInfo(61336) .. "\n<= time to die (sec)", 
-                        ruRU = A.GetSpellInfo(61336) .. "\n<= time to die (sec)",  
-                        frFR = A.GetSpellInfo(61336) .. "\n<= time to die (sec)",  
+                        enUS = GetSpellInfo(61336) .. "\n<= time to die (sec)", 
+                        ruRU = GetSpellInfo(61336) .. "\n<= time to die (sec)",  
+                        frFR = GetSpellInfo(61336) .. "\n<= time to die (sec)",  
                     }, 
                     TT = { 
                         enUS = "OFF - The trigger is disabled\n0->100 Less than or equal to the specified percentage of your health\nWARNING: There must be at least one of several triggers turned on\nWhen selecting multiple triggers, they will be synchronized as one general condition", 
@@ -1915,9 +1918,9 @@ A.Data.ProfileUI = {
                     DBV     = 20,
                     ONLYOFF    = true,
                     L = { 
-                        enUS = A.GetSpellInfo(61336) .. "\n<= health (%)", 
-                        ruRU = A.GetSpellInfo(61336) .. "\n<= health (%)",  
-                        frFR = A.GetSpellInfo(61336) .. "\n<= health (%)", 
+                        enUS = GetSpellInfo(61336) .. "\n<= health (%)", 
+                        ruRU = GetSpellInfo(61336) .. "\n<= health (%)",  
+                        frFR = GetSpellInfo(61336) .. "\n<= health (%)", 
                     }, 
                     TT = { 
                         enUS = "OFF - The trigger is disabled\n0->100 Less than or equal to the specified percentage of your health\nWARNING: There must be at least one of several triggers turned on\nWhen selecting multiple triggers, they will be synchronized as one general condition",
@@ -1942,7 +1945,7 @@ A.Data.ProfileUI = {
                     DBV = 100, -- Set healthpercentage @60% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(204066) .. " (%)",
+                        ANY = GetSpellInfo(204066) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -1954,7 +1957,7 @@ A.Data.ProfileUI = {
                     DBV = 100, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(22842) .. " (%)",
+                        ANY = GetSpellInfo(22842) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -1968,7 +1971,7 @@ A.Data.ProfileUI = {
                     DBV = 100, -- Set healthpercentage @60% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(61336) .. " (%)",
+                        ANY = GetSpellInfo(61336) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -1980,7 +1983,7 @@ A.Data.ProfileUI = {
                     DBV = 100, -- Set healthpercentage @60% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(192081) .. " (%)",
+                        ANY = GetSpellInfo(192081) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -1992,7 +1995,7 @@ A.Data.ProfileUI = {
                     DBV = 70, -- Set healthpercentage @60% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(155835) .. "\nmin rage",
+                        ANY = GetSpellInfo(155835) .. "\nmin rage",
                     }, 
                     TT = { 
                         enUS = "Minimum rage required before using Bristling Fur", 
@@ -2010,7 +2013,7 @@ A.Data.ProfileUI = {
                     DBV = 100, -- Set healthpercentage @60% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(298155) .. " (%)",
+                        ANY = GetSpellInfo(298155) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -2022,7 +2025,7 @@ A.Data.ProfileUI = {
                     DBV = 100, -- Set healthpercentage @60% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(301308) .. " (%)",
+                        ANY = GetSpellInfo(301308) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -2125,7 +2128,7 @@ A.Data.ProfileUI = {
                     DB = "FearPvP",
                     DBV = "ON MELEE BURST",
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(5782),
+                        ANY = "PvP " .. GetSpellInfo(5782),
                     }, 
                     TT = { 
                         enUS = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Only if melee player has damage buffs\nON COOLDOWN - means will use always on melee players\nOFF - Cut out from rotation but still allow work through Queue and MSG systems\nIf you want fully turn it OFF then you should make SetBlocker in 'Actions' tab", 
@@ -2151,7 +2154,7 @@ A.Data.ProfileUI = {
                         [4] = true,
                     }, 
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(5782) .. " units",
+                        ANY = "PvP " .. GetSpellInfo(5782) .. " units",
                     }, 
                     TT = { 
                         enUS = "primary - is @target, @mouseover, @targettarget (these units are depend on toggles above)", 
@@ -2544,7 +2547,7 @@ A.Data.ProfileUI = {
                     DBV = 85,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(22812) .. " (%)",
+                        ANY = GetSpellInfo(22812) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -2556,7 +2559,7 @@ A.Data.ProfileUI = {
                     DBV = 100,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(20594) .. " (%)",                        
+                        ANY = GetSpellInfo(20594) .. " (%)",                        
                     }, 
                     M = {},
                 },
@@ -2570,7 +2573,7 @@ A.Data.ProfileUI = {
                     DBV = 100,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(102342) .. " (%)",                        
+                        ANY = GetSpellInfo(102342) .. " (%)",                        
                     }, 
                     M = {},
                 },
@@ -2582,7 +2585,7 @@ A.Data.ProfileUI = {
                     DBV = 100,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(5487) .. " (%)",
+                        ANY = GetSpellInfo(5487) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -2596,7 +2599,7 @@ A.Data.ProfileUI = {
                     DBV = 100,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(122783) .. " (%)",                        
+                        ANY = GetSpellInfo(122783) .. " (%)",                        
                     }, 
                     M = {},
                 },
@@ -2631,7 +2634,7 @@ A.Data.ProfileUI = {
                     DBV = 85,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(299374) .. "\nMana %",                        
+                        ANY = GetSpellInfo(299374) .. "\nMana %",                        
                     },                     
                     M = {},
                 },
@@ -2643,7 +2646,7 @@ A.Data.ProfileUI = {
                     DBV = 5,
                     ONOFF = false,
                     L = { 
-                        ANY = A.GetSpellInfo(299944) .. "\nunits number",                        
+                        ANY = GetSpellInfo(299944) .. "\nunits number",                        
                     },                     
                     M = {},
                 },
@@ -2655,7 +2658,7 @@ A.Data.ProfileUI = {
                     DBV = 85,
                     ONOFF = false,
                     L = { 
-                        ANY = A.GetSpellInfo(299944) .. "\n(%)",                        
+                        ANY = GetSpellInfo(299944) .. "\n(%)",                        
                     },                     
                     M = {},
                 },
@@ -2683,9 +2686,9 @@ A.Data.ProfileUI = {
                         ANY = "Burst\nMacro Creator",
                     }, 
                     TT = { 
-                        enUS = "Click this button to create the special " .. A.GetSpellInfo(774) .. " macro.\n@USAGE: Create the macro and add it to your spellbar or keybind it. Then if you know some big damage are incoming, just press once to spread Rejuvenation on max units and press again to stop.", 
-                        ruRU = "Click this button to create the special " .. A.GetSpellInfo(774) .. " macro.\n@USAGE: Create the macro and add it to your spellbar or keybind it. Then if you know some big damage are incoming, just press once to spread Rejuvenation on max units and press again to stop.", 
-                        frFR = "Click this button to create the special " .. A.GetSpellInfo(774) .. " macro.\n@USAGE: Create the macro and add it to your spellbar or keybind it. Then if you know some big damage are incoming, just press once to spread Rejuvenation on max units and press again to stop.", 
+                        enUS = "Click this button to create the special " .. GetSpellInfo(774) .. " macro.\n@USAGE: Create the macro and add it to your spellbar or keybind it. Then if you know some big damage are incoming, just press once to spread Rejuvenation on max units and press again to stop.", 
+                        ruRU = "Click this button to create the special " .. GetSpellInfo(774) .. " macro.\n@USAGE: Create the macro and add it to your spellbar or keybind it. Then if you know some big damage are incoming, just press once to spread Rejuvenation on max units and press again to stop.", 
+                        frFR = "Click this button to create the special " .. GetSpellInfo(774) .. " macro.\n@USAGE: Create the macro and add it to your spellbar or keybind it. Then if you know some big damage are incoming, just press once to spread Rejuvenation on max units and press again to stop.", 
                     },                           
                 },
             },				
@@ -2693,7 +2696,7 @@ A.Data.ProfileUI = {
                 {
                     E = "Header",
                     L = {
-                        ANY = A.GetSpellInfo(33763),
+                        ANY = GetSpellInfo(33763),
                     },
                 },
             }, 
@@ -2706,7 +2709,7 @@ A.Data.ProfileUI = {
                     DBV = 100,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(33763) .. " (%)",                        
+                        ANY = GetSpellInfo(33763) .. " (%)",                        
                     }, 
                     TT = { 
                         enUS = "Offset Health Percent on which start casting 'Lifebloom'", 
@@ -2724,7 +2727,7 @@ A.Data.ProfileUI = {
                     DB = "LifebloomWorkMode",
                     DBV = "Auto",
                     L = { 
-                        ANY = A.GetSpellInfo(33763) .. " Work Mode",
+                        ANY = GetSpellInfo(33763) .. " Work Mode",
                     }, 
                     TT = { 
                         enUS = "These conditions will activate differents logic behind.\nAuto: Fully automated settings, priorise Photosynthesis on you if talent is learned.\nTanking Units: Will make sure Lifebloom is always present on tanks.\nMostly Inc. Damage: Friendly unit taking the more damage in the current situation.", 
@@ -2739,7 +2742,7 @@ A.Data.ProfileUI = {
                 {
                     E = "Header",
                     L = {
-                        ANY = " -- " .. A.GetSpellInfo(740) .. " -- ",
+                        ANY = " -- " .. GetSpellInfo(740) .. " -- ",
                     },
                 }, 
             },
@@ -2769,7 +2772,7 @@ A.Data.ProfileUI = {
                     DBV = 5,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(740) .. "\n(Total Units)",    
+                        ANY = GetSpellInfo(740) .. "\n(Total Units)",    
                     },                     
                     M = {},
                 },
@@ -2781,7 +2784,7 @@ A.Data.ProfileUI = {
                     DBV = 3,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(740) .. "\n(Total Units)",    
+                        ANY = GetSpellInfo(740) .. "\n(Total Units)",    
                     },                     
                     M = {},
                 },
@@ -2796,7 +2799,7 @@ A.Data.ProfileUI = {
                     DBV = 65,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(740) .. "\n(Per UnitHealth %)",                        
+                        ANY = GetSpellInfo(740) .. "\n(Per UnitHealth %)",                        
                     },                     
                     M = {},
                 },
@@ -2808,7 +2811,7 @@ A.Data.ProfileUI = {
                     DBV = 60,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(740) .. "\n(Per UnitHealth %)",                        
+                        ANY = GetSpellInfo(740) .. "\n(Per UnitHealth %)",                        
                     },                     
                     M = {},
                 },			    
@@ -2817,7 +2820,7 @@ A.Data.ProfileUI = {
                 {
                     E = "Header",
                     L = {
-                        ANY = A.GetSpellInfo(197721),
+                        ANY = GetSpellInfo(197721),
                     },
                 },
             }, 
@@ -2831,7 +2834,7 @@ A.Data.ProfileUI = {
                     DBV = 70,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(197721) .. "\n(Per UnitHealth %)",                        
+                        ANY = GetSpellInfo(197721) .. "\n(Per UnitHealth %)",                        
                     },                     
                     M = {},
                 },
@@ -2843,7 +2846,7 @@ A.Data.ProfileUI = {
                     DBV = 4,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(197721) .. "\n(Total Units)",    
+                        ANY = GetSpellInfo(197721) .. "\n(Total Units)",    
                     },                     
                     M = {},
                 },
@@ -2852,7 +2855,7 @@ A.Data.ProfileUI = {
                 {
                     E = "Header",
                     L = {
-                        ANY = A.GetSpellInfo(145205),
+                        ANY = GetSpellInfo(145205),
                     },
                 },
             }, 		
@@ -2865,11 +2868,11 @@ A.Data.ProfileUI = {
                     DBV = 2,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(145205) .. "\nrefresh(sec)",                        
+                        ANY = GetSpellInfo(145205) .. "\nrefresh(sec)",                        
                     }, 
                     TT = { 
-                        enUS = "Time remaining in seconds before refreshing " .. A.GetSpellInfo(145205), 
-                        ruRU = "Time remaining in seconds before refreshing " .. A.GetSpellInfo(145205), 
+                        enUS = "Time remaining in seconds before refreshing " .. GetSpellInfo(145205), 
+                        ruRU = "Time remaining in seconds before refreshing " .. GetSpellInfo(145205), 
                     },
                     M = {},
                 },            
@@ -2883,7 +2886,7 @@ A.Data.ProfileUI = {
                     DBV = 85,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(18562) .. " (%)",                        
+                        ANY = GetSpellInfo(18562) .. " (%)",                        
                     }, 
                     TT = { 
                         enUS = "Offset Health Percent on which start casting 'Swiftmend'", 
@@ -2902,7 +2905,7 @@ A.Data.ProfileUI = {
                     DBV = 93,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(48438) .. "\n(Per UnitHealth %)",                        
+                        ANY = GetSpellInfo(48438) .. "\n(Per UnitHealth %)",                        
                     },                     
                     M = {},
                 },
@@ -2914,7 +2917,7 @@ A.Data.ProfileUI = {
                     DBV = 3,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(48438) .. "\n(Total Units)",    
+                        ANY = GetSpellInfo(48438) .. "\n(Total Units)",    
                     },                     
                     M = {},
                 },
@@ -2992,8 +2995,8 @@ A.Data.ProfileUI = {
                     DB = "MouseButtonsCheck",
                     DBV = true,
                     L = { 
-                        enUS = A.GetSpellInfo(145205) .. "\nCheck Mouse Buttons", 
-                        ruRU = A.GetSpellInfo(145205) .. "\nПроверять Кнопки Мышки", 
+                        enUS = GetSpellInfo(145205) .. "\nCheck Mouse Buttons", 
+                        ruRU = GetSpellInfo(145205) .. "\nПроверять Кнопки Мышки", 
                     }, 
                     TT = { 
                         enUS = "Prevents use if the camera is currently spinning with the mouse button held down", 
@@ -3013,7 +3016,7 @@ A.Data.ProfileUI = {
                     DB = "CyclonePvP",
                     DBV = "ON MELEE BURST",
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(33786),
+                        ANY = "PvP " .. GetSpellInfo(33786),
                     }, 
                     TT = { 
                         enUS = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Only if melee player has damage buffs\nON COOLDOWN - means will use always on melee players\nOFF - Cut out from rotation but still allow work through Queue and MSG systems\nIf you want fully turn it OFF then you should make SetBlocker in 'Actions' tab", 
@@ -3039,7 +3042,7 @@ A.Data.ProfileUI = {
                         [4] = true,
                     }, 
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(33786) .. " units",
+                        ANY = "PvP " .. GetSpellInfo(33786) .. " units",
                     }, 
                     TT = { 
                         enUS = "primary - is @target, @mouseover, @targettarget (these units are depend on toggles above)", 
@@ -3059,7 +3062,7 @@ A.Data.ProfileUI = {
                     DB = "MightyBashPvP",
                     DBV = "ON MELEE BURST",
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(5211),
+                        ANY = "PvP " .. GetSpellInfo(5211),
                     }, 
                     TT = { 
                         enUS = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Only if melee player has damage buffs\nON COOLDOWN - means will use always on melee players\nOFF - Cut out from rotation but still allow work through Queue and MSG systems\nIf you want fully turn it OFF then you should make SetBlocker in 'Actions' tab", 
@@ -3085,7 +3088,7 @@ A.Data.ProfileUI = {
                         [4] = true,
                     }, 
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(5211) .. " units",
+                        ANY = "PvP " .. GetSpellInfo(5211) .. " units",
                     }, 
                     TT = { 
                         enUS = "primary - is @target, @mouseover, @targettarget (these units are depend on toggles above)", 

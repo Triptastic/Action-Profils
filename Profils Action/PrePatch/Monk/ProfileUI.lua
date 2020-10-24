@@ -1,22 +1,34 @@
-local TMW                                             = TMW 
+--------------------------------
+-- Taste TMW Action ProfileUI --
+--------------------------------
+local TMW											= TMW 
+local CNDT											= TMW.CNDT
+local Env											= CNDT.Env
+local A												= Action
+local GetToggle										= A.GetToggle
+local InterruptIsValid								= A.InterruptIsValid
+local UnitCooldown									= A.UnitCooldown
+local Unit											= A.Unit 
+local Player										= A.Player 
+local Pet											= A.Pet
+local LoC											= A.LossOfControl
+local MultiUnits									= A.MultiUnits
+local EnemyTeam										= A.EnemyTeam
+local FriendlyTeam									= A.FriendlyTeam
+local TeamCache										= A.TeamCache
+local InstanceInfo									= A.InstanceInfo
+local TR                                            = Action.TasteRotation
+local select, setmetatable							= select, setmetatable
 
-local A                                             = Action
-local UnitCooldown                                    = A.UnitCooldown
-local Unit                                            = A.Unit 
-local Player                                        = A.Player 
-local Pet                                             = A.Pet
-local LoC                                             = A.LossOfControl
-local MultiUnits                                    = A.MultiUnits
-local EnemyTeam                                        = A.EnemyTeam
-local FriendlyTeam                                    = A.FriendlyTeam
-local TeamCache                                        = A.TeamCache
-local InstanceInfo                                    = A.InstanceInfo
-
-local select                                        = select
+-- Shadowlands Spell Info fix for empty spells
+local GetSpellInfo_original                                = _G.GetSpellInfo
+local function GetSpellInfo(...)
+    return GetSpellInfo_original(...) or ""
+end
 
 A.Data.ProfileEnabled[Action.CurrentProfile] = true     = true
 A.Data.ProfileUI                                     = {    
-    DateTime = "v6 (17.09.2019)",
+    DateTime = "v5.0.1 (24.10.2020)",
     [2] = {        
         [ACTION_CONST_MONK_BREWMASTER] = {             
             { -- [1]                            
@@ -78,7 +90,7 @@ A.Data.ProfileUI                                     = {
                     DB = "ShouldPurify",
                     DBV = 0, 
                     L = { 
-                        ANY = A.GetSpellInfo(119582),
+                        ANY = GetSpellInfo(119582),
                     }, 
                     TT = { 
                         enUS = "Stagger level on which need\nPurifying Brew (5 super high, 1 very low)", 
@@ -94,7 +106,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 100,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(115176) .. " (%)",
+                        ANY = GetSpellInfo(115176) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -108,7 +120,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 85,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(122281) .. " (%)",
+                        ANY = GetSpellInfo(122281) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -120,7 +132,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 100,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(115295) .. " (" .. A.GetSpellInfo(124255) .. " %)",    
+                        ANY = GetSpellInfo(115295) .. " (" .. GetSpellInfo(124255) .. " %)",    
                     }, 
                     M = {},
                 },
@@ -134,7 +146,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 100,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(122278) .. " (%)",                        
+                        ANY = GetSpellInfo(122278) .. " (%)",                        
                     }, 
                     M = {},
                 },
@@ -146,7 +158,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 100,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(115203) .. " (%)",
+                        ANY = GetSpellInfo(115203) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -160,7 +172,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 100,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(115176) .. " (%)",                        
+                        ANY = GetSpellInfo(115176) .. " (%)",                        
                     }, 
                     M = {},
                 },
@@ -194,7 +206,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 100,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(20594) .. " (%)",                        
+                        ANY = GetSpellInfo(20594) .. " (%)",                        
                     }, 
                     M = {},
                 },
@@ -222,7 +234,7 @@ A.Data.ProfileUI                                     = {
                     DB = "ParalysisPvP",
                     DBV = "BOTH",
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(115078),
+                        ANY = "PvP " .. GetSpellInfo(115078),
                     }, 
                     TT = { 
                         enUS = "@arena1-3 interrupt PvP list from 'Interrupts' tab by Paralysis\nMore custom config you can find in group by open /tmw", 
@@ -326,7 +338,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 85,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(122281) .. " (%)",
+                        ANY = GetSpellInfo(122281) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -338,7 +350,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 100,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(20594) .. " (%)",                        
+                        ANY = GetSpellInfo(20594) .. " (%)",                        
                     }, 
                     M = {},
                 },
@@ -352,7 +364,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 100,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(122278) .. " (%)",                        
+                        ANY = GetSpellInfo(122278) .. " (%)",                        
                     }, 
                     M = {},
                 },
@@ -364,7 +376,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 100,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(243435) .. " (%)",
+                        ANY = GetSpellInfo(243435) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -378,7 +390,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 100,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(122783) .. " (%)",                        
+                        ANY = GetSpellInfo(122783) .. " (%)",                        
                     }, 
                     M = {},
                 },
@@ -423,8 +435,8 @@ A.Data.ProfileUI                                     = {
                     DB = "HealingEnginePreventSuggest",
                     DBV = true,
                     L = { 
-                        enUS = "HealingEngine: Skip select target while " .. A.GetSpellInfo(115175)  .. " casting", 
-                        ruRU = "HealingEngine: Пропускать выбор целей пока " .. A.GetSpellInfo(115175)  .. " произносится", 
+                        enUS = "HealingEngine: Skip select target while " .. GetSpellInfo(115175)  .. " casting", 
+                        ruRU = "HealingEngine: Пропускать выбор целей пока " .. GetSpellInfo(115175)  .. " произносится", 
                     }, 
                     TT = { 
                         enUS = "If 'Soothing Mist' casting > 3 and unit health percent\nlower than value specified for slider 'Soothing Mist'", 
@@ -451,7 +463,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 100,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(116849) .. " (%)",                        
+                        ANY = GetSpellInfo(116849) .. " (%)",                        
                     }, 
                     M = {},
                 },
@@ -465,7 +477,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 100,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(115175) .. " (%)",                        
+                        ANY = GetSpellInfo(115175) .. " (%)",                        
                     }, 
                     TT = { 
                         enUS = "Offset Health Percent on which start casting 'Soothing Mist'", 
@@ -488,7 +500,7 @@ A.Data.ProfileUI                                     = {
                     }, 
                     MULT = true,
                     L = { 
-                        ANY = A.GetSpellInfo(115175) .. " " .. A.GetLocalization().TAB[1].STOPCAST .. " Mode",
+                        ANY = GetSpellInfo(115175) .. " " .. A.GetLocalization().TAB[1].STOPCAST .. " Mode",
                     }, 
                     TT = { 
                         enUS = "Conditions works only if in first tab was enabled 'Stop Cast'", 
@@ -508,7 +520,7 @@ A.Data.ProfileUI                                     = {
                     DB = "SoothingMistWorkMode",
                     DBV = "Auto",
                     L = { 
-                        ANY = A.GetSpellInfo(115175) .. " Work Mode",
+                        ANY = GetSpellInfo(115175) .. " Work Mode",
                     }, 
                     TT = { 
                         enUS = "These conditions will be skiped if unit will dying in emergency (critical) situation", 
@@ -527,7 +539,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 100,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(198664) .. "\n(Per UnitHealth %)",                        
+                        ANY = GetSpellInfo(198664) .. "\n(Per UnitHealth %)",                        
                     },                     
                     M = {},
                 },
@@ -539,7 +551,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 41,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(198664) .. "\n(Total Units)",    
+                        ANY = GetSpellInfo(198664) .. "\n(Total Units)",    
                     },                     
                     M = {},
                 },
@@ -554,7 +566,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 100,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(115310) .. "\n(Per UnitHealth %)",                        
+                        ANY = GetSpellInfo(115310) .. "\n(Per UnitHealth %)",                        
                     },                     
                     M = {},
                 },
@@ -566,7 +578,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 41,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(115310) .. "\n(Total Units)",    
+                        ANY = GetSpellInfo(115310) .. "\n(Total Units)",    
                     },                     
                     M = {},
                 },
@@ -581,7 +593,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 100,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(191837) .. "\n(Per UnitHealth %)",                        
+                        ANY = GetSpellInfo(191837) .. "\n(Per UnitHealth %)",                        
                     },                     
                     M = {},
                 },
@@ -593,7 +605,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 7,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(191837) .. "\n(Total Units)",    
+                        ANY = GetSpellInfo(191837) .. "\n(Total Units)",    
                     },                     
                     M = {},
                 },
@@ -666,8 +678,8 @@ A.Data.ProfileUI                                     = {
                     DB = "MouseButtonsCheck",
                     DBV = true,
                     L = { 
-                        enUS = A.GetSpellInfo(205234) .. "\nCheck Mouse Buttons", 
-                        ruRU = A.GetSpellInfo(205234) .. "\nПроверять Кнопки Мышки", 
+                        enUS = GetSpellInfo(205234) .. "\nCheck Mouse Buttons", 
+                        ruRU = GetSpellInfo(205234) .. "\nПроверять Кнопки Мышки", 
                     }, 
                     TT = { 
                         enUS = "Prevents use if the camera is currently spinning with the mouse button held down", 
@@ -686,7 +698,7 @@ A.Data.ProfileUI                                     = {
                     DB = "ParalysisPvP",
                     DBV = "BOTH",
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(115078),
+                        ANY = "PvP " .. GetSpellInfo(115078),
                     }, 
                     TT = { 
                         enUS = "@arena1-3 interrupt PvP list from 'Interrupts' tab by Paralysis\nMore custom config you can find in group by open /tmw", 
@@ -706,7 +718,7 @@ A.Data.ProfileUI                                     = {
                     DB = "GrappleWeaponPvP",
                     DBV = "ON MELEE BURST",
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(233759),
+                        ANY = "PvP " .. GetSpellInfo(233759),
                     }, 
                     TT = { 
                         enUS = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Only if melee player has damage buffs\nON COOLDOWN - means will use always on melee players\nOFF - Cut out from rotation but still allow work through Queue and MSG systems\nIf you want fully turn it OFF then you should make SetBlocker in 'Actions' tab", 
@@ -731,7 +743,7 @@ A.Data.ProfileUI                                     = {
                         [4] = true,
                     }, 
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(233759) .. " units",
+                        ANY = "PvP " .. GetSpellInfo(233759) .. " units",
                     }, 
                     TT = { 
                         enUS = "primary - is @target, @mouseover, @targettarget (these units are depend on toggles above)", 
@@ -806,7 +818,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 100,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(122470) .. " (%)",
+                        ANY = GetSpellInfo(122470) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -818,7 +830,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 100,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(20594) .. " (%)",                        
+                        ANY = GetSpellInfo(20594) .. " (%)",                        
                     }, 
                     M = {},
                 },
@@ -832,7 +844,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 100,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(122278) .. " (%)",                        
+                        ANY = GetSpellInfo(122278) .. " (%)",                        
                     }, 
                     M = {},
                 },
@@ -844,7 +856,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 100,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(201318) .. " (%)",
+                        ANY = GetSpellInfo(201318) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -858,7 +870,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 100,
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(122783) .. " (%)",                        
+                        ANY = GetSpellInfo(122783) .. " (%)",                        
                     }, 
                     M = {},
                 },
@@ -923,7 +935,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 100,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(287771) .. " (Self HP %)",
+                        ANY = GetSpellInfo(287771) .. " (Self HP %)",
                     }, 
                     M = {},
                 },
@@ -938,7 +950,7 @@ A.Data.ProfileUI                                     = {
                     DB = "ParalysisPvP",
                     DBV = "BOTH",
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(115078),
+                        ANY = "PvP " .. GetSpellInfo(115078),
                     }, 
                     TT = { 
                         enUS = "@arena1-3 interrupt PvP list from 'Interrupts' tab by Paralysis\nMore custom config you can find in group by open /tmw", 
@@ -958,7 +970,7 @@ A.Data.ProfileUI                                     = {
                     DB = "GrappleWeaponPvP",
                     DBV = "ON MELEE BURST",
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(233759),
+                        ANY = "PvP " .. GetSpellInfo(233759),
                     }, 
                     TT = { 
                         enUS = "@arena1-3, @target, @mouseover, @targettarget\nON MELEE BURST - Only if melee player has damage buffs\nON COOLDOWN - means will use always on melee players\nOFF - Cut out from rotation but still allow work through Queue and MSG systems\nIf you want fully turn it OFF then you should make SetBlocker in 'Actions' tab", 
@@ -983,7 +995,7 @@ A.Data.ProfileUI                                     = {
                         [4] = true,
                     }, 
                     L = { 
-                        ANY = "PvP " .. A.GetSpellInfo(233759) .. " units",
+                        ANY = "PvP " .. GetSpellInfo(233759) .. " units",
                     }, 
                     TT = { 
                         enUS = "primary - is @target, @mouseover, @targettarget (these units are depend on toggles above)", 

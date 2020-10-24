@@ -4,11 +4,9 @@
 local TMW											= TMW 
 local CNDT											= TMW.CNDT
 local Env											= CNDT.Env
-
 local A												= Action
 local GetToggle										= A.GetToggle
 local InterruptIsValid								= A.InterruptIsValid
-
 local UnitCooldown									= A.UnitCooldown
 local Unit											= A.Unit 
 local Player										= A.Player 
@@ -22,10 +20,15 @@ local InstanceInfo									= A.InstanceInfo
 local TR                                            = Action.TasteRotation
 local select, setmetatable							= select, setmetatable
 
+-- Shadowlands Spell Info fix for empty spells
+local GetSpellInfo_original                                = _G.GetSpellInfo
+local function GetSpellInfo(...)
+    return GetSpellInfo_original(...) or ""
+end
 
 A.Data.ProfileEnabled[Action.CurrentProfile] = true
 A.Data.ProfileUI                                     = {    
-    DateTime = "v4.2.2 (02.08.2020)",
+    DateTime = "v5.0.1 (24.10.2020)",
     [2] = {        
         [ACTION_CONST_PRIEST_SHADOW] = {             
             { -- [1]                            
@@ -292,7 +295,7 @@ A.Data.ProfileUI                                     = {
                 {
                     E = "Header",
                     L = {
-                        ANY = " -- " .. A.GetSpellInfo(295258) .. " -- ",
+                        ANY = " -- " .. GetSpellInfo(295258) .. " -- ",
                     },
                 },
             },
@@ -306,12 +309,12 @@ A.Data.ProfileUI                                     = {
                     DBV = 10, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(295258) .. " TTD",
+                        ANY = GetSpellInfo(295258) .. " TTD",
                     },
                     TT = { 
-                        enUS = "Set the minimum Time To Die for a unit before using " .. A.GetSpellInfo(295258) .. " \nDoes not apply to Boss.", 
-                        ruRU = "Установите минимальное время смерти для отряда перед использованием " .. A.GetSpellInfo(295258) .. " \nНе применимо к боссу.", 
-                        frFR = "Définissez le temps minimum pour mourir pour une unité avant d'utiliser " .. A.GetSpellInfo(295258) .. " \nNe s'applique pas aux boss.", 
+                        enUS = "Set the minimum Time To Die for a unit before using " .. GetSpellInfo(295258) .. " \nDoes not apply to Boss.", 
+                        ruRU = "Установите минимальное время смерти для отряда перед использованием " .. GetSpellInfo(295258) .. " \nНе применимо к боссу.", 
+                        frFR = "Définissez le temps minimum pour mourir pour une unité avant d'utiliser " .. GetSpellInfo(295258) .. " \nNe s'applique pas aux boss.", 
                     }, 					
                     M = {},
                 },
@@ -323,12 +326,12 @@ A.Data.ProfileUI                                     = {
                     DBV = 3, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(295258) .. " TTD",
+                        ANY = GetSpellInfo(295258) .. " TTD",
                     },
                     TT = { 
-                        enUS = "Set the minimum Time To Die for a unit before using " .. A.GetSpellInfo(295258) .. " \nDoes not apply to Boss.", 
-                        ruRU = "Установите минимальное время смерти для отряда перед использованием " .. A.GetSpellInfo(295258) .. " \nНе применимо к боссу.", 
-                        frFR = "Définissez le temps minimum pour mourir pour une unité avant d'utiliser " .. A.GetSpellInfo(295258) .. " \nNe s'applique pas aux boss.", 
+                        enUS = "Set the minimum Time To Die for a unit before using " .. GetSpellInfo(295258) .. " \nDoes not apply to Boss.", 
+                        ruRU = "Установите минимальное время смерти для отряда перед использованием " .. GetSpellInfo(295258) .. " \nНе применимо к боссу.", 
+                        frFR = "Définissez le temps minimum pour mourir pour une unité avant d'utiliser " .. GetSpellInfo(295258) .. " \nNe s'applique pas aux boss.", 
                     }, 					
                     M = {},
                 }, 				
@@ -337,7 +340,7 @@ A.Data.ProfileUI                                     = {
                 {
                     E = "Header",
                     L = {
-                        ANY = " -- " .. A.GetSpellInfo(300714) .. " -- ",
+                        ANY = " -- " .. GetSpellInfo(300714) .. " -- ",
                     },
                 },
             },
@@ -382,12 +385,12 @@ A.Data.ProfileUI                                     = {
                     DBV = 40, -- Set healthpercentage @30% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(300714) .. " TTD",
+                        ANY = GetSpellInfo(300714) .. " TTD",
                     },
                     TT = { 
-                        enUS = "Set the minimum Time To Die for a unit before using " .. A.GetSpellInfo(300714) .. " \nDoes not apply to Boss.", 
-                        ruRU = "Установите минимальное время смерти для отряда перед использованием " .. A.GetSpellInfo(300714) .. " \nНе применимо к боссу.", 
-                        frFR = "Définissez le temps minimum pour mourir pour une unité avant d'utiliser " .. A.GetSpellInfo(300714) .. " \nNe s'applique pas aux boss.", 
+                        enUS = "Set the minimum Time To Die for a unit before using " .. GetSpellInfo(300714) .. " \nDoes not apply to Boss.", 
+                        ruRU = "Установите минимальное время смерти для отряда перед использованием " .. GetSpellInfo(300714) .. " \nНе применимо к боссу.", 
+                        frFR = "Définissez le temps minimum pour mourir pour une unité avant d'utiliser " .. GetSpellInfo(300714) .. " \nNe s'applique pas aux boss.", 
                     }, 					
                     M = {},
                 },				
@@ -520,7 +523,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 60, -- Set healthpercentage @60% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(15286) .. " (%)",
+                        ANY = GetSpellInfo(15286) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -532,7 +535,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 60, -- Set healthpercentage @60% life. 
                     ONOFF = true,
                     L = { 
-                        ANY = A.GetSpellInfo(47585) .. " (%)",
+                        ANY = GetSpellInfo(47585) .. " (%)",
                     }, 
                     M = {},
                 },
@@ -843,7 +846,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 85,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(299374) .. "\nMana %",                        
+                        ANY = GetSpellInfo(299374) .. "\nMana %",                        
                     },                     
                     M = {},
                 },
@@ -855,7 +858,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 5,
                     ONOFF = false,
                     L = { 
-                        ANY = A.GetSpellInfo(299944) .. "\nunits number",                        
+                        ANY = GetSpellInfo(299944) .. "\nunits number",                        
                     },                     
                     M = {},
                 },
@@ -867,7 +870,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 85,
                     ONOFF = false,
                     L = { 
-                        ANY = A.GetSpellInfo(299944) .. "\n(%)",                        
+                        ANY = GetSpellInfo(299944) .. "\n(%)",                        
                     },                     
                     M = {},
                 },
@@ -961,7 +964,7 @@ A.Data.ProfileUI                                     = {
                 {
                     E = "Header",
                     L = {
-                        ANY = " -- " .. A.GetSpellInfo(47540) .. " -- ",
+                        ANY = " -- " .. GetSpellInfo(47540) .. " -- ",
                     },
                 }, 
             },
@@ -976,7 +979,7 @@ A.Data.ProfileUI                                     = {
                     DB = "PenanceWorkMode",
                     DBV = "BOTH",
                     L = { 
-                        ANY = A.GetSpellInfo(47540) .. " Work Mode",
+                        ANY = GetSpellInfo(47540) .. " Work Mode",
                     }, 
                     TT = { 
                         enUS = "These conditions will be skiped if unit will dying in emergency (critical) situation", 
@@ -999,12 +1002,12 @@ A.Data.ProfileUI                                     = {
          	        DB = "AngelicFeather",
          	        DBV = true,
          	        L = { 
-					    enUS = "Auto\n" .. A.GetSpellInfo(121536),
-                        ruRU = "Auto\n" .. A.GetSpellInfo(121536),
+					    enUS = "Auto\n" .. GetSpellInfo(121536),
+                        ruRU = "Auto\n" .. GetSpellInfo(121536),
 					},
           	        TT = { 
-					    enUS = "Enable this option to automatically use " .. A.GetSpellInfo(121536),
-                        ruRU = "Enable this option to automatically use " .. A.GetSpellInfo(121536),
+					    enUS = "Enable this option to automatically use " .. GetSpellInfo(121536),
+                        ruRU = "Enable this option to automatically use " .. GetSpellInfo(121536),
 					},
         	        M = {},
        	        },	
@@ -1013,12 +1016,12 @@ A.Data.ProfileUI                                     = {
          	        DB = "LeapofFaith",
          	        DBV = true,
          	        L = { 
-					    enUS = "Auto\n" .. A.GetSpellInfo(73325),
-                        ruRU = "Auto\n" .. A.GetSpellInfo(73325),
+					    enUS = "Auto\n" .. GetSpellInfo(73325),
+                        ruRU = "Auto\n" .. GetSpellInfo(73325),
 					},
           	        TT = { 
-					    enUS = "Enable this option to automatically use " .. A.GetSpellInfo(73325),
-                        ruRU = "Enable this option to automatically use " .. A.GetSpellInfo(73325),
+					    enUS = "Enable this option to automatically use " .. GetSpellInfo(73325),
+                        ruRU = "Enable this option to automatically use " .. GetSpellInfo(73325),
 					},
         	        M = {},
        	        },	
@@ -1058,12 +1061,12 @@ A.Data.ProfileUI                                     = {
          	        DB = "Dispel",
          	        DBV = true,
          	        L = { 
-					    enUS = "Auto\n" .. A.GetSpellInfo(528),
-                        ruRU = "Auto\n" .. A.GetSpellInfo(528),
+					    enUS = "Auto\n" .. GetSpellInfo(528),
+                        ruRU = "Auto\n" .. GetSpellInfo(528),
 					},
           	        TT = { 
-					    enUS = "Enable this option to automatically use " .. A.GetSpellInfo(528),
-                        ruRU = "Enable this option to automatically use " .. A.GetSpellInfo(528),
+					    enUS = "Enable this option to automatically use " .. GetSpellInfo(528),
+                        ruRU = "Enable this option to automatically use " .. GetSpellInfo(528),
 					},
         	        M = {},
        	        },
@@ -1072,12 +1075,12 @@ A.Data.ProfileUI                                     = {
          	        DB = "MassDispel",
          	        DBV = true,
          	        L = { 
-					    enUS = "Auto\n" .. A.GetSpellInfo(32375),
-                        ruRU = "Auto\n" .. A.GetSpellInfo(32375),
+					    enUS = "Auto\n" .. GetSpellInfo(32375),
+                        ruRU = "Auto\n" .. GetSpellInfo(32375),
 					},
           	        TT = { 
-					    enUS = "Enable this option to automatically use " .. A.GetSpellInfo(32375),
-                        ruRU = "Enable this option to automatically use " .. A.GetSpellInfo(32375),
+					    enUS = "Enable this option to automatically use " .. GetSpellInfo(32375),
+                        ruRU = "Enable this option to automatically use " .. GetSpellInfo(32375),
 					},
         	        M = {},
        	        },
@@ -1086,12 +1089,12 @@ A.Data.ProfileUI                                     = {
          	        DB = "Purje",
          	        DBV = true,
          	        L = { 
-					    enUS = "Auto\n" .. A.GetSpellInfo(527),
-                        ruRU = "Auto\n" .. A.GetSpellInfo(527),
+					    enUS = "Auto\n" .. GetSpellInfo(527),
+                        ruRU = "Auto\n" .. GetSpellInfo(527),
 					},
           	        TT = { 
-					    enUS = "Enable this option to automatically use " .. A.GetSpellInfo(527),
-                        ruRU = "Enable this option to automatically use " .. A.GetSpellInfo(527),
+					    enUS = "Enable this option to automatically use " .. GetSpellInfo(527),
+                        ruRU = "Enable this option to automatically use " .. GetSpellInfo(527),
 					},
         	        M = {},
        	        },				
@@ -1436,7 +1439,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 85,
                     ONLYON = true,
                     L = { 
-                        ANY = A.GetSpellInfo(299374) .. "\nMana %",                        
+                        ANY = GetSpellInfo(299374) .. "\nMana %",                        
                     },                     
                     M = {},
                 },
@@ -1448,7 +1451,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 5,
                     ONOFF = false,
                     L = { 
-                        ANY = A.GetSpellInfo(299944) .. "\nunits number",                        
+                        ANY = GetSpellInfo(299944) .. "\nunits number",                        
                     },                     
                     M = {},
                 },
@@ -1460,7 +1463,7 @@ A.Data.ProfileUI                                     = {
                     DBV = 85,
                     ONOFF = false,
                     L = { 
-                        ANY = A.GetSpellInfo(299944) .. "\n(%)",                        
+                        ANY = GetSpellInfo(299944) .. "\n(%)",                        
                     },                     
                     M = {},
                 },
@@ -1554,7 +1557,7 @@ A.Data.ProfileUI                                     = {
                 {
                     E = "Header",
                     L = {
-                        ANY = " -- " .. A.GetSpellInfo(47788) .. " -- ",
+                        ANY = " -- " .. GetSpellInfo(47788) .. " -- ",
                     },
                 }, 
             },
@@ -1564,12 +1567,12 @@ A.Data.ProfileUI                                     = {
          	        DB = "GuardianSpiritSelfDeff",
          	        DBV = true,
          	        L = { 
-					    enUS = A.GetSpellInfo(47788) .. " Self Deff",
-                        ruRU = A.GetSpellInfo(47788) .. " Self Deff",
+					    enUS = GetSpellInfo(47788) .. " Self Deff",
+                        ruRU = GetSpellInfo(47788) .. " Self Deff",
 					},
           	        TT = { 
-					    enUS = "Enable this option to automatically use " .. A.GetSpellInfo(47788) .. " for Self defense.",
-                        ruRU = "Enable this option to automatically use " .. A.GetSpellInfo(47788) .. " for Self defense.",
+					    enUS = "Enable this option to automatically use " .. GetSpellInfo(47788) .. " for Self defense.",
+                        ruRU = "Enable this option to automatically use " .. GetSpellInfo(47788) .. " for Self defense.",
 					},
         	        M = {},
        	        },	
@@ -1578,12 +1581,12 @@ A.Data.ProfileUI                                     = {
          	        DB = "GuardianSpiritTeamDeff",
          	        DBV = true,
          	        L = { 
-					    enUS = A.GetSpellInfo(47788) .. " Team Deff",
-                        ruRU = A.GetSpellInfo(47788) .. " Team Deff",
+					    enUS = GetSpellInfo(47788) .. " Team Deff",
+                        ruRU = GetSpellInfo(47788) .. " Team Deff",
 					},
           	        TT = { 
-					    enUS = "Enable this option to automatically use " .. A.GetSpellInfo(47788) .. " for Team deffense.",
-                        ruRU = "Enable this option to automatically use " .. A.GetSpellInfo(47788) .. " for Team deffense.",
+					    enUS = "Enable this option to automatically use " .. GetSpellInfo(47788) .. " for Team deffense.",
+                        ruRU = "Enable this option to automatically use " .. GetSpellInfo(47788) .. " for Team deffense.",
 					},
         	        M = {},
        	        },	
@@ -1592,7 +1595,7 @@ A.Data.ProfileUI                                     = {
                 {
                     E = "Header",
                     L = {
-                        ANY = " -- " .. A.GetSpellInfo(139) .. " -- ",
+                        ANY = " -- " .. GetSpellInfo(139) .. " -- ",
                     },
                 }, 
             },
@@ -1602,12 +1605,12 @@ A.Data.ProfileUI                                     = {
          	        DB = "RenewRefresh",
          	        DBV = false,
          	        L = { 
-					    enUS = A.GetSpellInfo(139) .. " Force Refresh",
-                        ruRU = A.GetSpellInfo(139) .. " Force Refresh",
+					    enUS = GetSpellInfo(139) .. " Force Refresh",
+                        ruRU = GetSpellInfo(139) .. " Force Refresh",
 					},
           	        TT = { 
-					    enUS = "Enable this option to automatically force " .. A.GetSpellInfo(139) .. " refreshment on every units.",
-                        ruRU = "Enable this option to automatically force " .. A.GetSpellInfo(139) .. " refreshment on every units.",
+					    enUS = "Enable this option to automatically force " .. GetSpellInfo(139) .. " refreshment on every units.",
+                        ruRU = "Enable this option to automatically force " .. GetSpellInfo(139) .. " refreshment on every units.",
 					},
         	        M = {},
        	        },		
@@ -1626,12 +1629,12 @@ A.Data.ProfileUI                                     = {
          	        DB = "AngelicFeather",
          	        DBV = true,
          	        L = { 
-					    enUS = "Auto\n" .. A.GetSpellInfo(121536),
-                        ruRU = "Auto\n" .. A.GetSpellInfo(121536),
+					    enUS = "Auto\n" .. GetSpellInfo(121536),
+                        ruRU = "Auto\n" .. GetSpellInfo(121536),
 					},
           	        TT = { 
-					    enUS = "Enable this option to automatically use " .. A.GetSpellInfo(121536),
-                        ruRU = "Enable this option to automatically use " .. A.GetSpellInfo(121536),
+					    enUS = "Enable this option to automatically use " .. GetSpellInfo(121536),
+                        ruRU = "Enable this option to automatically use " .. GetSpellInfo(121536),
 					},
         	        M = {},
        	        },	
@@ -1640,12 +1643,12 @@ A.Data.ProfileUI                                     = {
          	        DB = "LeapofFaith",
          	        DBV = true,
          	        L = { 
-					    enUS = "Auto\n" .. A.GetSpellInfo(73325),
-                        ruRU = "Auto\n" .. A.GetSpellInfo(73325),
+					    enUS = "Auto\n" .. GetSpellInfo(73325),
+                        ruRU = "Auto\n" .. GetSpellInfo(73325),
 					},
           	        TT = { 
-					    enUS = "Enable this option to automatically use " .. A.GetSpellInfo(73325),
-                        ruRU = "Enable this option to automatically use " .. A.GetSpellInfo(73325),
+					    enUS = "Enable this option to automatically use " .. GetSpellInfo(73325),
+                        ruRU = "Enable this option to automatically use " .. GetSpellInfo(73325),
 					},
         	        M = {},
        	        },	
@@ -1685,12 +1688,12 @@ A.Data.ProfileUI                                     = {
          	        DB = "Dispel",
          	        DBV = true,
          	        L = { 
-					    enUS = "Auto\n" .. A.GetSpellInfo(528),
-                        ruRU = "Auto\n" .. A.GetSpellInfo(528),
+					    enUS = "Auto\n" .. GetSpellInfo(528),
+                        ruRU = "Auto\n" .. GetSpellInfo(528),
 					},
           	        TT = { 
-					    enUS = "Enable this option to automatically use " .. A.GetSpellInfo(528),
-                        ruRU = "Enable this option to automatically use " .. A.GetSpellInfo(528),
+					    enUS = "Enable this option to automatically use " .. GetSpellInfo(528),
+                        ruRU = "Enable this option to automatically use " .. GetSpellInfo(528),
 					},
         	        M = {},
        	        },
@@ -1699,12 +1702,12 @@ A.Data.ProfileUI                                     = {
          	        DB = "MassDispel",
          	        DBV = true,
          	        L = { 
-					    enUS = "Auto\n" .. A.GetSpellInfo(32375),
-                        ruRU = "Auto\n" .. A.GetSpellInfo(32375),
+					    enUS = "Auto\n" .. GetSpellInfo(32375),
+                        ruRU = "Auto\n" .. GetSpellInfo(32375),
 					},
           	        TT = { 
-					    enUS = "Enable this option to automatically use " .. A.GetSpellInfo(32375),
-                        ruRU = "Enable this option to automatically use " .. A.GetSpellInfo(32375),
+					    enUS = "Enable this option to automatically use " .. GetSpellInfo(32375),
+                        ruRU = "Enable this option to automatically use " .. GetSpellInfo(32375),
 					},
         	        M = {},
        	        },
@@ -1713,12 +1716,12 @@ A.Data.ProfileUI                                     = {
          	        DB = "Purje",
          	        DBV = true,
          	        L = { 
-					    enUS = "Auto\n" .. A.GetSpellInfo(527),
-                        ruRU = "Auto\n" .. A.GetSpellInfo(527),
+					    enUS = "Auto\n" .. GetSpellInfo(527),
+                        ruRU = "Auto\n" .. GetSpellInfo(527),
 					},
           	        TT = { 
-					    enUS = "Enable this option to automatically use " .. A.GetSpellInfo(527),
-                        ruRU = "Enable this option to automatically use " .. A.GetSpellInfo(527),
+					    enUS = "Enable this option to automatically use " .. GetSpellInfo(527),
+                        ruRU = "Enable this option to automatically use " .. GetSpellInfo(527),
 					},
         	        M = {},
        	        },				
