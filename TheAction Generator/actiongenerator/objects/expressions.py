@@ -336,6 +336,30 @@ class Expression(Decorable):
         Return the condition when the prefix is essence.
         """
         return Essence.build(self)
+        
+    def covenant(self):
+        """
+        Return the condition when the prefix is covenant.
+        """
+        return Covenant.build(self)
+        
+    def soulbind(self):
+        """
+        Return the condition when the prefix is soulbind.
+        """
+        return Soulbind.build(self)
+
+    def conduit(self):
+        """
+        Return the condition when the prefix is conduit.
+        """
+        return Conduit.build(self)
+
+    def runeforge(self):
+        """
+        Return the condition when the prefix is runeforge.
+        """
+        return Runeforge.build(self)
 
     def consumable(self):
         """
@@ -1146,6 +1170,70 @@ class Essence(BuildExpression):
         Return the arguments for the expression essence.spell.rank.
         """
         self.method = Method('GetAzeriteRank()')
+
+class Covenant(BuildExpression):
+    """
+    Represent the expression for a covenant. condition.
+    """
+
+    def __init__(self, condition):
+        Expires.__init__(self, condition, 'cooldown', 'cooldown_up')
+        call = condition.condition_list[2]
+        super().__init__(call)
+    
+    def enabled(self):
+        """
+        Return the arguments for the expression covenant.spell.enabled.
+        """
+        self.method = Method('IsCovenantLearned()')
+        
+class Soulbind(BuildExpression):
+    """
+    Represent the expression for a soulbind. condition.
+    """
+
+    def __init__(self, condition):
+        Expires.__init__(self, condition, 'cooldown', 'cooldown_up')
+        call = condition.condition_list[2]
+        super().__init__(call)
+    
+    def enabled(self):
+        """
+        Return the arguments for the expression soulbind.spell.enabled.
+        """
+        self.method = Method('IsSoulbindLearned()')
+
+class Conduit(BuildExpression):
+    """
+    Represent the expression for a conduit. condition.
+    """
+
+    def __init__(self, condition):
+        Expires.__init__(self, condition, 'cooldown', 'cooldown_up')
+        call = condition.condition_list[2]
+        super().__init__(call)
+    
+    def enabled(self):
+        """
+        Return the arguments for the expression conduit.spell.enabled.
+        """
+        self.method = Method('IsConduitLearned()')
+
+class Runeforge(BuildExpression):
+    """
+    Represent the expression for a runeforge. condition.
+    """
+
+    def __init__(self, condition):
+        Expires.__init__(self, condition, 'cooldown', 'cooldown_up')
+        call = condition.condition_list[2]
+        super().__init__(call)
+    
+    def enabled(self):
+        """
+        Return the arguments for the expression covenant.spell.enabled.
+        """
+        self.method = Method('IsRuneforgeLearned()')
 
 class RaidEvent(BuildExpression):
     """
